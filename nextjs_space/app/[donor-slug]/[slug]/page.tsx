@@ -89,133 +89,152 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
   const storyUrl = `https://impactusall.abacusai.app/${donorSlug}/${storySlug}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Donor-Branded Header */}
+    <div className="min-h-screen bg-white">
+      {/* Donor-Branded Header - Sticky */}
       <div
-        className="py-4 px-4 sm:px-6 lg:px-8 shadow-sm"
+        className="sticky top-0 z-50 py-3 px-4 sm:px-6 lg:px-8 shadow-md backdrop-blur-sm bg-opacity-95"
         style={{
           background: `linear-gradient(90deg, ${donor.primaryColor || '#ea580c'} 0%, ${donor.secondaryColor || '#14b8a6'} 100%)`,
         }}
       >
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link
             href={`/${donorSlug}`}
-            className="flex items-center gap-3 text-white hover:opacity-90 transition-opacity"
+            className="flex items-center gap-3 text-white hover:opacity-90 transition-opacity group"
           >
             {donor.logoUrl && (
-              <div className="relative w-10 h-10 bg-white rounded-full p-1.5">
+              <div className="relative w-12 h-12 bg-white rounded-lg p-2 group-hover:scale-105 transition-transform">
                 <Image
                   src={donor.logoUrl}
                   alt={donor.name}
                   fill
-                  className="object-contain p-0.5"
+                  className="object-contain p-1"
                 />
               </div>
             )}
-            <span className="font-semibold">{donor.name}</span>
+            <div>
+              <span className="text-sm opacity-90">Return to</span>
+              <div className="font-bold text-lg">{donor.name}</div>
+            </div>
           </Link>
         </div>
       </div>
 
-      {/* Story Content */}
-      <article className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Charity Badge */}
-        <div className="mb-6 inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-md">
-          {story.charity.logoUrl && (
-            <div className="relative w-6 h-6">
-              <Image
-                src={story.charity.logoUrl}
-                alt={story.charity.name}
-                fill
-                className="object-contain"
-              />
+      {/* Hero Section - Full Width Featured Image */}
+      {story.featuredImageUrl && (
+        <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden">
+          <Image
+            src={story.featuredImageUrl}
+            alt={story.title}
+            fill
+            priority
+            className="object-cover"
+          />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+          
+          {/* Story Title Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-12">
+            <div className="max-w-4xl mx-auto">
+              {/* Charity Badge */}
+              <div className="mb-4 inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl">
+                {story.charity.logoUrl && (
+                  <div className="relative w-6 h-6">
+                    <Image
+                      src={story.charity.logoUrl}
+                      alt={story.charity.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+                <span className="text-sm font-semibold text-slate-700">{story.charity.name}</span>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-2xl leading-tight">
+                {story.title}
+              </h1>
+
+              {/* Date */}
+              {story.publishedAt && (
+                <div className="flex items-center gap-2 text-white/90 text-lg">
+                  <Calendar className="w-5 h-5" />
+                  <time dateTime={story.publishedAt.toISOString()}>
+                    {new Date(story.publishedAt).toLocaleDateString('en-GB', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </time>
+                </div>
+              )}
             </div>
-          )}
-          <span className="text-sm font-medium text-slate-700">{story.charity.name}</span>
+          </div>
         </div>
+      )}
 
-        {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-          {story.title}
-        </h1>
-
-        {/* Date */}
-        {story.publishedAt && (
-          <div className="flex items-center gap-2 text-slate-600 mb-8">
-            <Calendar className="w-4 h-4" />
-            <time dateTime={story.publishedAt.toISOString()}>
-              {new Date(story.publishedAt).toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
-            </time>
-          </div>
-        )}
-
-        {/* Featured Image */}
-        {story.featuredImageUrl && (
-          <div className="relative aspect-video bg-muted rounded-xl overflow-hidden shadow-lg mb-8">
-            <Image
-              src={story.featuredImageUrl}
-              alt={story.title}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-        )}
-
-        {/* Impact Metrics */}
+      {/* Story Content Area */}
+      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Impact Metrics - Prominent Display */}
         {impactMetrics && Object.keys(impactMetrics).length > 0 && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">Impact at a Glance</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {impactMetrics.families_helped > 0 && (
-                <div className="text-center p-4 bg-orange-50 rounded-lg">
-                  <div className="text-3xl font-bold text-orange-600 mb-1">
-                    <AnimatedCounter end={impactMetrics.families_helped} duration={2000} />
-                  </div>
-                  <div className="text-xs text-slate-600">Families Helped</div>
-                </div>
-              )}
-              {impactMetrics.hours_of_care > 0 && (
-                <div className="text-center p-4 bg-teal-50 rounded-lg">
-                  <div className="text-3xl font-bold text-teal-600 mb-1">
-                    <AnimatedCounter end={impactMetrics.hours_of_care} duration={2000} />
-                  </div>
-                  <div className="text-xs text-slate-600">Hours of Care</div>
-                </div>
-              )}
-              {impactMetrics.meals_provided > 0 && (
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-3xl font-bold text-green-600 mb-1">
-                    <AnimatedCounter end={impactMetrics.meals_provided} duration={2000} />
-                  </div>
-                  <div className="text-xs text-slate-600">Meals Provided</div>
-                </div>
-              )}
-              {impactMetrics.jobs_created > 0 && (
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">
-                    <AnimatedCounter end={impactMetrics.jobs_created} duration={2000} />
-                  </div>
-                  <div className="text-xs text-slate-600">Jobs Created</div>
-                </div>
-              )}
+          <div 
+            className="mb-16 p-8 md:p-12 rounded-2xl shadow-xl relative overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, ${donor.primaryColor || '#DA291C'}08 0%, ${donor.secondaryColor || '#FBE122'}08 100%)`,
+            }}
+          >
+            {/* Decorative element */}
+            <div 
+              className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-20"
+              style={{
+                background: donor.primaryColor || '#DA291C',
+              }}
+            />
+            
+            <div className="relative">
+              <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-800 mb-10">
+                The Impact of This Story
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {Object.entries(impactMetrics).map(([key, value]: [string, any]) => {
+                  if (typeof value === 'number' && value > 0) {
+                    const label = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                    return (
+                      <div key={key} className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                        <div 
+                          className="text-4xl md:text-5xl font-black mb-2"
+                          style={{ color: donor.primaryColor || '#DA291C' }}
+                        >
+                          <AnimatedCounter end={value} duration={2500} />
+                        </div>
+                        <div className="text-sm md:text-base font-semibold text-slate-700">{label}</div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
             </div>
           </div>
         )}
 
         {/* Story Content */}
         <div
-          className="prose prose-lg max-w-none mb-12 bg-white rounded-xl shadow-md p-8"
+          className="prose prose-xl max-w-none mb-16 
+                     prose-headings:font-bold prose-headings:text-slate-800 
+                     prose-p:text-slate-700 prose-p:leading-relaxed prose-p:text-lg
+                     prose-strong:text-slate-900 prose-strong:font-semibold
+                     prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline"
           dangerouslySetInnerHTML={{ __html: story.content }}
         />
 
         {/* Timeline Section */}
         {story.milestones && story.milestones.length > 0 && (
-          <div className="mb-12">
+          <div className="mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-800 mb-12">
+              The Journey
+            </h2>
             <StoryTimeline 
               milestones={story.milestones.map((m: any) => ({
                 id: m.id,
@@ -230,41 +249,47 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
 
         {/* Thank You Messages */}
         {story.thankYouMessages && story.thankYouMessages.length > 0 && (
-          <div className="mb-12">
+          <div className="mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-800 mb-12">
+              In Their Own Words
+            </h2>
             <ThankYouMessages messages={story.thankYouMessages} />
           </div>
         )}
 
         {/* Engagement Section */}
-        <DonorStoryActions
-          storyId={story.id}
-          title={story.title}
-          url={storyUrl}
-          initialReactions={[
-            { type: 'LOVE', count: reactions.LOVE },
-            { type: 'APPLAUSE', count: reactions.APPLAUSE },
-            { type: 'MOVED', count: reactions.MOVED },
-            { type: 'INSPIRED', count: reactions.INSPIRED },
-            { type: 'GRATEFUL', count: reactions.GRATEFUL },
-          ]}
-          initialComments={story.comments.map((c: any) => ({
-            id: c.id,
-            userName: c.user?.name || c.userName,
-            content: c.content,
-            createdAt: c.createdAt.toISOString(),
-          }))}
-        />
+        <div className="mb-12">
+          <DonorStoryActions
+            storyId={story.id}
+            title={story.title}
+            url={storyUrl}
+            initialReactions={[
+              { type: 'LOVE', count: reactions.LOVE },
+              { type: 'APPLAUSE', count: reactions.APPLAUSE },
+              { type: 'MOVED', count: reactions.MOVED },
+              { type: 'INSPIRED', count: reactions.INSPIRED },
+              { type: 'GRATEFUL', count: reactions.GRATEFUL },
+            ]}
+            initialComments={story.comments.map((c: any) => ({
+              id: c.id,
+              userName: c.user?.name || c.userName,
+              content: c.content,
+              createdAt: c.createdAt.toISOString(),
+            }))}
+          />
+        </div>
 
-        {/* Back to Hub */}
-        <div className="text-center py-8">
+        {/* Back to Hub - Prominent CTA */}
+        <div className="text-center py-12">
           <Link
             href={`/${donorSlug}`}
-            className="inline-block px-6 py-3 rounded-lg font-semibold text-white transition-all hover:shadow-lg"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-xl font-bold text-white text-lg transition-all hover:shadow-2xl hover:scale-105 transform"
             style={{
               background: `linear-gradient(135deg, ${donor.primaryColor || '#ea580c'} 0%, ${donor.secondaryColor || '#14b8a6'} 100%)`,
             }}
           >
-            ← Back to {donor.name} Impact Hub
+            <span>←</span>
+            <span>Read More Stories from {donor.name}</span>
           </Link>
         </div>
       </article>

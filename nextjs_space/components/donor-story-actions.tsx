@@ -1,5 +1,6 @@
 'use client';
 
+import { SessionProvider } from 'next-auth/react';
 import { ReactionButtons } from './reaction-buttons';
 import { CommentsSection } from './comments-section';
 import { ShareButton } from './share-button';
@@ -32,6 +33,7 @@ export function DonorStoryActions({
   initialComments,
 }: DonorStoryActionsProps) {
   return (
+    <SessionProvider>
     <>
       {/* Engagement Section */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-8">
@@ -54,5 +56,6 @@ export function DonorStoryActions({
         <CommentsSection storyId={storyId} initialComments={initialComments} />
       </div>
     </>
+    </SessionProvider>
   );
 }

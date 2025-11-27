@@ -58,102 +58,144 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
   const totalComments = donor.stories.reduce((sum: number, story: any) => sum + story._count.comments, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Donor-Branded Hero Section */}
-      <div
-        className="relative py-16 px-4 sm:px-6 lg:px-8"
-        style={{
-          background: `linear-gradient(135deg, ${donor.primaryColor || '#ea580c'} 0%, ${donor.secondaryColor || '#14b8a6'} 100%)`,
-        }}
-      >
-        <div className="max-w-7xl mx-auto text-center">
+    <div className="min-h-screen bg-white">
+      {/* Immersive Hero Section with Full-Width Background Image */}
+      <div className="relative h-[70vh] min-h-[600px] w-full overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/man-united-hero.jpg"
+            alt="Manchester United Impact"
+            fill
+            priority
+            className="object-cover"
+          />
+          {/* Gradient Overlay */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(to bottom, ${donor.primaryColor}20 0%, ${donor.primaryColor}90 100%)`,
+            }}
+          />
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center">
           {/* Donor Logo */}
           {donor.logoUrl && (
-            <div className="mb-6 flex justify-center">
-              <div className="relative w-24 h-24 bg-white rounded-full p-3 shadow-lg">
-                <Image
-                  src={donor.logoUrl}
-                  alt={`${donor.name} logo`}
-                  fill
-                  className="object-contain p-2"
-                />
-              </div>
+            <div className="mb-8 relative w-32 h-32 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl">
+              <Image
+                src={donor.logoUrl}
+                alt={`${donor.name} logo`}
+                fill
+                className="object-contain p-3"
+              />
             </div>
           )}
 
-          {/* Donor Name & Tagline */}
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          {/* Donor Name */}
+          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 drop-shadow-2xl tracking-tight">
             {donor.name}
           </h1>
+
+          {/* Tagline */}
           {donor.tagline && (
-            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto">
+            <p className="text-2xl md:text-3xl text-white font-medium max-w-4xl mx-auto mb-8 drop-shadow-lg">
               {donor.tagline}
             </p>
           )}
+
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex items-start justify-center p-2">
+              <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Impact Metrics with Animated Counters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-12">
-          <h2 className="text-2xl font-bold text-center mb-8 text-slate-800">
-            Our Impact Together
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {aggregateMetrics.families > 0 && (
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: donor.primaryColor || '#ea580c' }}>
-                  <AnimatedCounter end={aggregateMetrics.families} duration={2000} />
-                </div>
-                <div className="text-sm text-slate-600">Families Helped</div>
-              </div>
-            )}
-            {aggregateMetrics.hours > 0 && (
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: donor.primaryColor || '#ea580c' }}>
-                  <AnimatedCounter end={aggregateMetrics.hours} duration={2000} />
-                </div>
-                <div className="text-sm text-slate-600">Hours of Care</div>
-              </div>
-            )}
-            {aggregateMetrics.meals > 0 && (
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: donor.primaryColor || '#ea580c' }}>
-                  <AnimatedCounter end={aggregateMetrics.meals} duration={2000} />
-                </div>
-                <div className="text-sm text-slate-600">Meals Provided</div>
-              </div>
-            )}
-            {aggregateMetrics.jobs > 0 && (
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold mb-2" style={{ color: donor.primaryColor || '#ea580c' }}>
-                  <AnimatedCounter end={aggregateMetrics.jobs} duration={2000} />
-                </div>
-                <div className="text-sm text-slate-600">Jobs Created</div>
-              </div>
-            )}
-          </div>
+      {/* Impact Metrics - Floating Card */}
+      <div className="relative z-10 -mt-32 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 border-t-4" style={{ borderColor: donor.primaryColor || '#DA291C' }}>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-3">
+                Real Impact, Real Lives Changed
+              </h2>
+              <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+                Every number represents a person, a family, a life transformed
+              </p>
+            </div>
 
-          {/* Engagement Stats */}
-          <div className="mt-8 pt-8 border-t border-slate-200">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-slate-800">
-                  <AnimatedCounter end={totalLikes + totalReactions} duration={2000} />
+            {/* Main Impact Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-10">
+              {aggregateMetrics.families > 0 && (
+                <div className="text-center transform hover:scale-105 transition-transform duration-300">
+                  <div 
+                    className="text-5xl md:text-6xl font-black mb-3" 
+                    style={{ color: donor.primaryColor || '#DA291C' }}
+                  >
+                    <AnimatedCounter end={aggregateMetrics.families} duration={2500} />
+                  </div>
+                  <div className="text-base md:text-lg font-semibold text-slate-700">Families Helped</div>
                 </div>
-                <div className="text-xs text-slate-600">Supporter Reactions</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-800">
-                  <AnimatedCounter end={totalComments} duration={2000} />
+              )}
+              {aggregateMetrics.hours > 0 && (
+                <div className="text-center transform hover:scale-105 transition-transform duration-300">
+                  <div 
+                    className="text-5xl md:text-6xl font-black mb-3" 
+                    style={{ color: donor.primaryColor || '#DA291C' }}
+                  >
+                    <AnimatedCounter end={aggregateMetrics.hours} duration={2500} />
+                  </div>
+                  <div className="text-base md:text-lg font-semibold text-slate-700">Hours of Care</div>
                 </div>
-                <div className="text-xs text-slate-600">Comments</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-slate-800">
-                  <AnimatedCounter end={donor.stories.length} duration={2000} />
+              )}
+              {aggregateMetrics.meals > 0 && (
+                <div className="text-center transform hover:scale-105 transition-transform duration-300">
+                  <div 
+                    className="text-5xl md:text-6xl font-black mb-3" 
+                    style={{ color: donor.primaryColor || '#DA291C' }}
+                  >
+                    <AnimatedCounter end={aggregateMetrics.meals} duration={2500} />
+                  </div>
+                  <div className="text-base md:text-lg font-semibold text-slate-700">Meals Provided</div>
                 </div>
-                <div className="text-xs text-slate-600">Impact Stories</div>
+              )}
+              {aggregateMetrics.jobs > 0 && (
+                <div className="text-center transform hover:scale-105 transition-transform duration-300">
+                  <div 
+                    className="text-5xl md:text-6xl font-black mb-3" 
+                    style={{ color: donor.primaryColor || '#DA291C' }}
+                  >
+                    <AnimatedCounter end={aggregateMetrics.jobs} duration={2500} />
+                  </div>
+                  <div className="text-base md:text-lg font-semibold text-slate-700">Jobs Secured</div>
+                </div>
+              )}
+            </div>
+
+            {/* Engagement Stats */}
+            <div className="pt-8 border-t-2 border-slate-100">
+              <div className="grid grid-cols-3 gap-6 text-center">
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold text-slate-800 mb-1">
+                    <AnimatedCounter end={totalLikes + totalReactions} duration={2000} />
+                  </div>
+                  <div className="text-sm md:text-base text-slate-600 font-medium">Supporter Reactions</div>
+                </div>
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold text-slate-800 mb-1">
+                    <AnimatedCounter end={totalComments} duration={2000} />
+                  </div>
+                  <div className="text-sm md:text-base text-slate-600 font-medium">Comments</div>
+                </div>
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold text-slate-800 mb-1">
+                    <AnimatedCounter end={donor.stories.length} duration={2000} />
+                  </div>
+                  <div className="text-sm md:text-base text-slate-600 font-medium">Impact Stories</div>
+                </div>
               </div>
             </div>
           </div>
@@ -161,33 +203,44 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
       </div>
 
       {/* Impact Stories Feed */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <h2 className="text-3xl font-bold mb-8 text-slate-800">Impact Stories</h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+            Stories That Change Hearts
+          </h2>
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            Read the inspiring journeys of people whose lives have been transformed through your support
+          </p>
+        </div>
+
         {donor.stories.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-xl shadow">
-            <p className="text-slate-600">No stories published yet.</p>
+          <div className="text-center py-20 bg-slate-50 rounded-2xl">
+            <p className="text-xl text-slate-600">No stories published yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {donor.stories.map((story: any) => (
               <Link
                 key={story.id}
                 href={`/${donorSlug}/${story.slug}`}
-                className="group bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
               >
                 {/* Story Image */}
                 {story.featuredImageUrl && (
-                  <div className="relative aspect-video bg-muted">
+                  <div className="relative aspect-[16/10] bg-slate-100 overflow-hidden">
                     <Image
                       src={story.featuredImageUrl}
                       alt={story.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
                     {/* Charity Badge */}
-                    <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2">
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl flex items-center gap-2 transform group-hover:scale-105 transition-transform duration-300">
                       {story.charity.logoUrl && (
-                        <div className="relative w-5 h-5">
+                        <div className="relative w-6 h-6">
                           <Image
                             src={story.charity.logoUrl}
                             alt={story.charity.name}
@@ -196,7 +249,7 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
                           />
                         </div>
                       )}
-                      <span className="text-xs font-medium text-slate-700">
+                      <span className="text-sm font-semibold text-slate-700">
                         {story.charity.name}
                       </span>
                     </div>
@@ -204,20 +257,42 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
                 )}
 
                 {/* Story Content */}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-orange-600 transition-colors">
+                <div className="p-8">
+                  <h3 
+                    className="text-2xl md:text-3xl font-bold text-slate-800 mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r transition-all duration-300"
+                    style={{
+                      backgroundImage: `linear-gradient(135deg, ${donor.primaryColor || '#DA291C'} 0%, ${donor.secondaryColor || '#FBE122'} 100%)`,
+                    }}
+                  >
                     {story.title}
                   </h3>
                   {story.excerpt && (
-                    <p className="text-slate-600 text-sm line-clamp-3 mb-4">
+                    <p className="text-slate-600 text-base md:text-lg leading-relaxed line-clamp-3 mb-6">
                       {story.excerpt}
                     </p>
                   )}
 
-                  {/* Engagement Stats */}
-                  <div className="flex items-center gap-4 text-xs text-slate-500">
-                    <span>❤️ {story._count.likes + story._count.reactions}</span>
-                    <span>💬 {story._count.comments}</span>
+                  {/* Engagement Stats & CTA */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-6 text-sm text-slate-500">
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-base">❤️</span>
+                        <span className="font-medium">{story._count.likes + story._count.reactions}</span>
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-base">💬</span>
+                        <span className="font-medium">{story._count.comments}</span>
+                      </span>
+                    </div>
+                    <span 
+                      className="text-sm font-bold px-4 py-2 rounded-lg transition-all duration-300"
+                      style={{
+                        color: donor.primaryColor || '#DA291C',
+                        backgroundColor: `${donor.primaryColor || '#DA291C'}10`,
+                      }}
+                    >
+                      Read Story →
+                    </span>
                   </div>
                 </div>
               </Link>

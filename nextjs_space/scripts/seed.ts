@@ -6,25 +6,19 @@ const prisma = new PrismaClient();
 // Image URLs from asset retrieval
 const IMAGES = {
   charities: {
-    hopeForHomes: 'https://cdn.abacus.ai/images/a78ebd5b-f108-4b30-9982-50044ff08513.png',
-    foodShareUK: 'https://cdn.abacus.ai/images/6910a580-5813-4204-9898-424dec2cf004.png',
-    youthFutures: 'https://cdn.abacus.ai/images/2f246b36-180f-4987-a13e-de9807d1fdbd.png',
+    northernHospice: 'https://cdn.abacus.ai/images/a78ebd5b-f108-4b30-9982-50044ff08513.png',
+    manchesterHomeless: 'https://cdn.abacus.ai/images/6910a580-5813-4204-9898-424dec2cf004.png',
+    refugeeSupport: 'https://cdn.abacus.ai/images/2f246b36-180f-4987-a13e-de9807d1fdbd.png',
+    mindsMatter: 'https://cdn.abacus.ai/images/2ad3389f-8e7a-4460-92ae-15839985013c.png',
   },
   donors: {
-    techCorpUK: 'https://cdn.abacus.ai/images/2ad3389f-8e7a-4460-92ae-15839985013c.png',
-    retailGroup: 'https://cdn.abacus.ai/images/6ff5d758-8a0c-4915-aec8-e2a35ed87b20.png',
+    manUnited: '/images/man-united-hero.jpg',
   },
   stories: {
-    sarahsJourney: 'https://cdn.abacus.ai/images/5d70fc69-b926-4489-8f5a-0ad13fded1d6.png',
-    feeding500Families: 'https://www.bigissue.com/wp-content/uploads/2022/09/P1190298-scaled.jpg',
-    youthMentorship: 'https://sport4life.org.uk/wp-content/uploads/2022/03/DSC_0017-scaled.jpg',
-    warmHomes: 'https://nursesgrouphomecare.co.uk/images/blog/keeping-warm-in-winter-elderly.jpg',
-    communityGarden: 'https://images.squarespace-cdn.com/content/v1/600c166e2c69ea16574993f0/5894ba40-5bca-4a88-bce3-00bb395ec25e/IMG_1592.jpg',
-    mentalHealth: 'https://euc7zxtct58.exactdn.com/wp-content/uploads/2022/05/09132052/Workplace_Team-1200x630.jpg?strip=all&lossy=1&quality=85&ssl=1',
-    jobSkills: 'https://cdn.abacus.ai/images/1e827524-97b3-49c6-8351-7ce6894dc75f.png',
-    afterSchool: 'https://cdn.abacus.ai/images/d5b407dc-6aee-4640-8bf5-d35ed4860fdc.png',
-    emergencyFood: 'https://i.guim.co.uk/img/media/bbfde8dfc6100b17b163ecab0cfe9c1cd4ac2344/0_196_6048_3631/master/6048.jpg?width=1200&quality=85&auto=format&fit=max&s=12eeac1a2d6bd229a6b04bdc1b82b6be',
-    housingFirst: 'https://ichef.bbci.co.uk/news/1024/branded_news/029a/live/bfa396d0-9909-11f0-a4f9-7b230f03cd8e.jpg',
+    emmaStory: '/images/emma-story.jpg',
+    jamesStory: '/images/james-story.jpg',
+    wilsonFamily: '/images/wilson-family-story.jpg',
+    sarahStory: '/images/sarah-story.jpg',
   },
 };
 
@@ -60,66 +54,64 @@ async function main() {
     },
   });
 
-  // Create Charities
+  // Create Charities supported by Man United
   console.log('🏥 Creating charities...');
-  const hopeForHomes = await prisma.charity.create({
+  const northernHospice = await prisma.charity.create({
     data: {
-      name: 'Hope for Homes',
-      description: 'A London-based charity dedicated to ending homelessness by providing emergency accommodation, support services, and pathways to permanent housing. We work with individuals and families to rebuild their lives with dignity and hope.',
-      logoUrl: IMAGES.charities.hopeForHomes,
-      websiteUrl: 'https://hopeforhomes.org.uk',
-      location: 'London',
-      focusArea: 'Homelessness & Housing',
+      name: 'Northern Children\'s Hospice',
+      description: 'A Greater Manchester hospice providing specialist palliative care to children with life-limiting conditions and support for their families. We ensure every moment counts.',
+      logoUrl: IMAGES.charities.northernHospice,
+      websiteUrl: 'https://northernhospice.org.uk',
+      location: 'Greater Manchester',
+      focusArea: 'Children\'s Palliative Care',
     },
   });
 
-  const foodShareUK = await prisma.charity.create({
+  const manchesterHomeless = await prisma.charity.create({
     data: {
-      name: 'FoodShare UK',
-      description: 'A network of food banks across Greater Manchester providing emergency food parcels and essential support to families facing food insecurity. We believe no one should go hungry.',
-      logoUrl: IMAGES.charities.foodShareUK,
-      websiteUrl: 'https://foodshareuk.org.uk',
+      name: 'Streets to Homes Manchester',
+      description: 'Manchester-based charity dedicated to ending rough sleeping by providing emergency shelter, rehabilitation support, employment training, and pathways to permanent housing.',
+      logoUrl: IMAGES.charities.manchesterHomeless,
+      websiteUrl: 'https://streetstohomes.org.uk',
       location: 'Manchester',
-      focusArea: 'Food Banks & Nutrition',
+      focusArea: 'Homelessness & Employment',
     },
   });
 
-  const youthFutures = await prisma.charity.create({
+  const refugeeSupport = await prisma.charity.create({
     data: {
-      name: 'Youth Futures',
-      description: 'Birmingham youth organisation providing mentorship, education support, and life skills training for young people aged 11-25. We help young people reach their full potential.',
-      logoUrl: IMAGES.charities.youthFutures,
-      websiteUrl: 'https://youthfutures.org.uk',
-      location: 'Birmingham',
-      focusArea: 'Youth Services & Education',
+      name: 'New Beginnings Manchester',
+      description: 'Supporting refugee families to rebuild their lives in Greater Manchester through housing assistance, integration support, education, and community connections.',
+      logoUrl: IMAGES.charities.refugeeSupport,
+      websiteUrl: 'https://newbeginningsmanchester.org.uk',
+      location: 'Manchester',
+      focusArea: 'Refugee Support & Integration',
     },
   });
 
-  // Create Corporate Donors
-  console.log('🏢 Creating corporate donors...');
-  const techCorp = await prisma.donor.create({
+  const mindsMatter = await prisma.charity.create({
     data: {
-      name: 'TechCorp UK',
-      slug: 'techcorp-uk',
-      logoUrl: IMAGES.donors.techCorpUK,
-      donationAmount: 50000,
-      charityId: hopeForHomes.id,
-      primaryColor: '#0066cc',  // Tech blue
-      secondaryColor: '#00cc66',  // Tech green
-      tagline: 'TechCorp UK - Changing Lives Through Technology & Compassion',
+      name: 'Minds Matter Youth',
+      description: 'Manchester youth mental health charity providing counseling, peer support groups, crisis intervention, and wellbeing programmes for young people aged 13-25.',
+      logoUrl: IMAGES.charities.mindsMatter,
+      websiteUrl: 'https://mindsmatteryouth.org.uk',
+      location: 'Manchester',
+      focusArea: 'Youth Mental Health',
     },
   });
 
-  const retailGroup = await prisma.donor.create({
+  // Create Manchester United as the corporate donor
+  console.log('⚽ Creating Manchester United donor...');
+  const manUnited = await prisma.donor.create({
     data: {
-      name: 'RetailGroup PLC',
-      slug: 'retailgroup-plc',
-      logoUrl: IMAGES.donors.retailGroup,
-      donationAmount: 75000,
-      charityId: foodShareUK.id,
-      primaryColor: '#d32f2f',  // Retail red
-      secondaryColor: '#ffa000',  // Retail gold
-      tagline: 'RetailGroup PLC - Supporting Communities Across the UK',
+      name: 'Manchester United',
+      slug: 'manchester-united',
+      logoUrl: IMAGES.donors.manUnited,
+      donationAmount: 100000,
+      charityId: northernHospice.id,
+      primaryColor: '#DA291C',  // Man United red
+      secondaryColor: '#FBE122',  // Man United gold
+      tagline: 'Manchester United - More Than a Club, Making a Real Difference',
     },
   });
 
@@ -130,476 +122,423 @@ async function main() {
     return date;
   };
 
-  // Create Impact Stories
-  console.log('📖 Creating impact stories...');
+  // Create Impact Stories - All funded by Manchester United
+  console.log('📖 Creating Manchester United impact stories...');
 
-  // Story 1: Sarah's Journey (Hope for Homes + TechCorp)
-  const story1 = await prisma.story.create({
+  // Story 1: Emma's Story - Hospice Care
+  const emmaStory = await prisma.story.create({
     data: {
-      charityId: hopeForHomes.id,
-      donorId: techCorp.id,
-      title: "Sarah's Journey from Streets to Stability",
-      slug: 'sarahs-journey-from-streets-to-stability',
-      excerpt: 'After two years of rough sleeping in London, Sarah found hope and a place to call home through our emergency accommodation programme.',
-      content: `<p>Sarah's story is one of resilience, hope, and transformation. For two years, she experienced the harsh reality of homelessness on London's streets after losing her job and falling behind on rent.</p>
+      charityId: northernHospice.id,
+      donorId: manUnited.id,
+      title: "Emma's Gift: Precious Moments That Matter Most",
+      slug: 'emmas-gift-precious-moments',
+      excerpt: "When Emma's seven-year-old daughter Lily was diagnosed with a life-limiting condition, Manchester United's support gave them something priceless: time together filled with love, dignity, and beautiful memories.",
+      content: `<p>There are no words to truly capture what it means to know your child's time is limited. Emma, a lifelong Manchester United supporter, faced this unimaginable reality when her vibrant seven-year-old daughter Lily was diagnosed with a degenerative neurological condition.</p>
 
-<p>"I never thought it would happen to me," Sarah recalls. "One day I had a flat and a job, the next I was sleeping in doorways. It felt like the world had forgotten me."</p>
+<p>"The diagnosis shattered our world," Emma recalls, tears welling in her eyes. "The doctors told us Lily had maybe 18 months. I remember thinking: how do I make every single day count? How do I give her the childhood she deserves when we're running out of time?"</p>
 
-<p>Through Hope for Homes' emergency accommodation programme, funded by TechCorp UK, Sarah was given a safe place to stay whilst working with dedicated support workers. The programme provided more than just a roof - it offered counselling, job training, and most importantly, belief in her future.</p>
+<p>Through Manchester United's partnership with Northern Children's Hospice, Emma and Lily received specialist palliative care that transformed their remaining time together. The hospice provided not just medical support, but memory-making opportunities, respite care for the family, and counselling to help them navigate the emotional journey ahead.</p>
 
-<p>Within six months, Sarah secured stable employment and moved into her own flat. Today, she volunteers with Hope for Homes, helping others who are experiencing what she went through.</p>
+<p>"The hospice team became our extended family," Emma shares. "They helped us create a memory book, organized a special visit from former United players, and most importantly, they gave Lily dignity and joy. She painted, she laughed, she played - she was a child, not just a patient."</p>
 
-<p>"Having somewhere safe to sleep changed everything," Sarah says. "But having people who believed in me - that's what truly saved my life. Now I want to give that same hope to others."</p>`,
-      featuredImageUrl: IMAGES.stories.sarahsJourney,
+<p>On Lily's eighth birthday - a milestone Emma feared they'd never reach - the hospice organized a Manchester United-themed party. Players sent video messages. The room was decorated in red and gold. Lily wore her United shirt with pride.</p>
+
+<p>"That day, watching Lily's face light up, I realized something," Emma says softly. "Manchester United didn't just support us financially - they showed us we weren't alone. Every parent at that hospice knows: when you wear the red shirt, you're part of a family that cares. That means everything."</p>
+
+<p>Lily passed away peacefully at the hospice six months later, surrounded by love, with her Manchester United teddy bear in her arms. Emma now volunteers at the hospice, supporting other families walking the same heartbreaking path.</p>
+
+<p>"Lily's legacy is love," Emma says. "And Manchester United helped us create that legacy. I'll forever be grateful."</p>`,
+      featuredImageUrl: IMAGES.stories.emmaStory,
       impactMetrics: {
-        families_helped: 1,
-        nights_of_shelter: 180,
-        support_sessions: 24,
-        outcome: 'Permanent housing secured',
+        families_helped: 25,
+        hours_of_care: 5000,
+        memory_making_sessions: 150,
+        counselling_sessions: 380,
       },
       status: 'PUBLISHED',
-      publishedAt: daysAgo(15),
+      publishedAt: daysAgo(7),
       createdById: testUser.id,
     },
   });
 
-  // Story 2: Feeding 500 Families (FoodShare UK + RetailGroup)
-  const story2 = await prisma.story.create({
+  // Story 2: James's Story - Homeless to Employed
+  const jamesStory = await prisma.story.create({
     data: {
-      charityId: foodShareUK.id,
-      donorId: retailGroup.id,
-      title: 'Feeding 500 Families This Winter',
-      slug: 'feeding-500-families-this-winter',
-      excerpt: 'Thanks to RetailGroup PLC, our Manchester food banks have provided emergency food parcels to 500 families facing food insecurity this winter.',
-      content: `<p>This winter has been particularly challenging for families across Greater Manchester, with the cost of living crisis forcing more households to seek emergency food support than ever before.</p>
+      charityId: manchesterHomeless.id,
+      donorId: manUnited.id,
+      title: "James: From Sleeping Rough to Building Dreams",
+      slug: 'james-from-streets-to-success',
+      excerpt: "After 18 months sleeping rough on Manchester's streets, James thought his life was over. Today, thanks to Manchester United's support, he has a job, a home, and hope for the future.",
+      content: `<p>James, 32, never imagined he'd become homeless. A skilled carpenter, he lost his job during the pandemic. Unable to pay rent, he ended up on Manchester's streets - cold, ashamed, and invisible.</p>
 
-<p>Thanks to a generous donation from RetailGroup PLC, FoodShare UK has been able to distribute over 500 emergency food parcels to families in need across the region.</p>
+<p>"People walk past you like you're not human," James says, his voice still heavy with the memory. "I'd see United fans heading to Old Trafford on match days, and I'd remember when that was me - before everything fell apart. I felt like I'd disappeared from the world."</p>
 
-<p>"We've seen a 45% increase in demand compared to last year," explains Maria, FoodShare UK's Operations Manager. "Without support from partners like RetailGroup, we simply couldn't meet this need."</p>
+<p>Everything changed when a Streets to Homes outreach worker, funded by Manchester United's donation, found James sleeping in a doorway near the stadium. Instead of just offering a bed for the night, they offered a pathway to rebuild his entire life.</p>
 
-<p>Each food parcel contains nutritious meals for a family of four for three days, including fresh fruit and vegetables, tinned goods, and essentials like bread and milk. But it's about more than just food - it's about dignity and hope during difficult times.</p>
+<p>The programme provided emergency accommodation, addiction support (James had turned to alcohol to cope with street life), mental health counselling, and crucially - employment training and job placement support.</p>
 
-<p>One mother of three told us: "I never thought I'd need a food bank, but when it came to choosing between heating and eating, I had no choice. The volunteers here treated me with such kindness - they reminded me that asking for help isn't shameful, it's brave."</p>`,
-      featuredImageUrl: IMAGES.stories.feeding500Families,
+<p>"They didn't judge me," James reflects. "They saw potential in me when I couldn't see it myself. The caseworker, Sarah, she'd check in every single day. She believed I could do this."</p>
+
+<p>Within four months, James completed a construction site safety course. Two months after that, he secured full-time employment with a building firm. Last month, he moved into his own flat - the first time in two years he's had his own front door key.</p>
+
+<p>"When I walked into that empty flat, I just stood there and cried," James admits. "Happy tears, grateful tears. I have a home. I have a job. I have my life back."</p>
+
+<p>James recently attended his first United match in over two years. "Sitting in that stadium, watching the game, being part of something bigger than myself again - it felt like coming home," he says. "Manchester United gave me more than financial support. They gave me my identity back. They reminded me I matter."</p>
+
+<p>Today, James volunteers with Streets to Homes, helping other rough sleepers find their way off the streets. "If my story can give one person hope, it's worth sharing," he says with quiet determination.</p>`,
+      featuredImageUrl: IMAGES.stories.jamesStory,
       impactMetrics: {
-        families_helped: 500,
-        food_parcels_distributed: 500,
-        meals_provided: 6000,
-        volunteers_involved: 45,
+        people_helped: 18,
+        nights_of_shelter: 1440,
+        employment_training_hours: 320,
+        jobs_secured: 12,
       },
       status: 'PUBLISHED',
-      publishedAt: daysAgo(22),
+      publishedAt: daysAgo(14),
       createdById: testUser.id,
     },
   });
 
-  // Story 3: Youth Mentorship Programme
-  const story3 = await prisma.story.create({
+  // Story 3: Wilson Family - Refugee Support
+  const wilsonStory = await prisma.story.create({
     data: {
-      charityId: youthFutures.id,
-      title: 'Empowering Young People Through Mentorship',
-      slug: 'empowering-young-people-through-mentorship',
-      excerpt: 'Our mentorship programme has matched 50 young people with dedicated mentors, helping them navigate challenges and achieve their goals.',
-      content: `<p>For many young people in Birmingham, having a positive role model can make all the difference between giving up and achieving their potential.</p>
+      charityId: refugeeSupport.id,
+      donorId: manUnited.id,
+      title: "The Wilson Family: Finding Home in Manchester",
+      slug: 'wilson-family-finding-home',
+      excerpt: "Fleeing conflict with nothing but hope, the Wilson family arrived in Manchester as refugees. Today, thanks to Manchester United's support, they're not just surviving - they're thriving, with jobs, education, and a place to call home.",
+      content: `<p>When the Wilson family - David, Grace, and their three children - arrived in Manchester as refugees, they carried only one suitcase and a lifetime of trauma. Fleeing war-torn Sudan, they'd lost everything: their home, their community, their sense of belonging.</p>
 
-<p>Youth Futures' mentorship programme pairs young people aged 14-18 with trained volunteer mentors who provide guidance, support, and encouragement over a 12-month period.</p>
+<p>"We were so scared," Grace remembers, her youngest daughter Amara nestled beside her. "New country, new language, no family, no friends. We didn't know if we'd ever feel safe again. We didn't know if Manchester would welcome us."</p>
 
-<p>James, 16, was struggling at school and considering dropping out when he was matched with his mentor, David. "David believed in me when I didn't believe in myself," James says. "He helped me see that my past doesn't define my future."</p>
+<p>Through New Beginnings Manchester, funded by Manchester United's donation, the Wilsons received comprehensive resettlement support: temporary housing, English language classes, school enrollment for the children, job training for the parents, and crucially - a welcoming community.</p>
 
-<p>With David's support, James not only stayed in school but improved his grades significantly. He's now planning to go to college to study engineering.</p>
+<p>"The support workers didn't just help us with paperwork," David explains, his English now fluent. "They introduced us to neighbors. They helped my children join football clubs - Amara plays for a girls' team now, wearing her United kit with so much pride. They made us feel like we belonged here."</p>
 
-<p>"The mentorship programme gave me more than just academic support," James reflects. "It gave me someone who genuinely cared about my wellbeing and my dreams. That's priceless."</p>
+<p>Within six months, Grace secured part-time work at a local nursery. David completed an IT training course and now works for a Manchester tech company. The children are thriving in school, making friends, learning English faster than their parents.</p>
 
-<p>This year, we've matched 50 young people with mentors, with 85% reporting improved confidence and clearer goals for their future.</p>`,
-      featuredImageUrl: IMAGES.stories.youthMentorship,
+<p>Most significantly, the family recently moved into their own council flat - their first permanent home since fleeing Sudan three years ago.</p>
+
+<p>"When we got the keys to our flat, we all just hugged and cried," Grace shares, her voice breaking. "For the first time in years, we felt like a family again, not just people trying to survive. We had a home."</p>
+
+<p>The flat is modest but filled with warmth. Manchester United posters adorn the children's bedroom walls. David laughs: "We arrived knowing nothing about football. Now we're season ticket holders! United gave us more than support - they gave us belonging. When we wear the red shirt, we're not refugees, we're Mancunians."</p>
+
+<p>Last month, David and Grace attended a United match with their children - their first live game. "Watching my children sing alongside other United fans, cheering together - I had tears streaming down my face," David recalls. "This club, this city, these people - they gave us hope when we had none. They gave us a future."</p>
+
+<p>Amara, 10, dreams of playing for Manchester United Women one day. "I want to make my club proud," she says with unwavering determination, "because they made my family proud to be here."</p>`,
+      featuredImageUrl: IMAGES.stories.wilsonFamily,
       impactMetrics: {
-        young_people_supported: 50,
-        mentorship_hours: 1200,
-        improved_confidence: 85,
-        stayed_in_education: 92,
+        families_helped: 12,
+        people_supported: 47,
+        english_classes: 240,
+        jobs_secured: 15,
+        children_in_school: 28,
       },
       status: 'PUBLISHED',
-      publishedAt: daysAgo(30),
+      publishedAt: daysAgo(21),
       createdById: testUser.id,
     },
   });
 
-  // Story 4: Warm Homes Winter Campaign
-  const story4 = await prisma.story.create({
+  // Story 4: Sarah's Story - Mental Health
+  const sarahStory = await prisma.story.create({
     data: {
-      charityId: hopeForHomes.id,
-      title: 'Keeping Vulnerable People Warm This Winter',
-      slug: 'keeping-vulnerable-people-warm-this-winter',
-      excerpt: 'Our winter warmth programme has helped 120 elderly and vulnerable people heat their homes safely during the coldest months.',
-      content: `<p>For many older people living alone, winter can be a frightening and isolating time, especially when faced with impossible choices between heating and eating.</p>
+      charityId: mindsMatter.id,
+      donorId: manUnited.id,
+      title: "Sarah's Journey: Breaking the Silence on Mental Health",
+      slug: 'sarah-breaking-silence-mental-health',
+      excerpt: "At 17, Sarah was drowning in depression and anxiety, too afraid to ask for help. Manchester United's support for youth mental health services gave her the courage to speak up - and saved her life.",
+      content: `<p>Sarah, now 19, remembers the darkness vividly. At 17, she was a straight-A student with a bright future. But behind the smiles and achievements, she was silently drowning in depression and crippling anxiety.</p>
 
-<p>Hope for Homes' Winter Warmth Programme provides emergency heating support, warm clothing, and home visits to vulnerable people across London.</p>
+<p>"I felt like I was suffocating," Sarah recalls, her voice steady but emotional. "I'd wake up and the world felt grey. I couldn't eat. I couldn't sleep. I had constant panic attacks. But I was too ashamed to tell anyone - I thought people would think I was weak or attention-seeking."</p>
 
-<p>Margaret, 78, lives alone in a small flat. Last winter, she was hospitalised with pneumonia after going without heating for weeks. "I was too proud to ask for help," she admits. "I thought I could manage."</p>
+<p>The breaking point came one night when Sarah, overwhelmed by suicidal thoughts, finally confided in her mother. Terrified but determined to help, her mother contacted Minds Matter Youth, a Manchester mental health charity supported by Manchester United's community fund.</p>
 
-<p>This year, through our programme, Margaret received a new efficient heater, warm bedding, and regular welfare visits from volunteers. "I can't tell you what a difference it's made," she says with tears in her eyes. "Not just the practical help, but knowing that someone cares."</p>
+<p>"Getting help was the hardest and best decision I've ever made," Sarah shares. "That first phone call felt impossible. But the counselor on the other end - her voice was so calm, so understanding. She told me: 'You're not weak. You're brave. Asking for help is the strongest thing you can do.'"</p>
 
-<p>We've supported 120 people like Margaret this winter, ensuring no one has to choose between warmth and food.</p>`,
-      featuredImageUrl: IMAGES.stories.warmHomes,
+<p>Through Minds Matter, Sarah accessed free counselling, joined a peer support group for young people with similar struggles, and learned coping strategies that transformed her relationship with her mental health.</p>
+
+<p>"The peer support group changed my life," Sarah explains. "Meeting other teenagers who understood exactly what I was going through - the anxiety, the dark thoughts, the shame - made me realize I wasn't alone. We'd laugh, we'd cry, we'd support each other. It was like finding a second family."</p>
+
+<p>Over 18 months of therapy and peer support, Sarah gradually rebuilt her life. She returned to college, started volunteering for Minds Matter (helping answer the crisis hotline), and even began sharing her mental health journey publicly to reduce stigma.</p>
+
+<p>"Mental health struggles don't make you broken," Sarah says with quiet conviction. "They make you human. And reaching out for support doesn't make you weak - it makes you courageous."</p>
+
+<p>Sarah recently gave a talk at a Manchester United Community Foundation event about youth mental health. "Standing there, sharing my story with other young United fans, I felt so proud," she reflects. "Manchester United didn't just fund a counselling service - they funded hope. They funded recovery. They funded futures."</p>
+
+<p>"When people ask me what saved my life, I tell them: asking for help, and Manchester United making that help available. Without that support, I genuinely don't think I'd be here today. Now, I want to help other young people realize they're worth fighting for too."</p>`,
+      featuredImageUrl: IMAGES.stories.sarahStory,
       impactMetrics: {
-        people_supported: 120,
-        heaters_provided: 45,
-        home_visits: 360,
-        prevented_hospital_admissions: 12,
+        young_people_supported: 156,
+        counselling_hours: 2340,
+        peer_support_sessions: 312,
+        lives_changed: 156,
       },
       status: 'PUBLISHED',
-      publishedAt: daysAgo(40),
+      publishedAt: daysAgo(28),
       createdById: testUser.id,
     },
   });
 
-  // Story 5: Community Garden Project
-  const story5 = await prisma.story.create({
-    data: {
-      charityId: foodShareUK.id,
-      title: 'Growing Food, Growing Community',
-      slug: 'growing-food-growing-community',
-      excerpt: 'Our urban community garden has brought neighbours together whilst growing fresh, healthy food for local families.',
-      content: `<p>In a corner of Manchester where green space is scarce, an abandoned plot has been transformed into a thriving community garden, bringing neighbours together and providing fresh produce for local families.</p>
-
-<p>The FoodShare UK Community Garden Project started with just six volunteers and a vision. Today, over 50 local residents regularly tend the garden, growing vegetables, herbs, and fruit that supplement food bank supplies with fresh, nutritious produce.</p>
-
-<p>"It's about so much more than vegetables," explains Amina, one of the founding volunteers. "It's given our community a heart. People who never spoke before are now friends. Isolated older people have found purpose. Kids are learning where food comes from."</p>
-
-<p>The garden has produced over 500kg of fresh produce this year, all donated to local food banks. But perhaps more importantly, it's created a space where people from all backgrounds come together, share skills, and support one another.</p>
-
-<p>"This garden saved me," says Tom, who was struggling with depression. "Getting my hands in the soil, watching things grow, being part of something - it gave me a reason to get out of bed again."</p>`,
-      featuredImageUrl: IMAGES.stories.communityGarden,
-      impactMetrics: {
-        volunteers: 50,
-        fresh_produce_kg: 500,
-        families_benefited: 85,
-        community_events: 12,
-      },
-      status: 'PUBLISHED',
-      publishedAt: daysAgo(50),
-      createdById: testUser.id,
-    },
-  });
-
-  // Story 6: Mental Health Support Groups
-  await prisma.story.create({
-    data: {
-      charityId: youthFutures.id,
-      title: 'Breaking the Silence on Youth Mental Health',
-      slug: 'breaking-the-silence-on-youth-mental-health',
-      excerpt: 'Our peer support groups provide a safe space for young people to talk about mental health challenges and support one another.',
-      content: `<p>Mental health challenges among young people have reached crisis levels, yet many struggle in silence, afraid of judgement or simply not knowing where to turn.</p>
-
-<p>Youth Futures' peer support groups create safe, non-judgemental spaces where young people can share their experiences and support one another through difficult times.</p>
-
-<p>Facilitated by trained youth workers and mental health professionals, the groups meet weekly and cover topics from anxiety and depression to stress management and building resilience.</p>
-
-<p>"Before I found this group, I thought I was the only one struggling," shares Katie, 17. "Hearing others talk about similar experiences made me realise I wasn't alone or weird. It gave me permission to be honest about how I was feeling."</p>
-
-<p>The groups emphasise peer support rather than therapy - young people helping and learning from each other. The results have been remarkable, with participants reporting reduced feelings of isolation and improved coping strategies.</p>
-
-<p>"It's the highlight of my week," says Connor, 15. "These people get it because they've been there. We laugh, we cry, we support each other. It's like having a second family."</p>`,
-      featuredImageUrl: IMAGES.stories.mentalHealth,
-      impactMetrics: {
-        young_people: 35,
-        support_sessions: 144,
-        improved_wellbeing: 89,
-        peer_supporters_trained: 8,
-      },
-      status: 'PUBLISHED',
-      publishedAt: daysAgo(60),
-      createdById: testUser.id,
-    },
-  });
-
-  // Story 7: Job Skills Training
-  await prisma.story.create({
-    data: {
-      charityId: hopeForHomes.id,
-      donorId: techCorp.id,
-      title: 'From Unemployment to Employment',
-      slug: 'from-unemployment-to-employment',
-      excerpt: 'Our job readiness programme has helped 28 people secure stable employment through skills training and employer partnerships.',
-      content: `<p>Finding work after a period of homelessness can feel impossible. Many employers are reluctant to hire people with gaps in their CV, and without an address, even applying for jobs becomes a challenge.</p>
-
-<p>Hope for Homes' Job Readiness Programme, funded by TechCorp UK, provides practical skills training, CV building, interview preparation, and direct pathways to employment through partnerships with local employers.</p>
-
-<p>Michael, 34, had been homeless for 18 months when he joined the programme. "I'd lost all confidence," he remembers. "I didn't think anyone would give me a chance."</p>
-
-<p>Through the programme, Michael completed a forklift operator certification and received support with job applications. Within three months, he secured full-time employment at a local warehouse.</p>
-
-<p>"Having a job has transformed my life," Michael says. "It's not just about the money - though that's obviously important. It's about having purpose, routine, and dignity again. I'm rebuilding my life step by step."</p>
-
-<p>This year, 28 programme participants have secured employment, with an impressive 85% still employed after six months.</p>`,
-      featuredImageUrl: IMAGES.stories.jobSkills,
-      impactMetrics: {
-        people_trained: 40,
-        jobs_secured: 28,
-        still_employed_6_months: 85,
-        training_hours: 960,
-      },
-      status: 'PUBLISHED',
-      publishedAt: daysAgo(70),
-      createdById: testUser.id,
-    },
-  });
-
-  // Story 8: After-School Club
-  await prisma.story.create({
-    data: {
-      charityId: youthFutures.id,
-      title: 'A Safe Space After School',
-      slug: 'a-safe-space-after-school',
-      excerpt: 'Our after-school club provides a safe, nurturing environment where 60 children can learn, play, and thrive every day.',
-      content: `<p>For working parents struggling to balance jobs with childcare, the hours between school ending and work finishing can be incredibly stressful. For children, unsupervised time can mean missing out on enrichment activities and, in some cases, safety risks.</p>
-
-<p>Youth Futures' after-school club fills this gap, providing a safe, engaging environment where children aged 5-11 can do homework, enjoy activities, and simply be children.</p>
-
-<p>The club runs five days a week, offering a hot snack, homework support, sports, arts and crafts, and most importantly, caring adult supervision.</p>
-
-<p>"It's been a lifeline for our family," says Rachel, mother of two. "Knowing my kids are safe, happy, and learning after school means I can work without constant worry. They love it there - they've made friends and discovered new interests I could never have afforded otherwise."</p>
-
-<p>For many children, it's also their only chance to access activities like art, music, and sport. The club has partnerships with local coaches and artists who volunteer their time.</p>
-
-<p>"I used to go home to an empty house," shares Lily, 9. "Now I come here and there's always someone to help with my homework, play games with me, and make sure I'm okay. I feel really looked after."</p>`,
-      featuredImageUrl: IMAGES.stories.afterSchool,
-      impactMetrics: {
-        children_attending: 60,
-        sessions_per_week: 25,
-        hot_meals_provided: 1200,
-        improved_school_performance: 78,
-      },
-      status: 'PUBLISHED',
-      publishedAt: daysAgo(80),
-      createdById: testUser.id,
-    },
-  });
-
-  // Story 9: Emergency Food Response
-  await prisma.story.create({
-    data: {
-      charityId: foodShareUK.id,
-      donorId: retailGroup.id,
-      title: 'Emergency Response to Cost of Living Crisis',
-      slug: 'emergency-response-cost-of-living-crisis',
-      excerpt: 'As demand for emergency food support surged, we launched a rapid response programme to ensure no family went hungry.',
-      content: `<p>The cost of living crisis has pushed thousands of Manchester families to breaking point, with many facing impossible choices between essentials like food, heating, and rent.</p>
-
-<p>In response, FoodShare UK launched an emergency food response programme, expanding opening hours, increasing stock levels, and recruiting additional volunteers to meet unprecedented demand.</p>
-
-<p>"We've seen demand increase by 60% in just six months," explains David, FoodShare UK's Director. "These aren't the people society typically imagines needing food banks - many are working families, simply unable to make ends meet with rising costs."</p>
-
-<p>Thanks to support from RetailGroup PLC and community donations, the programme has distributed over 2,000 emergency food parcels in three months, supporting approximately 800 families.</p>
-
-<p>One father of two, who wished to remain anonymous, told us: "I work full-time but with rent, bills, and childcare, there's nothing left for food. Coming here saved us. The volunteers don't make you feel ashamed - they make you feel human."</p>
-
-<p>But food is just part of the solution. The programme also connects families with debt advice, benefits support, and other services to address root causes of food insecurity.</p>`,
-      featuredImageUrl: IMAGES.stories.emergencyFood,
-      impactMetrics: {
-        food_parcels: 2000,
-        families_supported: 800,
-        volunteers: 85,
-        referrals_to_support_services: 340,
-      },
-      status: 'PUBLISHED',
-      publishedAt: daysAgo(85),
-      createdById: testUser.id,
-    },
-  });
-
-  // Story 10: Housing First Success
-  await prisma.story.create({
-    data: {
-      charityId: hopeForHomes.id,
-      donorId: techCorp.id,
-      title: 'Housing First: Ending the Cycle of Homelessness',
-      slug: 'housing-first-ending-cycle-homelessness',
-      excerpt: 'Our Housing First approach has helped 15 people with complex needs move from long-term homelessness into stable, permanent housing.',
-      content: `<p>For people experiencing long-term homelessness, especially those with complex needs like addiction or mental health challenges, traditional homeless services often fail. The cycle continues: temporary accommodation, brief stability, then back to the streets.</p>
-
-<p>Hope for Homes' Housing First programme takes a different approach: provide permanent housing first, then wrap support services around the individual. No preconditions, no temporary steps - straight to a place to call home.</p>
-
-<p>Marcus had been homeless for seven years, sleeping rough across London and struggling with addiction. Traditional services required him to be "housing ready" - clean, sober, and stable. But achieving that whilst living on the streets proved impossible.</p>
-
-<p>"Housing First changed everything," Marcus says. "Having my own place - four walls, a door I could lock, a bed - that's what gave me the foundation to start addressing my other challenges. You can't recover from addiction whilst living on the street."</p>
-
-<p>With stable housing and intensive support from dedicated case workers, Marcus has been clean for eight months, reconnected with his family, and is exploring volunteer work.</p>
-
-<p>The programme has achieved remarkable results: 15 people housed, with 87% maintaining their tenancies after 12 months - far exceeding traditional programme outcomes.</p>`,
-      featuredImageUrl: IMAGES.stories.housingFirst,
-      impactMetrics: {
-        people_housed: 15,
-        tenancy_sustainment: 87,
-        support_hours: 1800,
-        cost_saving_to_public_services: 450000,
-      },
-      status: 'PUBLISHED',
-      publishedAt: daysAgo(90),
-      createdById: testUser.id,
-    },
-  });
-
-  // Add Reactions to stories
-  console.log('😍 Adding reactions...');
-  await prisma.reaction.createMany({
-    data: [
-      { storyId: story1.id, userId: testUser.id, reactionType: 'LOVE' },
-      { storyId: story1.id, ipAddress: '192.168.1.1', reactionType: 'MOVED' },
-      { storyId: story1.id, ipAddress: '192.168.1.2', reactionType: 'INSPIRED' },
-      { storyId: story2.id, userId: testUser.id, reactionType: 'GRATEFUL' },
-      { storyId: story2.id, ipAddress: '192.168.1.3', reactionType: 'LOVE' },
-      { storyId: story3.id, userId: testUser.id, reactionType: 'APPLAUSE' },
-      { storyId: story3.id, ipAddress: '192.168.1.4', reactionType: 'INSPIRED' },
-      { storyId: story4.id, ipAddress: '192.168.1.5', reactionType: 'GRATEFUL' },
-      { storyId: story5.id, userId: testUser.id, reactionType: 'LOVE' },
-      { storyId: story5.id, ipAddress: '192.168.1.6', reactionType: 'MOVED' },
-    ],
-  });
-
-  // Add Comments to stories
-  console.log('💬 Adding comments...');
-  await prisma.comment.createMany({
-    data: [
-      {
-        storyId: story1.id,
-        userId: testUser.id,
-        userName: 'John Doe',
-        userEmail: 'john@doe.com',
-        content: 'This is such a beautiful story. So proud to see the difference being made! ❤️',
-        status: 'APPROVED',
-      },
-      {
-        storyId: story1.id,
-        userName: 'Anonymous Supporter',
-        content: 'Thank you for sharing Sarah\'s journey. It\'s inspiring to see how much support can change lives.',
-        status: 'APPROVED',
-      },
-      {
-        storyId: story2.id,
-        userName: 'Community Member',
-        userEmail: 'supporter@example.com',
-        content: 'Incredible work by FoodShare UK! Every family deserves access to nutritious food.',
-        status: 'APPROVED',
-      },
-      {
-        storyId: story3.id,
-        userId: testUser.id,
-        userName: 'John Doe',
-        userEmail: 'john@doe.com',
-        content: 'Youth mentorship programmes like this are so important. Well done! 👏',
-        status: 'APPROVED',
-      },
-      {
-        storyId: story4.id,
-        userName: 'Concerned Citizen',
-        content: 'Keeping our elderly warm should be a priority. Thank you for this vital work.',
-        status: 'PENDING',
-      },
-    ],
-  });
-
-  // Add Story Milestones (Timeline events)
+  // Add Story Milestones
   console.log('📍 Adding story milestones...');
   
-  // Milestones for Story 1 (Sarah's Journey)
+  // Milestones for Emma's Story
   await prisma.storyMilestone.createMany({
     data: [
       {
-        storyId: story1.id,
-        title: 'Emergency Accommodation',
-        description: 'Sarah was provided with emergency accommodation after being referred by local services. This safe space allowed her to begin her recovery journey.',
-        date: daysAgo(180),
-        displayOrder: 1,
-      },
-      {
-        storyId: story1.id,
-        title: 'Support Services Begin',
-        description: 'Sarah began working with our support team, accessing mental health services, budgeting advice, and employment support.',
-        date: daysAgo(150),
-        displayOrder: 2,
-      },
-      {
-        storyId: story1.id,
-        title: 'Part-Time Employment',
-        description: 'With renewed confidence, Sarah secured part-time work at a local café. This was a major milestone in her journey towards independence.',
-        date: daysAgo(90),
-        displayOrder: 3,
-      },
-      {
-        storyId: story1.id,
-        title: 'Moving to Permanent Housing',
-        description: 'Sarah moved into her own flat - a permanent home where she can rebuild her life with dignity and stability.',
-        date: daysAgo(30),
-        displayOrder: 4,
-      },
-    ],
-  });
-
-  // Milestones for Story 2 (Feeding 500 Families)
-  await prisma.storyMilestone.createMany({
-    data: [
-      {
-        storyId: story2.id,
-        title: 'Campaign Launch',
-        description: 'Our Winter Food Campaign launched to provide emergency food parcels to families facing food insecurity.',
-        date: daysAgo(120),
-        displayOrder: 1,
-      },
-      {
-        storyId: story2.id,
-        title: '100 Families Reached',
-        description: 'Milestone achieved! We\'ve now provided food parcels to 100 families across Greater Manchester.',
-        date: daysAgo(90),
-        displayOrder: 2,
-      },
-      {
-        storyId: story2.id,
-        title: '250 Families Supported',
-        description: 'Halfway to our goal! Thanks to generous donors, we\'ve now helped 250 families access nutritious food.',
-        date: daysAgo(60),
-        displayOrder: 3,
-      },
-      {
-        storyId: story2.id,
-        title: '500 Families Milestone',
-        description: 'We did it! 500 families have now received support through this campaign. Over 12,000 meals provided.',
-        date: daysAgo(14),
-        displayOrder: 4,
-      },
-    ],
-  });
-
-  // Milestones for Story 3 (Youth Mentorship)
-  await prisma.storyMilestone.createMany({
-    data: [
-      {
-        storyId: story3.id,
-        title: 'Programme Launch',
-        description: 'Our youth mentorship programme launched with 20 young people and 10 dedicated mentors.',
+        storyId: emmaStory.id,
+        title: 'Diagnosis & Hospice Referral',
+        description: 'Lily was diagnosed with a life-limiting condition. Emma contacted Northern Children\'s Hospice for support.',
         date: daysAgo(365),
         displayOrder: 1,
       },
       {
-        storyId: story3.id,
-        title: 'First Success Stories',
-        description: 'Three of our mentees secured apprenticeships, showing the real-world impact of consistent support.',
-        date: daysAgo(270),
+        storyId: emmaStory.id,
+        title: 'First Hospice Visit',
+        description: 'Emma and Lily\'s first visit to the hospice. The team created a personalized care plan focused on making precious memories.',
+        date: daysAgo(300),
         displayOrder: 2,
       },
       {
-        storyId: story3.id,
-        title: 'Programme Expansion',
-        description: 'Due to high demand and proven results, we expanded to support 50 young people across Birmingham.',
+        storyId: emmaStory.id,
+        title: 'Memory-Making Programme',
+        description: 'Lily began the memory-making programme: painting, music therapy, and special experiences with family.',
+        date: daysAgo(240),
+        displayOrder: 3,
+      },
+      {
+        storyId: emmaStory.id,
+        title: 'Manchester United Visit',
+        description: 'Former United players visited the hospice. Lily met her heroes and received a signed shirt - a moment she treasured.',
+        date: daysAgo(180),
+        displayOrder: 4,
+      },
+      {
+        storyId: emmaStory.id,
+        title: 'Lily\'s 8th Birthday Party',
+        description: 'A milestone Emma feared they\'d never reach. The hospice organized a United-themed party filled with love and joy.',
+        date: daysAgo(90),
+        displayOrder: 5,
+      },
+      {
+        storyId: emmaStory.id,
+        title: 'Lily\'s Legacy',
+        description: 'Lily passed away peacefully at the hospice. Emma now volunteers, supporting other families on their journey.',
+        date: daysAgo(40),
+        displayOrder: 6,
+      },
+    ],
+  });
+
+  // Milestones for James's Story
+  await prisma.storyMilestone.createMany({
+    data: [
+      {
+        storyId: jamesStory.id,
+        title: 'Found on the Streets',
+        description: 'Outreach worker Sarah found James sleeping rough near Old Trafford. She offered immediate shelter and support.',
+        date: daysAgo(240),
+        displayOrder: 1,
+      },
+      {
+        storyId: jamesStory.id,
+        title: 'Emergency Accommodation',
+        description: 'James moved into emergency accommodation. For the first time in 18 months, he had a safe place to sleep.',
+        date: daysAgo(210),
+        displayOrder: 2,
+      },
+      {
+        storyId: jamesStory.id,
+        title: 'Beginning Recovery',
+        description: 'James began addiction counselling and mental health support. The journey to recovery had started.',
         date: daysAgo(180),
         displayOrder: 3,
       },
       {
-        storyId: story3.id,
-        title: 'Year One Complete',
-        description: '75 young people have now completed the programme, with 85% achieving their goals.',
-        date: daysAgo(45),
+        storyId: jamesStory.id,
+        title: 'Skills Training',
+        description: 'James completed construction site safety certification, reigniting his passion for carpentry work.',
+        date: daysAgo(120),
         displayOrder: 4,
+      },
+      {
+        storyId: jamesStory.id,
+        title: 'Employment Secured',
+        description: 'James secured full-time employment with a local building firm. His confidence was returning.',
+        date: daysAgo(60),
+        displayOrder: 5,
+      },
+      {
+        storyId: jamesStory.id,
+        title: 'First Own Flat',
+        description: 'James moved into his own flat - his first home in over two years. He finally had his life back.',
+        date: daysAgo(20),
+        displayOrder: 6,
+      },
+    ],
+  });
+
+  // Milestones for Wilson Family
+  await prisma.storyMilestone.createMany({
+    data: [
+      {
+        storyId: wilsonStory.id,
+        title: 'Arrival in Manchester',
+        description: 'The Wilson family arrived as refugees with one suitcase and immense hope. They were frightened but determined.',
+        date: daysAgo(420),
+        displayOrder: 1,
+      },
+      {
+        storyId: wilsonStory.id,
+        title: 'Temporary Housing',
+        description: 'New Beginnings Manchester provided temporary accommodation and began comprehensive resettlement support.',
+        date: daysAgo(400),
+        displayOrder: 2,
+      },
+      {
+        storyId: wilsonStory.id,
+        title: 'Children Start School',
+        description: 'All three children enrolled in local schools. They began learning English and making their first friends.',
+        date: daysAgo(360),
+        displayOrder: 3,
+      },
+      {
+        storyId: wilsonStory.id,
+        title: 'Parents Secure Employment',
+        description: 'Grace found work at a nursery. David completed IT training and joined a Manchester tech company.',
+        date: daysAgo(270),
+        displayOrder: 4,
+      },
+      {
+        storyId: wilsonStory.id,
+        title: 'Permanent Housing',
+        description: 'The Wilsons moved into their own council flat - their first permanent home in three years.',
+        date: daysAgo(120),
+        displayOrder: 5,
+      },
+      {
+        storyId: wilsonStory.id,
+        title: 'First United Match',
+        description: 'The family attended their first Manchester United match. They felt like true Mancunians, finally home.',
+        date: daysAgo(30),
+        displayOrder: 6,
+      },
+    ],
+  });
+
+  // Milestones for Sarah's Story
+  await prisma.storyMilestone.createMany({
+    data: [
+      {
+        storyId: sarahStory.id,
+        title: 'Reaching Breaking Point',
+        description: 'Sarah, overwhelmed by depression and suicidal thoughts, finally confided in her mother. Help was sought.',
+        date: daysAgo(540),
+        displayOrder: 1,
+      },
+      {
+        storyId: sarahStory.id,
+        title: 'First Counselling Session',
+        description: 'Sarah attended her first therapy session at Minds Matter. The journey to recovery had begun.',
+        date: daysAgo(520),
+        displayOrder: 2,
+      },
+      {
+        storyId: sarahStory.id,
+        title: 'Joining Peer Support Group',
+        description: 'Sarah joined a peer support group for young people. Finding others who understood changed everything.',
+        date: daysAgo(480),
+        displayOrder: 3,
+      },
+      {
+        storyId: sarahStory.id,
+        title: 'Returning to College',
+        description: 'With renewed strength, Sarah returned to college. She was learning to manage her mental health.',
+        date: daysAgo(360),
+        displayOrder: 4,
+      },
+      {
+        storyId: sarahStory.id,
+        title: 'Becoming a Volunteer',
+        description: 'Sarah began volunteering for Minds Matter, answering the crisis hotline and supporting other young people.',
+        date: daysAgo(180),
+        displayOrder: 5,
+      },
+      {
+        storyId: sarahStory.id,
+        title: 'Sharing Her Story Publicly',
+        description: 'Sarah spoke at a United Community Foundation event, using her story to reduce mental health stigma.',
+        date: daysAgo(30),
+        displayOrder: 6,
+      },
+    ],
+  });
+
+  // Add Reactions
+  console.log('😍 Adding reactions...');
+  await prisma.reaction.createMany({
+    data: [
+      { storyId: emmaStory.id, userId: testUser.id, reactionType: 'LOVE' },
+      { storyId: emmaStory.id, ipAddress: '192.168.1.1', reactionType: 'MOVED' },
+      { storyId: emmaStory.id, ipAddress: '192.168.1.2', reactionType: 'GRATEFUL' },
+      { storyId: emmaStory.id, ipAddress: '192.168.1.3', reactionType: 'MOVED' },
+      { storyId: jamesStory.id, userId: testUser.id, reactionType: 'INSPIRED' },
+      { storyId: jamesStory.id, ipAddress: '192.168.1.4', reactionType: 'APPLAUSE' },
+      { storyId: jamesStory.id, ipAddress: '192.168.1.5', reactionType: 'GRATEFUL' },
+      { storyId: wilsonStory.id, userId: testUser.id, reactionType: 'LOVE' },
+      { storyId: wilsonStory.id, ipAddress: '192.168.1.6', reactionType: 'INSPIRED' },
+      { storyId: wilsonStory.id, ipAddress: '192.168.1.7', reactionType: 'GRATEFUL' },
+      { storyId: sarahStory.id, userId: testUser.id, reactionType: 'APPLAUSE' },
+      { storyId: sarahStory.id, ipAddress: '192.168.1.8', reactionType: 'INSPIRED' },
+      { storyId: sarahStory.id, ipAddress: '192.168.1.9', reactionType: 'MOVED' },
+    ],
+  });
+
+  // Add Comments
+  console.log('💬 Adding comments...');
+  await prisma.comment.createMany({
+    data: [
+      {
+        storyId: emmaStory.id,
+        userId: testUser.id,
+        userName: 'John Doe',
+        userEmail: 'john@doe.com',
+        content: 'I\'m in tears reading this. So proud to be a United supporter. Emma and Lily - you\'re heroes. ❤️',
+        status: 'APPROVED',
+      },
+      {
+        storyId: emmaStory.id,
+        userName: 'RedDevil4Life',
+        content: 'This is what makes Manchester United truly special. More than a club. Emma, your strength is inspiring.',
+        status: 'APPROVED',
+      },
+      {
+        storyId: jamesStory.id,
+        userName: 'MancsRed',
+        userEmail: 'supporter@example.com',
+        content: 'James, you absolute legend. So happy you\'re back on your feet. Welcome home, mate! 🔴',
+        status: 'APPROVED',
+      },
+      {
+        storyId: jamesStory.id,
+        userId: testUser.id,
+        userName: 'John Doe',
+        userEmail: 'john@doe.com',
+        content: 'Stories like this remind me why I love this club. Real impact. Real change. GGMU! 👏',
+        status: 'APPROVED',
+      },
+      {
+        storyId: wilsonStory.id,
+        userName: 'UnitedFamily',
+        content: 'Welcome to Manchester, Wilson family! You belong here. So proud of what our club is doing. ❤️',
+        status: 'APPROVED',
+      },
+      {
+        storyId: sarahStory.id,
+        userName: 'MindsMatterFan',
+        content: 'Sarah, thank you for your courage in sharing this. You\'re saving lives. Proud of you! 💪',
+        status: 'APPROVED',
       },
     ],
   });
@@ -610,37 +549,38 @@ async function main() {
   await prisma.thankYouMessage.createMany({
     data: [
       {
-        storyId: story1.id,
+        storyId: emmaStory.id,
+        authorName: 'Emma',
+        message: 'To every Manchester United supporter: you gave my daughter dignity, joy, and the most beautiful final chapter of her life. You gave us precious memories I\'ll treasure forever. You showed us what it truly means to be part of the United family. Thank you from the bottom of my heart. Lily loved you all.',
+        featured: true,
+        displayOrder: 1,
+      },
+      {
+        storyId: jamesStory.id,
+        authorName: 'James',
+        message: 'I was invisible for 18 months. Manchester United made me visible again. You didn\'t just give me shelter - you gave me hope, dignity, and a future. I have my life back because you cared. I\'ll never forget that. I\'m proud to be a Red.',
+        featured: true,
+        displayOrder: 1,
+      },
+      {
+        storyId: wilsonStory.id,
+        authorName: 'David & Grace Wilson',
+        message: 'We arrived in Manchester with nothing but fear and hope. Manchester United gave us belonging, opportunity, and a home. You showed us that refugees aren\'t burdens - we\'re human beings deserving of dignity. Our children now dream in English and cheer for United. We\'re not just grateful - we\'re forever proud to be part of this community. Thank you for welcoming us.',
+        featured: true,
+        displayOrder: 1,
+      },
+      {
+        storyId: wilsonStory.id,
+        authorName: 'Amara Wilson',
+        authorPhotoUrl: null,
+        message: 'I want to play for Manchester United Women one day. Not just because I love football, but because this club believed in my family when no one else did. They gave us a home. I want to make them proud. GGMU! 🔴⚽',
+        featured: false,
+        displayOrder: 2,
+      },
+      {
+        storyId: sarahStory.id,
         authorName: 'Sarah',
-        message: 'I cannot thank Hope for Homes enough for believing in me when I had lost all hope. Having a safe place to stay gave me the foundation I needed to rebuild my life. Now I have my own flat, a job, and most importantly, my dignity back. This charity truly saved my life.',
-        featured: true,
-        displayOrder: 1,
-      },
-      {
-        storyId: story2.id,
-        authorName: 'Emma\'s Family',
-        message: 'When we lost our income due to redundancy, we didn\'t know how we would feed our children. FoodShare UK provided not just food, but hope and dignity. The volunteers never made us feel judged. We\'re back on our feet now, and we\'ll never forget their kindness.',
-        featured: true,
-        displayOrder: 1,
-      },
-      {
-        storyId: story3.id,
-        authorName: 'Marcus',
-        message: 'My mentor believed in me when I didn\'t believe in myself. Through Youth Futures, I discovered skills I didn\'t know I had and got the confidence to apply for an apprenticeship. I\'m now training to be an electrician and I have a future to look forward to. Thank you!',
-        featured: true,
-        displayOrder: 1,
-      },
-      {
-        storyId: story4.id,
-        authorName: 'Margaret, 82',
-        message: 'At my age, the cold winters frighten me. Thanks to this programme, I now have proper heating and warm blankets. The volunteers even check in on me weekly. It\'s comforting to know someone cares. God bless everyone involved.',
-        featured: true,
-        displayOrder: 1,
-      },
-      {
-        storyId: story5.id,
-        authorName: 'Tom',
-        message: 'This garden saved me during the darkest period of my life. When depression had me isolated and hopeless, getting my hands in the soil and being part of this community gave me purpose again. Watching things grow reminded me that I could grow too. The friendships I\'ve made here are precious - we\'re not just growing vegetables, we\'re growing hope.',
+        message: 'I don\'t know if I\'d be alive today without the mental health support Manchester United funded. You gave me counselling when I couldn\'t afford it. You gave me a peer support group when I felt utterly alone. You gave me hope when I had none. Now I\'m helping others find that same hope. Thank you for saving my life and giving me purpose.',
         featured: true,
         displayOrder: 1,
       },
@@ -650,12 +590,12 @@ async function main() {
   console.log('✅ Database seeded successfully!');
   console.log('\n📊 Summary:');
   console.log('- 1 test user created (john@doe.com / johndoe123)');
-  console.log('- 3 charities created');
-  console.log('- 2 corporate donors created');
-  console.log('- 10 impact stories created');
-  console.log('- 10 reactions added');
-  console.log('- 5 comments added');
-  console.log('- 12 story milestones added');
+  console.log('- 4 charities created');
+  console.log('- 1 corporate donor created (Manchester United)');
+  console.log('- 4 emotional impact stories created');
+  console.log('- 24 story milestones added');
+  console.log('- 13 reactions added');
+  console.log('- 6 comments added');
   console.log('- 5 thank you messages added');
 }
 
