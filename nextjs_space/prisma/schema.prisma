@@ -104,9 +104,12 @@ model User {
   sessions           Session[]
   
   // Application relations
-  storiesCreated     Story[]   @relation("StoryCreator")
-  storiesUpdated     Story[]   @relation("StoryUpdater")
+  storiesCreated     Story[]    @relation("StoryCreator")
+  storiesUpdated     Story[]    @relation("StoryUpdater")
   likes              Like[]
+  reactions          Reaction[]
+  comments           Comment[]  @relation("CommentAuthor")
+  moderatedComments  Comment[]  @relation("CommentModerator")
 
   @@index([email])
   @@index([charityId])
@@ -191,6 +194,10 @@ model Story {
   
   media               Media[]
   likes               Like[]
+  reactions           Reaction[]
+  comments            Comment[]
+  milestones          StoryMilestone[]
+  thankYouMessages    ThankYouMessage[]
   analytics           Analytics[]
 
   @@unique([slug, charityId])
@@ -254,6 +261,8 @@ model Analytics {
   uniqueVisitors      Int        @default(0)
   likes               Int        @default(0)
   shares              Int        @default(0)
+  comments            Int        @default(0)
+  reactions           Int        @default(0)
   
   // Social Media Breakdown
   sharesTwitter       Int        @default(0)
@@ -273,4 +282,121 @@ model Analytics {
   @@index([storyId])
   @@index([donorId])
   @@index([date])
+}
+
+enum ReactionType {
+  LOVE
+  APPLAUSE
+  MOVED
+  INSPIRED
+  GRATEFUL
+}
+
+model Reaction {
+  id                  String       @id @default(cuid())
+  storyId             String
+  
+  // User Info (nullable for anonymous reactions)
+  userId              String?
+  ipAddress           String?      // For anonymous users
+  
+  // Reaction Type
+  reactionType        ReactionType
+  
+  createdAt           DateTime     @default(now())
+  
+  // Relations
+  story               Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user                User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId, reactionType])
+  @@unique([storyId, ipAddress, reactionType])
+  @@index([storyId])
+  @@index([userId])
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
+
+model Comment {
+  id                  String        @id @default(cuid())
+  storyId             String
+  
+  // User Info
+  userId              String?
+  userName            String        // Display name (for anonymous comments)
+  userEmail           String?       // Optional, for moderation contact
+  
+  // Content
+  content             String        @db.Text
+  
+  // Moderation
+  status              CommentStatus @default(PENDING)
+  moderatedAt         DateTime?
+  moderatedById       String?
+  moderatedBy         User?         @relation("CommentModerator", fields: [moderatedById], references: [id])
+  
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  
+  // Relations
+  story               Story         @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user                User?         @relation("CommentAuthor", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([storyId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model StoryMilestone {
+  id                  String       @id @default(cuid())
+  storyId             String
+  
+  // Milestone Info
+  title               String
+  description         String       @db.Text
+  date                DateTime
+  displayOrder        Int          @default(0)
+  
+  // Optional Media
+  imageUrl            String?
+  
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  
+  // Relations
+  story               Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@index([storyId])
+  @@index([date])
+}
+
+model ThankYouMessage {
+  id                  String       @id @default(cuid())
+  storyId             String
+  
+  // Message Info
+  authorName          String       // Name of person giving thanks (e.g., "Emma's Family")
+  message             String       @db.Text
+  
+  // Optional Media
+  authorPhotoUrl      String?
+  
+  // Display
+  featured            Boolean      @default(false)  // Show prominently on story page
+  displayOrder        Int          @default(0)
+  
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  
+  // Relations
+  story               Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@index([storyId])
+  @@index([featured])
 }

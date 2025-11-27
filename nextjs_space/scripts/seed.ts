@@ -34,6 +34,10 @@ async function main() {
   // Clear existing data
   console.log('🗑️  Clearing existing data...');
   await prisma.analytics.deleteMany();
+  await prisma.thankYouMessage.deleteMany();
+  await prisma.storyMilestone.deleteMany();
+  await prisma.comment.deleteMany();
+  await prisma.reaction.deleteMany();
   await prisma.like.deleteMany();
   await prisma.media.deleteMany();
   await prisma.story.deleteMany();
@@ -124,7 +128,7 @@ async function main() {
   console.log('📖 Creating impact stories...');
 
   // Story 1: Sarah's Journey (Hope for Homes + TechCorp)
-  await prisma.story.create({
+  const story1 = await prisma.story.create({
     data: {
       charityId: hopeForHomes.id,
       donorId: techCorp.id,
@@ -154,7 +158,7 @@ async function main() {
   });
 
   // Story 2: Feeding 500 Families (FoodShare UK + RetailGroup)
-  await prisma.story.create({
+  const story2 = await prisma.story.create({
     data: {
       charityId: foodShareUK.id,
       donorId: retailGroup.id,
@@ -184,7 +188,7 @@ async function main() {
   });
 
   // Story 3: Youth Mentorship Programme
-  await prisma.story.create({
+  const story3 = await prisma.story.create({
     data: {
       charityId: youthFutures.id,
       title: 'Empowering Young People Through Mentorship',
@@ -215,7 +219,7 @@ async function main() {
   });
 
   // Story 4: Warm Homes Winter Campaign
-  await prisma.story.create({
+  const story4 = await prisma.story.create({
     data: {
       charityId: hopeForHomes.id,
       title: 'Keeping Vulnerable People Warm This Winter',
@@ -244,7 +248,7 @@ async function main() {
   });
 
   // Story 5: Community Garden Project
-  await prisma.story.create({
+  const story5 = await prisma.story.create({
     data: {
       charityId: foodShareUK.id,
       title: 'Growing Food, Growing Community',
@@ -430,12 +434,223 @@ async function main() {
     },
   });
 
+  // Add Reactions to stories
+  console.log('😍 Adding reactions...');
+  await prisma.reaction.createMany({
+    data: [
+      { storyId: story1.id, userId: testUser.id, reactionType: 'LOVE' },
+      { storyId: story1.id, ipAddress: '192.168.1.1', reactionType: 'MOVED' },
+      { storyId: story1.id, ipAddress: '192.168.1.2', reactionType: 'INSPIRED' },
+      { storyId: story2.id, userId: testUser.id, reactionType: 'GRATEFUL' },
+      { storyId: story2.id, ipAddress: '192.168.1.3', reactionType: 'LOVE' },
+      { storyId: story3.id, userId: testUser.id, reactionType: 'APPLAUSE' },
+      { storyId: story3.id, ipAddress: '192.168.1.4', reactionType: 'INSPIRED' },
+      { storyId: story4.id, ipAddress: '192.168.1.5', reactionType: 'GRATEFUL' },
+      { storyId: story5.id, userId: testUser.id, reactionType: 'LOVE' },
+      { storyId: story5.id, ipAddress: '192.168.1.6', reactionType: 'MOVED' },
+    ],
+  });
+
+  // Add Comments to stories
+  console.log('💬 Adding comments...');
+  await prisma.comment.createMany({
+    data: [
+      {
+        storyId: story1.id,
+        userId: testUser.id,
+        userName: 'John Doe',
+        userEmail: 'john@doe.com',
+        content: 'This is such a beautiful story. So proud to see the difference being made! ❤️',
+        status: 'APPROVED',
+      },
+      {
+        storyId: story1.id,
+        userName: 'Anonymous Supporter',
+        content: 'Thank you for sharing Sarah\'s journey. It\'s inspiring to see how much support can change lives.',
+        status: 'APPROVED',
+      },
+      {
+        storyId: story2.id,
+        userName: 'Community Member',
+        userEmail: 'supporter@example.com',
+        content: 'Incredible work by FoodShare UK! Every family deserves access to nutritious food.',
+        status: 'APPROVED',
+      },
+      {
+        storyId: story3.id,
+        userId: testUser.id,
+        userName: 'John Doe',
+        userEmail: 'john@doe.com',
+        content: 'Youth mentorship programmes like this are so important. Well done! 👏',
+        status: 'APPROVED',
+      },
+      {
+        storyId: story4.id,
+        userName: 'Concerned Citizen',
+        content: 'Keeping our elderly warm should be a priority. Thank you for this vital work.',
+        status: 'PENDING',
+      },
+    ],
+  });
+
+  // Add Story Milestones (Timeline events)
+  console.log('📍 Adding story milestones...');
+  
+  // Milestones for Story 1 (Sarah's Journey)
+  await prisma.storyMilestone.createMany({
+    data: [
+      {
+        storyId: story1.id,
+        title: 'Emergency Accommodation',
+        description: 'Sarah was provided with emergency accommodation after being referred by local services. This safe space allowed her to begin her recovery journey.',
+        date: daysAgo(180),
+        displayOrder: 1,
+      },
+      {
+        storyId: story1.id,
+        title: 'Support Services Begin',
+        description: 'Sarah began working with our support team, accessing mental health services, budgeting advice, and employment support.',
+        date: daysAgo(150),
+        displayOrder: 2,
+      },
+      {
+        storyId: story1.id,
+        title: 'Part-Time Employment',
+        description: 'With renewed confidence, Sarah secured part-time work at a local café. This was a major milestone in her journey towards independence.',
+        date: daysAgo(90),
+        displayOrder: 3,
+      },
+      {
+        storyId: story1.id,
+        title: 'Moving to Permanent Housing',
+        description: 'Sarah moved into her own flat - a permanent home where she can rebuild her life with dignity and stability.',
+        date: daysAgo(30),
+        displayOrder: 4,
+      },
+    ],
+  });
+
+  // Milestones for Story 2 (Feeding 500 Families)
+  await prisma.storyMilestone.createMany({
+    data: [
+      {
+        storyId: story2.id,
+        title: 'Campaign Launch',
+        description: 'Our Winter Food Campaign launched to provide emergency food parcels to families facing food insecurity.',
+        date: daysAgo(120),
+        displayOrder: 1,
+      },
+      {
+        storyId: story2.id,
+        title: '100 Families Reached',
+        description: 'Milestone achieved! We\'ve now provided food parcels to 100 families across Greater Manchester.',
+        date: daysAgo(90),
+        displayOrder: 2,
+      },
+      {
+        storyId: story2.id,
+        title: '250 Families Supported',
+        description: 'Halfway to our goal! Thanks to generous donors, we\'ve now helped 250 families access nutritious food.',
+        date: daysAgo(60),
+        displayOrder: 3,
+      },
+      {
+        storyId: story2.id,
+        title: '500 Families Milestone',
+        description: 'We did it! 500 families have now received support through this campaign. Over 12,000 meals provided.',
+        date: daysAgo(14),
+        displayOrder: 4,
+      },
+    ],
+  });
+
+  // Milestones for Story 3 (Youth Mentorship)
+  await prisma.storyMilestone.createMany({
+    data: [
+      {
+        storyId: story3.id,
+        title: 'Programme Launch',
+        description: 'Our youth mentorship programme launched with 20 young people and 10 dedicated mentors.',
+        date: daysAgo(365),
+        displayOrder: 1,
+      },
+      {
+        storyId: story3.id,
+        title: 'First Success Stories',
+        description: 'Three of our mentees secured apprenticeships, showing the real-world impact of consistent support.',
+        date: daysAgo(270),
+        displayOrder: 2,
+      },
+      {
+        storyId: story3.id,
+        title: 'Programme Expansion',
+        description: 'Due to high demand and proven results, we expanded to support 50 young people across Birmingham.',
+        date: daysAgo(180),
+        displayOrder: 3,
+      },
+      {
+        storyId: story3.id,
+        title: 'Year One Complete',
+        description: '75 young people have now completed the programme, with 85% achieving their goals.',
+        date: daysAgo(45),
+        displayOrder: 4,
+      },
+    ],
+  });
+
+  // Add Thank You Messages
+  console.log('💝 Adding thank you messages...');
+  
+  await prisma.thankYouMessage.createMany({
+    data: [
+      {
+        storyId: story1.id,
+        authorName: 'Sarah',
+        message: 'I cannot thank Hope for Homes enough for believing in me when I had lost all hope. Having a safe place to stay gave me the foundation I needed to rebuild my life. Now I have my own flat, a job, and most importantly, my dignity back. This charity truly saved my life.',
+        featured: true,
+        displayOrder: 1,
+      },
+      {
+        storyId: story2.id,
+        authorName: 'Emma\'s Family',
+        message: 'When we lost our income due to redundancy, we didn\'t know how we would feed our children. FoodShare UK provided not just food, but hope and dignity. The volunteers never made us feel judged. We\'re back on our feet now, and we\'ll never forget their kindness.',
+        featured: true,
+        displayOrder: 1,
+      },
+      {
+        storyId: story3.id,
+        authorName: 'Marcus',
+        message: 'My mentor believed in me when I didn\'t believe in myself. Through Youth Futures, I discovered skills I didn\'t know I had and got the confidence to apply for an apprenticeship. I\'m now training to be an electrician and I have a future to look forward to. Thank you!',
+        featured: true,
+        displayOrder: 1,
+      },
+      {
+        storyId: story4.id,
+        authorName: 'Margaret, 82',
+        message: 'At my age, the cold winters frighten me. Thanks to this programme, I now have proper heating and warm blankets. The volunteers even check in on me weekly. It\'s comforting to know someone cares. God bless everyone involved.',
+        featured: true,
+        displayOrder: 1,
+      },
+      {
+        storyId: story5.id,
+        authorName: 'Tom',
+        message: 'This garden saved me during the darkest period of my life. When depression had me isolated and hopeless, getting my hands in the soil and being part of this community gave me purpose again. Watching things grow reminded me that I could grow too. The friendships I\'ve made here are precious - we\'re not just growing vegetables, we\'re growing hope.',
+        featured: true,
+        displayOrder: 1,
+      },
+    ],
+  });
+
   console.log('✅ Database seeded successfully!');
   console.log('\n📊 Summary:');
   console.log('- 1 test user created (john@doe.com / johndoe123)');
   console.log('- 3 charities created');
   console.log('- 2 corporate donors created');
   console.log('- 10 impact stories created');
+  console.log('- 10 reactions added');
+  console.log('- 5 comments added');
+  console.log('- 12 story milestones added');
+  console.log('- 5 thank you messages added');
 }
 
 main()
