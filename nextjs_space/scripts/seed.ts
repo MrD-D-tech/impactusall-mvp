@@ -104,6 +104,9 @@ async function main() {
       logoUrl: IMAGES.donors.techCorpUK,
       donationAmount: 50000,
       charityId: hopeForHomes.id,
+      primaryColor: '#0066cc',  // Tech blue
+      secondaryColor: '#00cc66',  // Tech green
+      tagline: 'TechCorp UK - Changing Lives Through Technology & Compassion',
     },
   });
 
@@ -114,6 +117,9 @@ async function main() {
       logoUrl: IMAGES.donors.retailGroup,
       donationAmount: 75000,
       charityId: foodShareUK.id,
+      primaryColor: '#d32f2f',  // Retail red
+      secondaryColor: '#ffa000',  // Retail gold
+      tagline: 'RetailGroup PLC - Supporting Communities Across the UK',
     },
   });
 

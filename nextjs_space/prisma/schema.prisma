@@ -141,9 +141,15 @@ model Charity {
 model Donor {
   id                  String   @id @default(cuid())
   name                String
-  slug                String   @unique  // For URLs (e.g., "hope-for-homes")
+  slug                String   @unique  // For URLs (e.g., "manchester-united", "techcorp-uk")
   logoUrl             String?
   donationAmount      Decimal? @db.Decimal(10, 2)
+  
+  // Branding for donor-specific hubs
+  primaryColor        String?  @default("#ea580c")  // Orange default
+  secondaryColor      String?  @default("#14b8a6")  // Teal default
+  tagline             String?  @db.Text  // e.g., "Manchester United's Impact Stories"
+  websiteUrl          String?
   
   // Optional charity relationship
   charityId           String?

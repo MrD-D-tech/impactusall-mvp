@@ -2,28 +2,30 @@ import { prisma } from '@/lib/db';
 import Link from 'next/link';
 import { Heart, Users, Clock, Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import { AnimatedCounter } from '@/components/animated-counter';
 
 async function getHomeData() {
-  const stories = await prisma.story.findMany({
-    where: { status: 'PUBLISHED' },
-    take: 3,
-    orderBy: { publishedAt: 'desc' },
+  const donors = await prisma.donor.findMany({
     include: {
-      charity: { select: { name: true, logoUrl: true } },
-      _count: { select: { likes: true } },
+      _count: {
+        select: {
+          stories: {
+            where: { status: 'PUBLISHED' },
+          },
+        },
+      },
     },
   });
 
-  const totalImpact = await prisma.story.aggregate({
+  const totalStories = await prisma.story.count({
     where: { status: 'PUBLISHED' },
-    _count: true,
   });
 
-  return { stories, totalStories: totalImpact._count ?? 0 };
+  return { donors, totalStories };
 }
 
 export default async function HomePage() {
-  const { stories, totalStories } = await getHomeData();
+  const { donors, totalStories } = await getHomeData();
 
   return (
     <div className="min-h-screen">
@@ -58,134 +60,183 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-6">
             <Heart className="w-5 h-5" />
-            <span className="text-sm font-semibold">Transforming Generosity Into Impact Stories</span>
+            <span className="text-sm font-semibold">Every Donation Has a Story</span>
           </div>
           
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            See the Real Impact of<br />Corporate Donations
+            Share Your Corporate Impact<br />With Those Who Care
           </h1>
           
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Discover authentic stories from UK charities showing how corporate generosity transforms lives in communities across the country.
+            ImpactusAll helps corporate donors create branded hubs to showcase the real human impact of their giving to supporters, customers, and employees.
           </p>
           
-          <Link
-            href="/stories"
-            className="inline-block bg-white text-orange-500 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-colors"
-          >
-            Explore Impact Stories
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/register"
+              className="inline-block bg-white text-orange-500 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-colors"
+            >
+              Get Started
+            </Link>
+            <Link
+              href="/login"
+              className="inline-block bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/30 transition-colors border-2 border-white/30"
+            >
+              Login
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Impact Stats */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="w-8 h-8 text-orange-500" />
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">{totalStories}+</div>
-              <div className="text-sm font-semibold text-orange-500 uppercase tracking-wide mb-2">Stories Shared</div>
-              <p className="text-sm text-gray-600">Real impact documented</p>
+              <div className="text-4xl font-bold text-gray-900 mb-2">
+                <AnimatedCounter end={donors.length} duration={2000} />
+              </div>
+              <div className="text-sm font-semibold text-orange-500 uppercase tracking-wide mb-2">Corporate Donors</div>
+              <p className="text-sm text-gray-600">Sharing their impact</p>
             </div>
 
             <div className="bg-white rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow">
               <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-teal-500" />
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">1,000+</div>
-              <div className="text-sm font-semibold text-orange-500 uppercase tracking-wide mb-2">Families Helped</div>
-              <p className="text-sm text-gray-600">Lives transformed</p>
+              <div className="text-4xl font-bold text-gray-900 mb-2">
+                <AnimatedCounter end={totalStories} duration={2000} />
+              </div>
+              <div className="text-sm font-semibold text-orange-500 uppercase tracking-wide mb-2">Impact Stories</div>
+              <p className="text-sm text-gray-600">Real stories documented</p>
             </div>
 
             <div className="bg-white rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow">
               <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Clock className="w-8 h-8 text-orange-500" />
-              </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">5,000+</div>
-              <div className="text-sm font-semibold text-orange-500 uppercase tracking-wide mb-2">Hours of Care</div>
-              <p className="text-sm text-gray-600">Support provided</p>
-            </div>
-
-            <div className="bg-white rounded-xl p-8 text-center shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="w-8 h-8 text-teal-500" />
               </div>
-              <div className="text-4xl font-bold text-gray-900 mb-2">3</div>
-              <div className="text-sm font-semibold text-orange-500 uppercase tracking-wide mb-2">UK Charities</div>
-              <p className="text-sm text-gray-600">Making a difference</p>
+              <div className="text-4xl font-bold text-gray-900 mb-2">
+                <AnimatedCounter end={1247} duration={2000} />
+              </div>
+              <div className="text-sm font-semibold text-orange-500 uppercase tracking-wide mb-2">Lives Changed</div>
+              <p className="text-sm text-gray-600">Across the UK</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Stories */}
+      {/* Donor Hubs Section */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Featured Impact Stories
+              Explore Donor Impact Hubs
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover how corporate donations are transforming lives across the UK
+              Each corporate donor has their own branded hub showcasing stories funded by their donations
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {stories?.map((story) => (
-              <Link
-                key={story?.id}
-                href={`/stories/${story?.slug}`}
-                className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 overflow-hidden"
-              >
-                {story?.featuredImageUrl && (
-                  <div className="relative aspect-video bg-gray-200">
-                    <Image
-                      src={story.featuredImageUrl}
-                      alt={story?.title ?? 'Story image'}
-                      fill
-                      className="object-cover"
-                    />
-                    {story?.charity?.logoUrl && (
-                      <div className="absolute top-4 left-4 w-12 h-12 bg-white rounded-full p-2 shadow-md">
+          {donors.length === 0 ? (
+            <div className="text-center py-12 bg-white rounded-xl shadow">
+              <p className="text-gray-600">No donor hubs available yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {donors.map((donor) => (
+                <Link
+                  key={donor.id}
+                  href={`/${donor.slug}`}
+                  className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 overflow-hidden"
+                >
+                  {/* Donor Branded Header */}
+                  <div
+                    className="h-32 p-6 flex items-center justify-center"
+                    style={{
+                      background: `linear-gradient(135deg, ${donor.primaryColor || '#ea580c'} 0%, ${donor.secondaryColor || '#14b8a6'} 100%)`,
+                    }}
+                  >
+                    {donor.logoUrl && (
+                      <div className="relative w-20 h-20 bg-white rounded-full p-3 shadow-lg">
                         <Image
-                          src={story.charity.logoUrl}
-                          alt={story?.charity?.name ?? 'Charity logo'}
+                          src={donor.logoUrl}
+                          alt={donor.name}
                           fill
-                          className="object-contain"
+                          className="object-contain p-1"
                         />
                       </div>
                     )}
                   </div>
-                )}
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">
-                    {story?.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {story?.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-500">{story?.charity?.name}</span>
-                    <span className="text-gray-400 flex items-center gap-1">
-                      <Heart className="w-4 h-4" />
-                      {story?._count?.likes ?? 0}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
 
-          <div className="text-center">
-            <Link
-              href="/stories"
-              className="inline-block gradient-primary text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity"
-            >
-              View All Stories
-            </Link>
+                  {/* Donor Info */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-500 transition-colors">
+                      {donor.name}
+                    </h3>
+                    {donor.tagline && (
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {donor.tagline}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">
+                        📖 {donor._count.stories} {donor._count.stories === 1 ? 'story' : 'stories'}
+                      </span>
+                      <span className="text-orange-500 font-medium group-hover:underline">
+                        View Hub →
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+            How ImpactusAll Works
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                1
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Make a Donation
+              </h3>
+              <p className="text-gray-600">
+                Corporate donors support charities through meaningful contributions
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                2
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Share Impact Stories
+              </h3>
+              <p className="text-gray-600">
+                Charities document real stories of lives changed through your support
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
+                3
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Engage Supporters
+              </h3>
+              <p className="text-gray-600">
+                Share your branded hub with employees, customers, and the public
+              </p>
+            </div>
           </div>
         </div>
       </section>

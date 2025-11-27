@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
-import prisma from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 type ReactionType = 'LOVE' | 'APPLAUSE' | 'MOVED' | 'INSPIRED' | 'GRATEFUL';
 
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
-      userReactions: reactions.map((r) => r.reactionType),
+      userReactions: reactions.map((r: any) => r.reactionType),
     });
   } catch (error) {
     console.error('Error fetching user reactions:', error);
@@ -165,7 +165,7 @@ async function getReactionCounts(storyId: string) {
     _count: true,
   });
 
-  return reactionCounts.map((rc) => ({
+  return reactionCounts.map((rc: any) => ({
     type: rc.reactionType,
     count: rc._count,
   }));
