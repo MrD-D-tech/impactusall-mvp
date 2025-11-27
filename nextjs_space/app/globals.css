@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+ 
+    /* ImpactusAll Brand Colors */
+    --primary: 24.6 95% 53.1%; /* Orange #F97316 */
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 172 80% 40%; /* Teal #14B8A6 */
+    --secondary-foreground: 0 0% 100%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 14 100% 57%; /* Accent Orange */
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 24.6 95% 53.1%; /* Orange ring */
+ 
+    --radius: 0.5rem;
+    
+    /* Chart Colors */
+    --chart-1: 199 89% 48%; /* #60B5FF */
+    --chart-2: 25 100% 64%; /* #FF9149 */
+    --chart-3: 0 100% 79%; /* #FF9898 */
+    --chart-4: 335 100% 78%; /* #FF90BB */
+    --chart-5: 0 100% 69%; /* #FF6363 */
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-white text-gray-900;
+  }
+  
+  /* Suppress hydration warnings */
+  body > div:first-child {
+    display: contents;
+  }
+}
+
+@layer utilities {
+  /* Orange to Teal Gradient */
+  .gradient-primary {
+    background: linear-gradient(to right, #F97316, #14B8A6);
+  }
+  
+  .gradient-primary-vertical {
+    background: linear-gradient(to bottom, #F97316, #14B8A6);
+  }
+  
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-gradient-to-r from-orange-500 to-teal-500 bg-clip-text text-transparent;
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

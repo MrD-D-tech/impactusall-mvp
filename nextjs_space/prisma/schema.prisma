@@ -1,0 +1,276 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/impactusall_mvp/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// ============================================
+// NEXTAUTH TABLES (Required for NextAuth.js)
+// ============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ============================================
+// APPLICATION TABLES
+// ============================================
+
+enum UserRole {
+  PUBLIC_USER
+  CHARITY_ADMIN
+  CORPORATE_DONOR
+}
+
+enum FileType {
+  IMAGE
+  VIDEO
+}
+
+enum StoryStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  emailVerified      DateTime?
+  password           String    // bcrypt hashed password
+  name               String
+  role               UserRole  @default(PUBLIC_USER)
+  image              String?
+  
+  // Email verification
+  verificationToken  String?   @unique
+  
+  // Password reset
+  resetToken         String?   @unique
+  resetTokenExpires  DateTime?
+  
+  // Relationships
+  charityId          String?
+  donorId            String?
+  charity            Charity?  @relation(fields: [charityId], references: [id])
+  donor              Donor?    @relation(fields: [donorId], references: [id])
+  
+  // Timestamps
+  createdAt          DateTime  @default(now())
+  lastLogin          DateTime?
+  updatedAt          DateTime  @updatedAt
+  
+  // NextAuth relations
+  accounts           Account[]
+  sessions           Session[]
+  
+  // Application relations
+  storiesCreated     Story[]   @relation("StoryCreator")
+  storiesUpdated     Story[]   @relation("StoryUpdater")
+  likes              Like[]
+
+  @@index([email])
+  @@index([charityId])
+  @@index([donorId])
+  @@index([verificationToken])
+  @@index([resetToken])
+}
+
+model Charity {
+  id                  String   @id @default(cuid())
+  name                String
+  description         String?  @db.Text
+  logoUrl             String?
+  websiteUrl          String?
+  location            String?  // UK city/region
+  focusArea           String?  // e.g., homelessness, food banks, youth services
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  // Relations
+  users               User[]
+  stories             Story[]
+  donors              Donor[]
+
+  @@index([name])
+}
+
+model Donor {
+  id                  String   @id @default(cuid())
+  name                String
+  slug                String   @unique  // For URLs (e.g., "hope-for-homes")
+  logoUrl             String?
+  donationAmount      Decimal? @db.Decimal(10, 2)
+  
+  // Optional charity relationship
+  charityId           String?
+  charity             Charity? @relation(fields: [charityId], references: [id])
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  
+  // Relations
+  users               User[]
+  stories             Story[]
+  analytics           Analytics[]
+
+  @@index([slug])
+  @@index([charityId])
+}
+
+model Story {
+  id                  String       @id @default(cuid())
+  charityId           String
+  donorId             String?
+  
+  // Content
+  title               String
+  slug                String       // For URLs
+  content             String       @db.Text  // Rich text HTML
+  excerpt             String?      @db.Text  // Short summary
+  featuredImageUrl    String?
+  
+  // Impact Metrics (stored as JSON)
+  impactMetrics       Json?        // {families_helped: 25, hours_of_care: 150, etc.}
+  
+  // Status
+  status              StoryStatus  @default(DRAFT)
+  publishedAt         DateTime?
+  
+  // Metadata
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  createdById         String
+  updatedById         String?
+  
+  // Relations
+  charity             Charity      @relation(fields: [charityId], references: [id])
+  donor               Donor?       @relation(fields: [donorId], references: [id])
+  createdBy           User         @relation("StoryCreator", fields: [createdById], references: [id])
+  updatedBy           User?        @relation("StoryUpdater", fields: [updatedById], references: [id])
+  
+  media               Media[]
+  likes               Like[]
+  analytics           Analytics[]
+
+  @@unique([slug, charityId])
+  @@index([charityId])
+  @@index([donorId])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+model Media {
+  id                  String     @id @default(cuid())
+  storyId             String
+  
+  // File Info
+  fileUrl             String     // CDN URL
+  fileType            FileType
+  fileSize            Int?       // in bytes
+  fileName            String?    // Original filename
+  
+  // Metadata
+  altText             String?
+  caption             String?    @db.Text
+  displayOrder        Int        @default(0)
+  
+  uploadedAt          DateTime   @default(now())
+  
+  // Relations
+  story               Story      @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@index([storyId])
+}
+
+model Like {
+  id                  String     @id @default(cuid())
+  storyId             String
+  
+  // User Info (nullable for anonymous likes)
+  userId              String?
+  ipAddress           String?    // For anonymous users
+  
+  createdAt           DateTime   @default(now())
+  
+  // Relations
+  story               Story      @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user                User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId])
+  @@unique([storyId, ipAddress])
+  @@index([storyId])
+  @@index([userId])
+}
+
+model Analytics {
+  id                  String     @id @default(cuid())
+  storyId             String
+  donorId             String?
+  date                DateTime   @db.Date
+  
+  // Engagement Metrics
+  views               Int        @default(0)
+  uniqueVisitors      Int        @default(0)
+  likes               Int        @default(0)
+  shares              Int        @default(0)
+  
+  // Social Media Breakdown
+  sharesTwitter       Int        @default(0)
+  sharesFacebook      Int        @default(0)
+  sharesLinkedin      Int        @default(0)
+  sharesInstagram     Int        @default(0)
+  sharesWhatsapp      Int        @default(0)
+  
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  
+  // Relations
+  story               Story      @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  donor               Donor?     @relation(fields: [donorId], references: [id])
+
+  @@unique([storyId, date])
+  @@index([storyId])
+  @@index([donorId])
+  @@index([date])
+}
