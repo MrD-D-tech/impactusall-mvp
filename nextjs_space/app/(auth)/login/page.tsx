@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -9,6 +9,7 @@ import { Eye, EyeOff, Loader2, Heart } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, update } = useSession() || {};
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -29,14 +30,27 @@ export default function LoginPage() {
 
       if (result?.error) {
         toast.error(result.error);
+        setIsLoading(false);
       } else {
         toast.success('Welcome back!');
-        router.push('/');
+        
+        // Fetch the updated session to get user role
+        const response = await fetch('/api/auth/session');
+        const sessionData = await response.json();
+        
+        // Redirect based on user role
+        if (sessionData?.user?.role === 'CHARITY_ADMIN') {
+          router.push('/charity-admin');
+        } else if (sessionData?.user?.role === 'CORPORATE_DONOR') {
+          router.push('/corporate-dashboard'); // For future implementation
+        } else {
+          router.push('/');
+        }
+        
         router.refresh();
       }
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
