@@ -41,19 +41,6 @@ async function main() {
   await prisma.donor.deleteMany();
   await prisma.charity.deleteMany();
 
-  // Create default test user (john@doe.com)
-  console.log('👤 Creating test user...');
-  const hashedPassword = await bcrypt.hash('johndoe123', 10);
-  const testUser = await prisma.user.create({
-    data: {
-      email: 'john@doe.com',
-      password: hashedPassword,
-      name: 'John Doe',
-      role: 'PUBLIC_USER',
-      emailVerified: new Date(),
-    },
-  });
-
   // Create Charities supported by Man United
   console.log('🏥 Creating charities...');
   const northernHospice = await prisma.charity.create({
@@ -100,13 +87,43 @@ async function main() {
     },
   });
 
+  // Create users
+  console.log('👤 Creating test users...');
+  const hashedPassword = await bcrypt.hash('johndoe123', 10);
+  
+  // Default test user (public)
+  const testUser = await prisma.user.create({
+    data: {
+      email: 'john@doe.com',
+      password: hashedPassword,
+      name: 'John Doe',
+      role: 'PUBLIC_USER',
+      emailVerified: new Date(),
+    },
+  });
+
+  // Charity admin user for Northern Hospice
+  const charityAdminPassword = await bcrypt.hash('admin123', 10);
+  const charityAdmin = await prisma.user.create({
+    data: {
+      email: 'admin@northernhospice.org.uk',
+      password: charityAdminPassword,
+      name: 'Sarah Thompson',
+      role: 'CHARITY_ADMIN',
+      emailVerified: new Date(),
+      charityId: northernHospice.id,
+    },
+  });
+
+  console.log('✅ Created charity admin: admin@northernhospice.org.uk / admin123');
+
   // Create Manchester United as the corporate donor
   console.log('⚽ Creating Manchester United donor...');
   const manUnited = await prisma.donor.create({
     data: {
       name: 'Manchester United',
       slug: 'manchester-united',
-      logoUrl: IMAGES.donors.manUnited,
+      logoUrl: null, // Logo not needed - using hero banner instead
       donationAmount: 100000,
       charityId: northernHospice.id,
       primaryColor: '#DA291C',  // Man United red
@@ -165,7 +182,7 @@ async function main() {
       },
       status: 'PUBLISHED',
       publishedAt: daysAgo(7),
-      createdById: testUser.id,
+      createdById: charityAdmin.id,
     },
   });
 
@@ -211,7 +228,7 @@ async function main() {
       },
       status: 'PUBLISHED',
       publishedAt: daysAgo(14),
-      createdById: testUser.id,
+      createdById: charityAdmin.id,
     },
   });
 
@@ -260,7 +277,7 @@ async function main() {
       },
       status: 'PUBLISHED',
       publishedAt: daysAgo(21),
-      createdById: testUser.id,
+      createdById: charityAdmin.id,
     },
   });
 
@@ -310,7 +327,7 @@ async function main() {
       },
       status: 'PUBLISHED',
       publishedAt: daysAgo(28),
-      createdById: testUser.id,
+      createdById: charityAdmin.id,
     },
   });
 
