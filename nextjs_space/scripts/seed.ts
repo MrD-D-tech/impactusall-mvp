@@ -111,7 +111,7 @@ async function main() {
       charityId: northernHospice.id,
       primaryColor: '#DA291C',  // Man United red
       secondaryColor: '#FBE122',  // Man United gold
-      tagline: 'Manchester United - More Than a Club, Making a Real Difference',
+      tagline: '£100,000 donated in 2024 & 2025 - Transforming Lives Across Greater Manchester',
     },
   });
 
@@ -133,21 +133,29 @@ async function main() {
       title: "Emma's Gift: Precious Moments That Matter Most",
       slug: 'emmas-gift-precious-moments',
       excerpt: "When Emma's seven-year-old daughter Lily was diagnosed with a life-limiting condition, Manchester United's support gave them something priceless: time together filled with love, dignity, and beautiful memories.",
-      content: `<p>There are no words to truly capture what it means to know your child's time is limited. Emma, a lifelong Manchester United supporter, faced this unimaginable reality when her vibrant seven-year-old daughter Lily was diagnosed with a degenerative neurological condition.</p>
+      content: `<div class="space-y-6">
+<p>There are no words to truly capture what it means to know your child's time is limited. Emma, a lifelong Manchester United supporter, faced this unimaginable reality when her vibrant seven-year-old daughter Lily was diagnosed with a degenerative neurological condition.</p>
 
-<p>"The diagnosis shattered our world," Emma recalls, tears welling in her eyes. "The doctors told us Lily had maybe 18 months. I remember thinking: how do I make every single day count? How do I give her the childhood she deserves when we're running out of time?"</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"The diagnosis shattered our world," Emma recalls, tears welling in her eyes. "The doctors told us Lily had maybe 18 months. I remember thinking: how do I make every single day count? How do I give her the childhood she deserves when we're running out of time?"</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Manchester United's Support</h3>
 
 <p>Through Manchester United's partnership with Northern Children's Hospice, Emma and Lily received specialist palliative care that transformed their remaining time together. The hospice provided not just medical support, but memory-making opportunities, respite care for the family, and counselling to help them navigate the emotional journey ahead.</p>
 
-<p>"The hospice team became our extended family," Emma shares. "They helped us create a memory book, organized a special visit from former United players, and most importantly, they gave Lily dignity and joy. She painted, she laughed, she played - she was a child, not just a patient."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"The hospice team became our extended family," Emma shares. "They helped us create a memory book, organised a special visit from former United players, and most importantly, they gave Lily dignity and joy. She painted, she laughed, she played - she was a child, not just a patient."</p>
 
-<p>On Lily's eighth birthday - a milestone Emma feared they'd never reach - the hospice organized a Manchester United-themed party. Players sent video messages. The room was decorated in red and gold. Lily wore her United shirt with pride.</p>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">A Birthday to Remember</h3>
 
-<p>"That day, watching Lily's face light up, I realized something," Emma says softly. "Manchester United didn't just support us financially - they showed us we weren't alone. Every parent at that hospice knows: when you wear the red shirt, you're part of a family that cares. That means everything."</p>
+<p>On Lily's eighth birthday - a milestone Emma feared they'd never reach - the hospice organised a Manchester United-themed party. Players sent video messages. The room was decorated in red and gold. Lily wore her United shirt with pride.</p>
+
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"That day, watching Lily's face light up, I realised something," Emma says softly. "Manchester United didn't just support us financially - they showed us we weren't alone. Every parent at that hospice knows: when you wear the red shirt, you're part of a family that cares. That means everything."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Lily's Legacy</h3>
 
 <p>Lily passed away peacefully at the hospice six months later, surrounded by love, with her Manchester United teddy bear in her arms. Emma now volunteers at the hospice, supporting other families walking the same heartbreaking path.</p>
 
-<p>"Lily's legacy is love," Emma says. "And Manchester United helped us create that legacy. I'll forever be grateful."</p>`,
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"Lily's legacy is love," Emma says. "And Manchester United helped us create that legacy. I'll forever be grateful."</p>
+</div>`,
       featuredImageUrl: IMAGES.stories.emmaStory,
       impactMetrics: {
         families_helped: 25,
@@ -169,23 +177,31 @@ async function main() {
       title: "James: From Sleeping Rough to Building Dreams",
       slug: 'james-from-streets-to-success',
       excerpt: "After 18 months sleeping rough on Manchester's streets, James thought his life was over. Today, thanks to Manchester United's support, he has a job, a home, and hope for the future.",
-      content: `<p>James, 32, never imagined he'd become homeless. A skilled carpenter, he lost his job during the pandemic. Unable to pay rent, he ended up on Manchester's streets - cold, ashamed, and invisible.</p>
+      content: `<div class="space-y-6">
+<p>James, 32, never imagined he'd become homeless. A skilled carpenter, he lost his job during the pandemic. Unable to pay rent, he ended up on Manchester's streets - cold, ashamed, and invisible.</p>
 
-<p>"People walk past you like you're not human," James says, his voice still heavy with the memory. "I'd see United fans heading to Old Trafford on match days, and I'd remember when that was me - before everything fell apart. I felt like I'd disappeared from the world."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"People walk past you like you're not human," James says, his voice still heavy with the memory. "I'd see United fans heading to Old Trafford on match days, and I'd remember when that was me - before everything fell apart. I felt like I'd disappeared from the world."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">A Turning Point</h3>
 
 <p>Everything changed when a Streets to Homes outreach worker, funded by Manchester United's donation, found James sleeping in a doorway near the stadium. Instead of just offering a bed for the night, they offered a pathway to rebuild his entire life.</p>
 
 <p>The programme provided emergency accommodation, addiction support (James had turned to alcohol to cope with street life), mental health counselling, and crucially - employment training and job placement support.</p>
 
-<p>"They didn't judge me," James reflects. "They saw potential in me when I couldn't see it myself. The caseworker, Sarah, she'd check in every single day. She believed I could do this."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"They didn't judge me," James reflects. "They saw potential in me when I couldn't see it myself. The caseworker, Sarah, she'd check in every single day. She believed I could do this."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Building a New Life</h3>
 
 <p>Within four months, James completed a construction site safety course. Two months after that, he secured full-time employment with a building firm. Last month, he moved into his own flat - the first time in two years he's had his own front door key.</p>
 
-<p>"When I walked into that empty flat, I just stood there and cried," James admits. "Happy tears, grateful tears. I have a home. I have a job. I have my life back."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"When I walked into that empty flat, I just stood there and cried," James admits. "Happy tears, grateful tears. I have a home. I have a job. I have my life back."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Coming Home</h3>
 
 <p>James recently attended his first United match in over two years. "Sitting in that stadium, watching the game, being part of something bigger than myself again - it felt like coming home," he says. "Manchester United gave me more than financial support. They gave me my identity back. They reminded me I matter."</p>
 
-<p>Today, James volunteers with Streets to Homes, helping other rough sleepers find their way off the streets. "If my story can give one person hope, it's worth sharing," he says with quiet determination.</p>`,
+<p>Today, James volunteers with Streets to Homes, helping other rough sleepers find their way off the streets. "If my story can give one person hope, it's worth sharing," he says with quiet determination.</p>
+</div>`,
       featuredImageUrl: IMAGES.stories.jamesStory,
       impactMetrics: {
         people_helped: 18,
@@ -207,25 +223,33 @@ async function main() {
       title: "The Wilson Family: Finding Home in Manchester",
       slug: 'wilson-family-finding-home',
       excerpt: "Fleeing conflict with nothing but hope, the Wilson family arrived in Manchester as refugees. Today, thanks to Manchester United's support, they're not just surviving - they're thriving, with jobs, education, and a place to call home.",
-      content: `<p>When the Wilson family - David, Grace, and their three children - arrived in Manchester as refugees, they carried only one suitcase and a lifetime of trauma. Fleeing war-torn Sudan, they'd lost everything: their home, their community, their sense of belonging.</p>
+      content: `<div class="space-y-6">
+<p>When the Wilson family - David, Grace, and their three children - arrived in Manchester as refugees, they carried only one suitcase and a lifetime of trauma. Fleeing war-torn Sudan, they'd lost everything: their home, their community, their sense of belonging.</p>
 
-<p>"We were so scared," Grace remembers, her youngest daughter Amara nestled beside her. "New country, new language, no family, no friends. We didn't know if we'd ever feel safe again. We didn't know if Manchester would welcome us."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"We were so scared," Grace remembers, her youngest daughter Amara nestled beside her. "New country, new language, no family, no friends. We didn't know if we'd ever feel safe again. We didn't know if Manchester would welcome us."</p>
 
-<p>Through New Beginnings Manchester, funded by Manchester United's donation, the Wilsons received comprehensive resettlement support: temporary housing, English language classes, school enrollment for the children, job training for the parents, and crucially - a welcoming community.</p>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">A Fresh Start</h3>
 
-<p>"The support workers didn't just help us with paperwork," David explains, his English now fluent. "They introduced us to neighbors. They helped my children join football clubs - Amara plays for a girls' team now, wearing her United kit with so much pride. They made us feel like we belonged here."</p>
+<p>Through New Beginnings Manchester, funded by Manchester United's donation, the Wilsons received comprehensive resettlement support: temporary housing, English language classes, school enrolment for the children, job training for the parents, and crucially - a welcoming community.</p>
+
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"The support workers didn't just help us with paperwork," David explains, his English now fluent. "They introduced us to neighbours. They helped my children join football clubs - Amara plays for a girls' team now, wearing her United kit with so much pride. They made us feel like we belonged here."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Rebuilding Their Lives</h3>
 
 <p>Within six months, Grace secured part-time work at a local nursery. David completed an IT training course and now works for a Manchester tech company. The children are thriving in school, making friends, learning English faster than their parents.</p>
 
 <p>Most significantly, the family recently moved into their own council flat - their first permanent home since fleeing Sudan three years ago.</p>
 
-<p>"When we got the keys to our flat, we all just hugged and cried," Grace shares, her voice breaking. "For the first time in years, we felt like a family again, not just people trying to survive. We had a home."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"When we got the keys to our flat, we all just hugged and cried," Grace shares, her voice breaking. "For the first time in years, we felt like a family again, not just people trying to survive. We had a home."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Becoming Mancunians</h3>
 
 <p>The flat is modest but filled with warmth. Manchester United posters adorn the children's bedroom walls. David laughs: "We arrived knowing nothing about football. Now we're season ticket holders! United gave us more than support - they gave us belonging. When we wear the red shirt, we're not refugees, we're Mancunians."</p>
 
 <p>Last month, David and Grace attended a United match with their children - their first live game. "Watching my children sing alongside other United fans, cheering together - I had tears streaming down my face," David recalls. "This club, this city, these people - they gave us hope when we had none. They gave us a future."</p>
 
-<p>Amara, 10, dreams of playing for Manchester United Women one day. "I want to make my club proud," she says with unwavering determination, "because they made my family proud to be here."</p>`,
+<p>Amara, 10, dreams of playing for Manchester United Women one day. "I want to make my club proud," she says with unwavering determination, "because they made my family proud to be here."</p>
+</div>`,
       featuredImageUrl: IMAGES.stories.wilsonFamily,
       impactMetrics: {
         families_helped: 12,
@@ -248,25 +272,35 @@ async function main() {
       title: "Sarah's Journey: Breaking the Silence on Mental Health",
       slug: 'sarah-breaking-silence-mental-health',
       excerpt: "At 17, Sarah was drowning in depression and anxiety, too afraid to ask for help. Manchester United's support for youth mental health services gave her the courage to speak up - and saved her life.",
-      content: `<p>Sarah, now 19, remembers the darkness vividly. At 17, she was a straight-A student with a bright future. But behind the smiles and achievements, she was silently drowning in depression and crippling anxiety.</p>
+      content: `<div class="space-y-6">
+<p>Sarah, now 19, remembers the darkness vividly. At 17, she was a straight-A student with a bright future. But behind the smiles and achievements, she was silently drowning in depression and crippling anxiety.</p>
 
-<p>"I felt like I was suffocating," Sarah recalls, her voice steady but emotional. "I'd wake up and the world felt grey. I couldn't eat. I couldn't sleep. I had constant panic attacks. But I was too ashamed to tell anyone - I thought people would think I was weak or attention-seeking."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"I felt like I was suffocating," Sarah recalls, her voice steady but emotional. "I'd wake up and the world felt grey. I couldn't eat. I couldn't sleep. I had constant panic attacks. But I was too ashamed to tell anyone - I thought people would think I was weak or attention-seeking."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">The Breaking Point</h3>
 
 <p>The breaking point came one night when Sarah, overwhelmed by suicidal thoughts, finally confided in her mother. Terrified but determined to help, her mother contacted Minds Matter Youth, a Manchester mental health charity supported by Manchester United's community fund.</p>
 
-<p>"Getting help was the hardest and best decision I've ever made," Sarah shares. "That first phone call felt impossible. But the counselor on the other end - her voice was so calm, so understanding. She told me: 'You're not weak. You're brave. Asking for help is the strongest thing you can do.'"</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"Getting help was the hardest and best decision I've ever made," Sarah shares. "That first phone call felt impossible. But the counsellor on the other end - her voice was so calm, so understanding. She told me: 'You're not weak. You're brave. Asking for help is the strongest thing you can do.'"</p>
 
-<p>Through Minds Matter, Sarah accessed free counselling, joined a peer support group for young people with similar struggles, and learned coping strategies that transformed her relationship with her mental health.</p>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Finding Support</h3>
 
-<p>"The peer support group changed my life," Sarah explains. "Meeting other teenagers who understood exactly what I was going through - the anxiety, the dark thoughts, the shame - made me realize I wasn't alone. We'd laugh, we'd cry, we'd support each other. It was like finding a second family."</p>
+<p>Through Minds Matter, Sarah accessed free counselling, joined a peer support group for young people with similar struggles, and learnt coping strategies that transformed her relationship with her mental health.</p>
+
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"The peer support group changed my life," Sarah explains. "Meeting other teenagers who understood exactly what I was going through - the anxiety, the dark thoughts, the shame - made me realise I wasn't alone. We'd laugh, we'd cry, we'd support each other. It was like finding a second family."</p>
+
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">A New Beginning</h3>
 
 <p>Over 18 months of therapy and peer support, Sarah gradually rebuilt her life. She returned to college, started volunteering for Minds Matter (helping answer the crisis hotline), and even began sharing her mental health journey publicly to reduce stigma.</p>
 
-<p>"Mental health struggles don't make you broken," Sarah says with quiet conviction. "They make you human. And reaching out for support doesn't make you weak - it makes you courageous."</p>
+<p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"Mental health struggles don't make you broken," Sarah says with quiet conviction. "They make you human. And reaching out for support doesn't make you weak - it makes you courageous."</p>
 
-<p>Sarah recently gave a talk at a Manchester United Community Foundation event about youth mental health. "Standing there, sharing my story with other young United fans, I felt so proud," she reflects. "Manchester United didn't just fund a counselling service - they funded hope. They funded recovery. They funded futures."</p>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Giving Back</h3>
 
-<p>"When people ask me what saved my life, I tell them: asking for help, and Manchester United making that help available. Without that support, I genuinely don't think I'd be here today. Now, I want to help other young people realize they're worth fighting for too."</p>`,
+<p>Sarah recently gave a talk at a Manchester United Community Foundation event about youth mental health. "Standing there, sharing my story with other United fans, I felt so proud," she reflects. "Manchester United didn't just fund a counselling service - they funded hope. They funded recovery. They funded futures."</p>
+
+<p>"When people ask me what saved my life, I tell them: asking for help, and Manchester United making that help available. Without that support, I genuinely don't think I'd be here today. Now, I want to help other young people realise they're worth fighting for too."</p>
+</div>`,
       featuredImageUrl: IMAGES.stories.sarahStory,
       impactMetrics: {
         young_people_supported: 156,

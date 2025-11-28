@@ -7,11 +7,7 @@ import { prisma } from '@/lib/db';
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const { storyId, content } = await request.json();
+    const { storyId, content, guestName } = await request.json();
 
     if (!storyId || !content) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -21,13 +17,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Comment cannot be empty' }, { status: 400 });
     }
 
+    // For guest users, require a name
+    if (!session?.user && !guestName?.trim()) {
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    }
+
     // Create comment (pending moderation)
     await prisma.comment.create({
       data: {
         storyId,
-        userId: session.user.id,
-        userName: session.user.name || 'Anonymous',
-        userEmail: session.user.email || undefined,
+        userId: session?.user?.id || null,
+        userName: session?.user ? (session.user.name || 'Anonymous') : guestName.trim(),
+        userEmail: session?.user?.email || undefined,
         content: content.trim(),
         status: 'PENDING',
       },

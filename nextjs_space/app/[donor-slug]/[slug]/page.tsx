@@ -86,6 +86,33 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
   };
 
   const impactMetrics = story.impactMetrics as any;
+
+  // Create contextual labels for impact metrics
+  const getMetricLabel = (key: string): string => {
+    const labelMap: Record<string, string> = {
+      'families_helped': 'Families Supported',
+      'hours_of_care': 'Hours of Care Provided',
+      'memory_making_sessions': 'Memory-Making Sessions',
+      'counselling_sessions': 'Counselling Sessions Delivered',
+      'people_helped': 'People Helped',
+      'nights_of_shelter': 'Nights of Shelter Provided',
+      'employment_training_hours': 'Hours of Training',
+      'jobs_created': 'Jobs Secured',
+      'jobs_secured': 'Jobs Secured',
+      'people_supported': 'People Supported',
+      'housing_units_secured': 'Homes Found',
+      'families_housed': 'Families Housed',
+      'integration_programmes': 'Integration Programmes',
+      'language_classes': 'Language Classes Delivered',
+      'young_people_supported': 'Young People Supported',
+      'counselling_hours': 'Hours of Counselling',
+      'peer_support_sessions': 'Peer Support Sessions',
+      'lives_changed': 'Lives Changed',
+      'meals_provided': 'Meals Provided',
+    };
+    
+    return labelMap[key] || key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
   const storyUrl = `https://impactusall.abacusai.app/${donorSlug}/${storySlug}`;
 
   return (
@@ -199,7 +226,7 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {Object.entries(impactMetrics).map(([key, value]: [string, any]) => {
                   if (typeof value === 'number' && value > 0) {
-                    const label = key.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                    const label = getMetricLabel(key);
                     return (
                       <div key={key} className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-xl shadow-md hover:shadow-lg transition-shadow">
                         <div 

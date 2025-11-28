@@ -40,22 +40,35 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
 
   // Calculate aggregate impact metrics from all stories
   const aggregateMetrics = donor.stories.reduce(
-    (acc: { families: number; hours: number; meals: number; jobs: number }, story: any) => {
+    (acc: { families: number; hours: number; meals: number; jobs: number; livesImpacted: number }, story: any) => {
       const metrics = story.impactMetrics as any;
       if (metrics) {
         acc.families += metrics.families_helped || 0;
         acc.hours += metrics.hours_of_care || 0;
         acc.meals += metrics.meals_provided || 0;
         acc.jobs += metrics.jobs_created || 0;
+        // Calculate lives impacted (sum of all people-based metrics)
+        acc.livesImpacted += (metrics.families_helped || 0) + (metrics.jobs_created || 0);
       }
       return acc;
     },
-    { families: 0, hours: 0, meals: 0, jobs: 0 }
+    { families: 0, hours: 0, meals: 0, jobs: 0, livesImpacted: 0 }
   );
 
   const totalLikes = donor.stories.reduce((sum: number, story: any) => sum + story._count.likes, 0);
   const totalReactions = donor.stories.reduce((sum: number, story: any) => sum + story._count.reactions, 0);
   const totalComments = donor.stories.reduce((sum: number, story: any) => sum + story._count.comments, 0);
+  
+  // Fetch share counts from analytics
+  const analyticsData = await prisma.analytics.findMany({
+    where: {
+      story: {
+        donorId: donor.id
+      }
+    }
+  });
+  
+  const totalShares = analyticsData.reduce((sum, record) => sum + (record.shares || 0), 0);
 
   return (
     <div className="min-h-screen bg-white">
@@ -83,13 +96,15 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
         <div className="relative h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center">
           {/* Donor Logo */}
           {donor.logoUrl && (
-            <div className="mb-8 relative w-32 h-32 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl">
-              <Image
-                src={donor.logoUrl}
-                alt={`${donor.name} logo`}
-                fill
-                className="object-contain p-3"
-              />
+            <div className="mb-8 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl w-40 h-40 flex items-center justify-center">
+              <div className="relative w-full h-full">
+                <Image
+                  src={donor.logoUrl}
+                  alt={`${donor.name} logo`}
+                  fill
+                  className="object-contain"
+                />
+              </div>
             </div>
           )}
 
@@ -140,15 +155,15 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
                   <div className="text-base md:text-lg font-semibold text-slate-700">Families Helped</div>
                 </div>
               )}
-              {aggregateMetrics.hours > 0 && (
+              {aggregateMetrics.livesImpacted > 0 && (
                 <div className="text-center transform hover:scale-105 transition-transform duration-300">
                   <div 
                     className="text-5xl md:text-6xl font-black mb-3" 
                     style={{ color: donor.primaryColor || '#DA291C' }}
                   >
-                    <AnimatedCounter end={aggregateMetrics.hours} duration={2500} />
+                    <AnimatedCounter end={aggregateMetrics.livesImpacted} duration={2500} />
                   </div>
-                  <div className="text-base md:text-lg font-semibold text-slate-700">Hours of Care</div>
+                  <div className="text-base md:text-lg font-semibold text-slate-700">Lives Impacted</div>
                 </div>
               )}
               {aggregateMetrics.meals > 0 && (
@@ -177,18 +192,24 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
 
             {/* Engagement Stats */}
             <div className="pt-8 border-t-2 border-slate-100">
-              <div className="grid grid-cols-3 gap-6 text-center">
+              <div className="grid grid-cols-4 gap-6 text-center">
                 <div>
                   <div className="text-3xl md:text-4xl font-bold text-slate-800 mb-1">
                     <AnimatedCounter end={totalLikes + totalReactions} duration={2000} />
                   </div>
-                  <div className="text-sm md:text-base text-slate-600 font-medium">Supporter Reactions</div>
+                  <div className="text-sm md:text-base text-slate-600 font-medium">Reactions</div>
                 </div>
                 <div>
                   <div className="text-3xl md:text-4xl font-bold text-slate-800 mb-1">
                     <AnimatedCounter end={totalComments} duration={2000} />
                   </div>
                   <div className="text-sm md:text-base text-slate-600 font-medium">Comments</div>
+                </div>
+                <div>
+                  <div className="text-3xl md:text-4xl font-bold text-slate-800 mb-1">
+                    <AnimatedCounter end={totalShares} duration={2000} />
+                  </div>
+                  <div className="text-sm md:text-base text-slate-600 font-medium">Shares</div>
                 </div>
                 <div>
                   <div className="text-3xl md:text-4xl font-bold text-slate-800 mb-1">
