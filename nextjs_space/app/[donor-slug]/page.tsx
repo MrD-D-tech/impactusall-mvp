@@ -274,6 +274,17 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
                         {story.charity.name}
                       </span>
                     </div>
+
+                    {/* Donation Badge */}
+                    <div 
+                      className="absolute top-4 right-4 px-4 py-2 rounded-full shadow-xl font-bold text-sm backdrop-blur-sm transform group-hover:scale-105 transition-transform duration-300"
+                      style={{
+                        backgroundColor: `${donor.primaryColor || '#DA291C'}`,
+                        color: 'white',
+                      }}
+                    >
+                      £25,000
+                    </div>
                   </div>
                 )}
 

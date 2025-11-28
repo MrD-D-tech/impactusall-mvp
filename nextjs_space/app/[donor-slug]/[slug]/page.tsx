@@ -163,19 +163,33 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
           {/* Story Title Overlay */}
           <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-12">
             <div className="max-w-4xl mx-auto">
-              {/* Charity Badge */}
-              <div className="mb-4 inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl">
-                {story.charity.logoUrl && (
-                  <div className="relative w-6 h-6">
-                    <Image
-                      src={story.charity.logoUrl}
-                      alt={story.charity.name}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                )}
-                <span className="text-sm font-semibold text-slate-700">{story.charity.name}</span>
+              {/* Badges */}
+              <div className="mb-4 flex flex-wrap items-center gap-3">
+                {/* Charity Badge */}
+                <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl">
+                  {story.charity.logoUrl && (
+                    <div className="relative w-6 h-6">
+                      <Image
+                        src={story.charity.logoUrl}
+                        alt={story.charity.name}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  )}
+                  <span className="text-sm font-semibold text-slate-700">{story.charity.name}</span>
+                </div>
+                
+                {/* Donation Badge */}
+                <div 
+                  className="inline-flex items-center px-4 py-2 rounded-full shadow-xl font-bold text-sm backdrop-blur-sm"
+                  style={{
+                    backgroundColor: `${donor.primaryColor || '#DA291C'}`,
+                    color: 'white',
+                  }}
+                >
+                  £25,000 Donation
+                </div>
               </div>
 
               {/* Title */}

@@ -111,7 +111,7 @@ async function main() {
       charityId: northernHospice.id,
       primaryColor: '#DA291C',  // Man United red
       secondaryColor: '#FBE122',  // Man United gold
-      tagline: '£100,000 donated in 2024 & 2025 - Transforming Lives Across Greater Manchester',
+      tagline: 'More Than a Club - Making a Real Difference Across Greater Manchester',
     },
   });
 
@@ -132,15 +132,15 @@ async function main() {
       donorId: manUnited.id,
       title: "Emma's Gift: Precious Moments That Matter Most",
       slug: 'emmas-gift-precious-moments',
-      excerpt: "When Emma's seven-year-old daughter Lily was diagnosed with a life-limiting condition, Manchester United's support gave them something priceless: time together filled with love, dignity, and beautiful memories.",
+      excerpt: "When Emma's seven-year-old daughter Lily was diagnosed with a life-limiting condition, Manchester United's £25,000 donation to Northern Children's Hospice gave them something priceless: time together filled with love, dignity, and beautiful memories.",
       content: `<div class="space-y-6">
 <p>There are no words to truly capture what it means to know your child's time is limited. Emma, a lifelong Manchester United supporter, faced this unimaginable reality when her vibrant seven-year-old daughter Lily was diagnosed with a degenerative neurological condition.</p>
 
 <p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"The diagnosis shattered our world," Emma recalls, tears welling in her eyes. "The doctors told us Lily had maybe 18 months. I remember thinking: how do I make every single day count? How do I give her the childhood she deserves when we're running out of time?"</p>
 
-<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Manchester United's Support</h3>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Manchester United's £25,000 Commitment</h3>
 
-<p>Through Manchester United's partnership with Northern Children's Hospice, Emma and Lily received specialist palliative care that transformed their remaining time together. The hospice provided not just medical support, but memory-making opportunities, respite care for the family, and counselling to help them navigate the emotional journey ahead.</p>
+<p>Through Manchester United's £25,000 donation to Northern Children's Hospice, Emma and Lily received specialist palliative care that transformed their remaining time together. This vital funding enabled the hospice to provide not just medical support, but memory-making opportunities, respite care for the family, and counselling to help them navigate the emotional journey ahead.</p>
 
 <p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"The hospice team became our extended family," Emma shares. "They helped us create a memory book, organised a special visit from former United players, and most importantly, they gave Lily dignity and joy. She painted, she laughed, she played - she was a child, not just a patient."</p>
 
@@ -176,15 +176,15 @@ async function main() {
       donorId: manUnited.id,
       title: "James: From Sleeping Rough to Building Dreams",
       slug: 'james-from-streets-to-success',
-      excerpt: "After 18 months sleeping rough on Manchester's streets, James thought his life was over. Today, thanks to Manchester United's support, he has a job, a home, and hope for the future.",
+      excerpt: "After 18 months sleeping rough on Manchester's streets, James thought his life was over. Today, thanks to Manchester United's £25,000 donation to Streets to Homes, he has a job, a home, and hope for the future.",
       content: `<div class="space-y-6">
 <p>James, 32, never imagined he'd become homeless. A skilled carpenter, he lost his job during the pandemic. Unable to pay rent, he ended up on Manchester's streets - cold, ashamed, and invisible.</p>
 
 <p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"People walk past you like you're not human," James says, his voice still heavy with the memory. "I'd see United fans heading to Old Trafford on match days, and I'd remember when that was me - before everything fell apart. I felt like I'd disappeared from the world."</p>
 
-<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">A Turning Point</h3>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Manchester United's £25,000 Investment in Change</h3>
 
-<p>Everything changed when a Streets to Homes outreach worker, funded by Manchester United's donation, found James sleeping in a doorway near the stadium. Instead of just offering a bed for the night, they offered a pathway to rebuild his entire life.</p>
+<p>Everything changed when a Streets to Homes outreach worker, funded by Manchester United's £25,000 donation, found James sleeping in a doorway near the stadium. This funding didn't just provide a bed for the night - it offered a comprehensive pathway to rebuild his entire life.</p>
 
 <p>The programme provided emergency accommodation, addiction support (James had turned to alcohol to cope with street life), mental health counselling, and crucially - employment training and job placement support.</p>
 
@@ -222,15 +222,15 @@ async function main() {
       donorId: manUnited.id,
       title: "The Wilson Family: Finding Home in Manchester",
       slug: 'wilson-family-finding-home',
-      excerpt: "Fleeing conflict with nothing but hope, the Wilson family arrived in Manchester as refugees. Today, thanks to Manchester United's support, they're not just surviving - they're thriving, with jobs, education, and a place to call home.",
+      excerpt: "Fleeing conflict with nothing but hope, the Wilson family arrived in Manchester as refugees. Today, thanks to Manchester United's £25,000 donation to New Beginnings Manchester, they're not just surviving - they're thriving, with jobs, education, and a place to call home.",
       content: `<div class="space-y-6">
 <p>When the Wilson family - David, Grace, and their three children - arrived in Manchester as refugees, they carried only one suitcase and a lifetime of trauma. Fleeing war-torn Sudan, they'd lost everything: their home, their community, their sense of belonging.</p>
 
 <p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"We were so scared," Grace remembers, her youngest daughter Amara nestled beside her. "New country, new language, no family, no friends. We didn't know if we'd ever feel safe again. We didn't know if Manchester would welcome us."</p>
 
-<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">A Fresh Start</h3>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Manchester United's £25,000 Gift of Hope</h3>
 
-<p>Through New Beginnings Manchester, funded by Manchester United's donation, the Wilsons received comprehensive resettlement support: temporary housing, English language classes, school enrolment for the children, job training for the parents, and crucially - a welcoming community.</p>
+<p>Through New Beginnings Manchester, supported by Manchester United's £25,000 donation, the Wilsons received comprehensive resettlement support: temporary housing, English language classes, school enrolment for the children, job training for the parents, and crucially - a welcoming community that made them feel they belonged.</p>
 
 <p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"The support workers didn't just help us with paperwork," David explains, his English now fluent. "They introduced us to neighbours. They helped my children join football clubs - Amara plays for a girls' team now, wearing her United kit with so much pride. They made us feel like we belonged here."</p>
 
@@ -271,15 +271,15 @@ async function main() {
       donorId: manUnited.id,
       title: "Sarah's Journey: Breaking the Silence on Mental Health",
       slug: 'sarah-breaking-silence-mental-health',
-      excerpt: "At 17, Sarah was drowning in depression and anxiety, too afraid to ask for help. Manchester United's support for youth mental health services gave her the courage to speak up - and saved her life.",
+      excerpt: "At 17, Sarah was drowning in depression and anxiety, too afraid to ask for help. Manchester United's £25,000 donation to Minds Matter Youth gave her the courage to speak up - and saved her life.",
       content: `<div class="space-y-6">
 <p>Sarah, now 19, remembers the darkness vividly. At 17, she was a straight-A student with a bright future. But behind the smiles and achievements, she was silently drowning in depression and crippling anxiety.</p>
 
 <p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"I felt like I was suffocating," Sarah recalls, her voice steady but emotional. "I'd wake up and the world felt grey. I couldn't eat. I couldn't sleep. I had constant panic attacks. But I was too ashamed to tell anyone - I thought people would think I was weak or attention-seeking."</p>
 
-<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">The Breaking Point</h3>
+<h3 class="text-2xl font-bold text-slate-800 mt-8 mb-4">Manchester United's £25,000 Lifeline</h3>
 
-<p>The breaking point came one night when Sarah, overwhelmed by suicidal thoughts, finally confided in her mother. Terrified but determined to help, her mother contacted Minds Matter Youth, a Manchester mental health charity supported by Manchester United's community fund.</p>
+<p>The breaking point came one night when Sarah, overwhelmed by suicidal thoughts, finally confided in her mother. Terrified but determined to help, her mother contacted Minds Matter Youth, a Manchester mental health charity funded by Manchester United's £25,000 donation. This vital support made free counselling and peer support groups available to young people like Sarah who desperately needed help.</p>
 
 <p class="text-lg font-semibold italic text-slate-700 bg-slate-50 p-6 rounded-lg border-l-4 border-red-600">"Getting help was the hardest and best decision I've ever made," Sarah shares. "That first phone call felt impossible. But the counsellor on the other end - her voice was so calm, so understanding. She told me: 'You're not weak. You're brave. Asking for help is the strongest thing you can do.'"</p>
 
