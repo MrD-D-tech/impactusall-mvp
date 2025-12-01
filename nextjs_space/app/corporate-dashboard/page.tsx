@@ -288,7 +288,7 @@ export default async function CorporateDashboardPage() {
                   </div>
                   <span 
                     className="px-2 py-1 text-xs font-semibold rounded-full text-white"
-                    style={{ backgroundColor: user.donor.primaryColor || '#ea580c' }}
+                    style={{ backgroundColor: user.donor?.primaryColor || '#ea580c' }}
                   >
                     £25,000
                   </span>
@@ -338,7 +338,7 @@ export default async function CorporateDashboardPage() {
               View All Stories
             </Button>
           </Link>
-          <Link href={`/manchester-united`}>
+          <Link href={`/${user.donor?.slug || 'manchester-united'}`}>
             <Button variant="outline">
               <Share2 className="mr-2 h-4 w-4" />
               View Public Hub
