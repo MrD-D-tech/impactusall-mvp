@@ -117,6 +117,21 @@ async function main() {
 
   console.log('✅ Created charity admin: admin@northernhospice.org.uk / admin123');
 
+  // Corporate donor user for Manchester United
+  const corporatePassword = await bcrypt.hash('corporate123', 10);
+  const corporateUser = await prisma.user.create({
+    data: {
+      email: 'corporate@manutd.com',
+      password: corporatePassword,
+      name: 'Richard Arnold',  // Manchester United CEO
+      role: 'CORPORATE_DONOR',
+      corporateRole: 'ADMIN',
+      emailVerified: new Date(),
+    },
+  });
+
+  console.log('✅ Created corporate user: corporate@manutd.com / corporate123');
+
   // Create Manchester United as the corporate donor
   console.log('⚽ Creating Manchester United donor...');
   const manUnited = await prisma.donor.create({
@@ -130,6 +145,12 @@ async function main() {
       secondaryColor: '#FBE122',  // Man United gold
       tagline: 'More Than a Club - Making a Real Difference Across Greater Manchester',
     },
+  });
+
+  // Link corporate user to donor
+  await prisma.user.update({
+    where: { id: corporateUser.id },
+    data: { donorId: manUnited.id },
   });
 
   // Helper function to create dates in the past
@@ -641,6 +662,8 @@ async function main() {
   console.log('✅ Database seeded successfully!');
   console.log('\n📊 Summary:');
   console.log('- 1 test user created (john@doe.com / johndoe123)');
+  console.log('- 1 charity admin created (admin@northernhospice.org.uk / admin123)');
+  console.log('- 1 corporate user created (corporate@manutd.com / corporate123)');
   console.log('- 4 charities created');
   console.log('- 1 corporate donor created (Manchester United)');
   console.log('- 4 emotional impact stories created');

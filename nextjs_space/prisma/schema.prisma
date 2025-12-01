@@ -61,6 +61,11 @@ enum UserRole {
   CORPORATE_DONOR
 }
 
+enum CorporateRole {
+  ADMIN
+  VIEWER
+}
+
 enum FileType {
   IMAGE
   VIDEO
@@ -73,12 +78,13 @@ enum StoryStatus {
 }
 
 model User {
-  id                 String    @id @default(cuid())
-  email              String    @unique
+  id                 String          @id @default(cuid())
+  email              String          @unique
   emailVerified      DateTime?
-  password           String    // bcrypt hashed password
+  password           String          // bcrypt hashed password
   name               String
-  role               UserRole  @default(PUBLIC_USER)
+  role               UserRole        @default(PUBLIC_USER)
+  corporateRole      CorporateRole?  // For CORPORATE_DONOR users: Admin or Viewer
   image              String?
   
   // Email verification
