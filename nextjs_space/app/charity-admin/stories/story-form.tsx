@@ -55,6 +55,8 @@ export default function StoryForm({
     initialData?.featuredImageUrl || null
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -98,6 +100,39 @@ export default function StoryForm({
     setImagePreview(null);
   };
 
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        toast.error('Please select a video file');
+        return;
+      }
+
+      // Validate file size (max 200MB for ~10 minute video)
+      if (file.size > 200 * 1024 * 1024) {
+        toast.error('Video must be smaller than 200MB (~10 minutes)');
+        return;
+      }
+
+      setVideoFile(file);
+      
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setVideoPreview(previewUrl);
+      
+      toast.success(`Video selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+    }
+  };
+
+  const removeVideo = () => {
+    if (videoPreview) {
+      URL.revokeObjectURL(videoPreview);
+    }
+    setVideoFile(null);
+    setVideoPreview(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent, asDraft: boolean = false) => {
     e.preventDefault();
     
@@ -138,6 +173,12 @@ export default function StoryForm({
         submitData.append('featuredImage', imageFile);
       } else if (initialData?.featuredImageUrl) {
         submitData.append('existingImageUrl', initialData.featuredImageUrl);
+      }
+
+      // Add video if selected
+      if (videoFile) {
+        submitData.append('video', videoFile);
+        toast.info('Uploading video... This may take a moment');
       }
 
       // Determine endpoint based on create or edit
@@ -274,6 +315,68 @@ export default function StoryForm({
                   />
                 </Label>
                 <p className="text-sm text-gray-500 mt-2">PNG, JPG, WebP up to 5MB</p>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Video Upload */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Impact Video (Optional)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {videoPreview ? (
+            <div className="relative">
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black">
+                <video
+                  src={videoPreview}
+                  controls
+                  className="w-full h-full"
+                  preload="metadata"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={removeVideo}
+                className="absolute top-2 right-2"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Remove
+              </Button>
+              {videoFile && (
+                <p className="text-sm text-gray-600 mt-2">
+                  <strong>File:</strong> {videoFile.name} ({(videoFile.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              <Upload className="mx-auto h-12 w-12 text-gray-400" />
+              <div className="mt-4">
+                <Label htmlFor="video" className="cursor-pointer">
+                  <span className="text-[#ea580c] hover:text-[#c2410c] font-medium">
+                    Upload a video
+                  </span>
+                  <Input
+                    id="video"
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    className="hidden"
+                  />
+                </Label>
+                <p className="text-sm text-gray-500 mt-2">
+                  MP4, MOV, WebM up to 200MB (~10 minutes)
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Video uploads may take a few moments depending on file size
+                </p>
               </div>
             </div>
           )}

@@ -38,6 +38,10 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
     include: {
       charity: true,
       donor: true,
+      media: {
+        where: { fileType: 'VIDEO' },
+        orderBy: { displayOrder: 'asc' },
+      },
       _count: {
         select: {
           likes: true,
@@ -257,6 +261,28 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
                 })}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Video Section */}
+        {story.media && story.media.length > 0 && (
+          <div className="mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-800 mb-8">
+              Watch the Impact
+            </h2>
+            {story.media.map((video: any) => (
+              <div key={video.id} className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
+                <video
+                  src={video.fileUrl}
+                  controls
+                  className="w-full h-full"
+                  preload="metadata"
+                  poster={story.featuredImageUrl || undefined}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            ))}
           </div>
         )}
 

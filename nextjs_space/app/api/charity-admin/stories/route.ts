@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
     const status = formData.get('status') as string;
     const impactMetricsRaw = formData.get('impactMetrics') as string;
     const featuredImage = formData.get('featuredImage') as File | null;
+    const video = formData.get('video') as File | null;
 
     // Validation
     if (!title || !content) {
@@ -116,6 +117,35 @@ export async function POST(request: NextRequest) {
         updatedById: session.user.id,
       },
     });
+
+    // Handle video upload if provided
+    if (video && video.size > 0) {
+      try {
+        const buffer = Buffer.from(await video.arrayBuffer());
+        const fileName = `videos/${Date.now()}-${video.name.replace(/\s+/g, '-')}`;
+        const videoS3Key = await uploadFile(buffer, fileName, video.type);
+        
+        // Generate signed URL for video
+        const { getSignedDownloadUrl } = await import('@/lib/s3');
+        const videoUrl = await getSignedDownloadUrl(videoS3Key, 86400 * 365); // 1 year expiry
+        
+        // Create Media record for the video
+        await prisma.media.create({
+          data: {
+            storyId: story.id,
+            fileUrl: videoUrl,
+            fileType: 'VIDEO',
+            fileSize: video.size,
+            fileName: video.name,
+            displayOrder: 0,
+          },
+        });
+      } catch (error) {
+        console.error('Error uploading video:', error);
+        // Don't fail the story creation if video upload fails
+        // The story is already created at this point
+      }
+    }
 
     return NextResponse.json({
       success: true,

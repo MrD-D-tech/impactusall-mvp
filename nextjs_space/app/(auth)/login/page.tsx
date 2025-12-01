@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -9,7 +9,6 @@ import { Eye, EyeOff, Loader2, Heart } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { data: session, update } = useSession() || {};
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
