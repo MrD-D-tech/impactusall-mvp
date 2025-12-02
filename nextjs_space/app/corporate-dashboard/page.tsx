@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth-options';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -14,7 +15,8 @@ import {
   Calendar,
   Users,
   Clock,
-  FileText
+  FileText,
+  ArrowRight
 } from 'lucide-react';
 import EngagementChart from './engagement-chart';
 
@@ -145,12 +147,23 @@ export default async function CorporateDashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Impact Dashboard</h1>
-        <p className="text-gray-600 mt-1">
-          Real-time insights into your donation's impact
-        </p>
+      {/* Header with Logo */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Impact Dashboard</h1>
+          <p className="text-gray-600 mt-1">
+            Real-time insights into your donation's impact
+          </p>
+        </div>
+        <div className="hidden md:block">
+          <Image 
+            src="/images/man-united-logo.png" 
+            alt="Manchester United Logo"
+            width={80}
+            height={80}
+            className="object-contain"
+          />
+        </div>
       </div>
 
       {/* Impact Metrics */}
@@ -277,7 +290,7 @@ export default async function CorporateDashboardPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {stories.slice(0, 4).map((story) => (
-            <Card key={story.id}>
+            <Card key={story.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -294,9 +307,9 @@ export default async function CorporateDashboardPage() {
                   </span>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <p className="text-sm text-gray-600 line-clamp-2">{story.excerpt}</p>
-                <div className="flex items-center gap-4 mt-4 text-sm text-gray-500">
+                <div className="flex items-center gap-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Heart className="h-4 w-4" />
                     {story._count.likes}
@@ -314,6 +327,22 @@ export default async function CorporateDashboardPage() {
                     }) : 'N/A'}
                   </div>
                 </div>
+                <Link href={`/${user.donor?.slug || 'manchester-united'}/${story.slug}?ref=dashboard`}>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full group"
+                    style={{ borderColor: user.donor?.primaryColor || '#ea580c' }}
+                  >
+                    <span style={{ color: user.donor?.primaryColor || '#ea580c' }}>
+                      View Full Story
+                    </span>
+                    <ArrowRight 
+                      className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" 
+                      style={{ color: user.donor?.primaryColor || '#ea580c' }}
+                    />
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}

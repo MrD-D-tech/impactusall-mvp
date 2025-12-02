@@ -197,18 +197,19 @@ export default async function ContentLibraryPage() {
                         View Public
                       </Button>
                     </Link>
-                    {story.featuredImageUrl && (
-                      <a 
-                        href={story.featuredImageUrl} 
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <a 
+                      href={`/api/corporate-dashboard/download-story?storyId=${story.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        title="Download complete story as HTML"
                       >
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </a>
-                    )}
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </a>
                   </div>
                 </CardContent>
               </Card>

@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
 import Link from 'next/link';
-import { FileText, Users, Eye, Heart, MessageCircle } from 'lucide-react';
+import { FileText, Users, Eye, Heart, MessageCircle, Info, Share2, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -189,6 +189,89 @@ export default async function CharityAdminDashboard() {
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Admin Guidance Card */}
+      <Card className="border-l-4 border-l-blue-500 bg-blue-50/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-blue-900">
+            <Info className="h-5 w-5" />
+            Story Creation & Sharing Guide
+          </CardTitle>
+          <CardDescription>
+            Quick reference for managing your impact stories
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="mt-1">
+                <CheckCircle className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900">Creating Compelling Stories</h4>
+                <p className="text-sm text-gray-700 mt-1">
+                  Focus on personal narratives with real impact. Include names, specific outcomes, and emotional moments.
+                  Add high-quality photos and videos to bring stories to life. Aim for 300-500 words per story.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="mt-1">
+                <Share2 className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900">Sharing on Social Media</h4>
+                <p className="text-sm text-gray-700 mt-1">
+                  Once published, your story appears on the public impact hub. Copy the story URL and share it on:
+                </p>
+                <ul className="text-sm text-gray-700 mt-2 space-y-1 ml-4">
+                  <li><strong>Instagram:</strong> Copy the link and paste it in your bio or use the link sticker in Stories</li>
+                  <li><strong>LinkedIn:</strong> Share as a post with the URL - LinkedIn will auto-generate a preview card</li>
+                  <li><strong>Twitter:</strong> Tweet the URL with hashtags like #CommunityImpact #Manchester</li>
+                  <li><strong>Facebook:</strong> Post the URL - Facebook will create a rich preview automatically</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="mt-1">
+                <FileText className="h-5 w-5 text-orange-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900">When Donors Request New Stories</h4>
+                <p className="text-sm text-gray-700 mt-1">
+                  <strong>1. Create Story:</strong> Click "Create New Story" and fill in all details including impact metrics<br />
+                  <strong>2. Tag Donor:</strong> Select the requesting corporate partner from the dropdown<br />
+                  <strong>3. Save as Draft:</strong> Review with your team before publishing<br />
+                  <strong>4. Publish:</strong> Once approved, click "Publish" to make it live on their impact hub<br />
+                  <strong>5. Notify:</strong> The corporate partner will be automatically notified of the new story
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="mt-1">
+                <Eye className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-gray-900">Monitoring Engagement</h4>
+                <p className="text-sm text-gray-700 mt-1">
+                  Track how your stories perform through likes, comments, and reactions. High-engagement stories can be
+                  repurposed for newsletters, grant applications, and annual reports.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t">
+            <p className="text-xs text-gray-600 italic">
+              💡 <strong>Pro Tip:</strong> Stories with emotional depth and specific metrics (e.g., "12 families supported") 
+              perform 3x better than general updates. Always include a call-to-action at the end.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

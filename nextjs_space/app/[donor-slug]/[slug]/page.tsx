@@ -7,6 +7,7 @@ import { StoryTimeline } from '@/components/story-timeline';
 import { ThankYouMessages } from '@/components/thank-you-messages';
 import { AnimatedCounter } from '@/components/animated-counter';
 import { DonorStoryActions } from '@/components/donor-story-actions';
+import { BackToDashboardButton } from '@/components/back-to-dashboard-button';
 
 interface StoryPageProps {
   params: {
@@ -123,31 +124,28 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
     <div className="min-h-screen bg-white">
       {/* Donor-Branded Header - Sticky */}
       <div
-        className="sticky top-0 z-50 py-3 px-4 sm:px-6 lg:px-8 shadow-md backdrop-blur-sm bg-opacity-95"
+        className="sticky top-0 z-50 py-4 px-4 sm:px-6 lg:px-8 shadow-md backdrop-blur-sm bg-opacity-95"
         style={{
           background: `linear-gradient(90deg, ${donor.primaryColor || '#ea580c'} 0%, ${donor.secondaryColor || '#14b8a6'} 100%)`,
         }}
       >
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link
-            href={`/${donorSlug}`}
-            className="flex items-center gap-3 text-white hover:opacity-90 transition-opacity group"
-          >
-            {donor.logoUrl && (
-              <div className="relative w-12 h-12 bg-white rounded-lg p-2 group-hover:scale-105 transition-transform">
-                <Image
-                  src={donor.logoUrl}
-                  alt={donor.name}
-                  fill
-                  className="object-contain p-1"
-                />
-              </div>
-            )}
-            <div>
-              <span className="text-sm opacity-90">Return to</span>
-              <div className="font-bold text-lg">{donor.name}</div>
+          <BackToDashboardButton 
+            donorSlug={donorSlug}
+            donorName={donor.name}
+            donorLogo={donor.logoUrl}
+            primaryColor={donor.primaryColor || '#ea580c'}
+          />
+          {donor.logoUrl && (
+            <div className="relative w-12 h-12 bg-white rounded-lg p-2">
+              <Image
+                src={donor.logoUrl}
+                alt={donor.name}
+                fill
+                className="object-contain p-1"
+              />
             </div>
-          </Link>
+          )}
         </div>
       </div>
 
