@@ -44,9 +44,19 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // Calculate donation amount per story (£25,000 per story for Manchester United)
+    const donationPerStory = 25000;
+    
+    // Add donationAmount and createdAt to each story
+    const storiesWithDonation = stories.map(story => ({
+      ...story,
+      donationAmount: donationPerStory,
+      createdAt: story.createdAt.toISOString(), // Convert Date to string for serialization
+    }));
+
     return NextResponse.json({
       donor: user.donor,
-      stories,
+      stories: storiesWithDonation,
     });
   } catch (error) {
     console.error('Error fetching report data:', error);
