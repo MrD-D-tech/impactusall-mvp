@@ -1,27 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Download, Calendar, TrendingUp, Users, Heart, Award } from 'lucide-react';
-import { toast } from 'sonner';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Loader2, Download, FileText, TrendingUp, Users, Heart, Award, Edit3 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+interface ImpactMetric {
+  [key: string]: number;
+}
 
 interface Story {
   id: string;
   title: string;
   excerpt: string;
-  content: string;
-  slug: string;
-  impactMetrics: any;
-  publishedAt: Date;
+  impactMetrics: ImpactMetric;
+  donationAmount: number;
+  createdAt: string;
   charity: {
     name: string;
-    logoUrl?: string;
+    logoUrl: string | null;
   };
   _count: {
     likes: number;
@@ -31,11 +37,11 @@ interface Story {
 }
 
 interface Donor {
+  id: string;
   name: string;
   primaryColor: string;
   secondaryColor: string;
-  logoUrl?: string;
-  donationAmount: number;
+  logoUrl: string | null;
 }
 
 interface ReportData {
@@ -43,12 +49,27 @@ interface ReportData {
   stories: Story[];
 }
 
+type ReportTemplate = 'executive' | 'impact' | 'strategic';
+
 export default function ReportsPage() {
   const { data: session, status } = useSession() || {};
   const router = useRouter();
-  const [reportData, setReportData] = useState<ReportData | null>(null);
-  const [reportType, setReportType] = useState('quarterly');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [reportData, setReportData] = useState<ReportData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Report builder state
+  const [selectedTemplate, setSelectedTemplate] = useState<ReportTemplate>('executive');
+  const [storyFilter, setStoryFilter] = useState<string>('all');
+  const [selectedStories, setSelectedStories] = useState<string[]>([]);
+  
+  // Editable fields
+  const [reportTitle, setReportTitle] = useState('Community Impact Report');
+  const [reportSubtitle, setReportSubtitle] = useState('Board of Directors Review');
+  const [overviewText, setOverviewText] = useState('');
+  const [strategicValue, setStrategicValue] = useState('');
+  const [recommendation, setRecommendation] = useState('');
+  const [closingStatement, setClosingStatement] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -60,12 +81,34 @@ export default function ReportsPage() {
     const fetchReportData = async () => {
       try {
         const response = await fetch('/api/corporate-dashboard/report-data');
-        if (!response.ok) throw new Error('Failed to fetch report data');
-        const data = await response.json();
-        setReportData(data);
+        if (response.ok) {
+          const data = await response.json();
+          setReportData(data);
+          
+          // Initialize with all stories selected
+          setSelectedStories(data.stories.map((s: Story) => s.id));
+          
+          // Set default text content
+          setOverviewText(
+            `${data.donor.name}'s community investment programme demonstrates our ongoing commitment to making a tangible difference across Greater Manchester. Through strategic partnerships with local charities, we have funded impactful initiatives, reaching families and individuals in need.`
+          );
+          
+          setStrategicValue(
+            `• Brand Enhancement: Strengthens Manchester United's reputation as a socially responsible organisation\n• Stakeholder Relations: Demonstrates tangible commitment to CSR objectives\n• Employee Engagement: Provides staff with meaningful volunteering opportunities\n• Commercial Value: Positive brand perception influences sponsorship deals and fan loyalty\n• Legacy Building: Establishes Manchester United as a catalyst for community transformation`
+          );
+          
+          setRecommendation(
+            `Based on the measurable impact achieved and positive community response, we recommend expanding the programme by 25% in the next fiscal year. This investment continues to deliver exceptional value in terms of brand equity, community goodwill, and stakeholder engagement.`
+          );
+          
+          setClosingStatement(
+            `Manchester United remains committed to being More Than a Club. Our community investment programme represents the very best of what we stand for—compassion, excellence, and lasting positive change. Together with our charity partners, we will continue to make a meaningful difference in Greater Manchester for years to come.`
+          );
+        }
       } catch (error) {
         console.error('Error fetching report data:', error);
-        toast.error('Failed to load report data');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -74,599 +117,663 @@ export default function ReportsPage() {
     }
   }, [status]);
 
-  // Helper function to load image as base64
-  const loadImageAsBase64 = async (url: string): Promise<string> => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-    } catch (error) {
-      console.error('Error loading image:', error);
-      return '';
+  // Filter stories based on time period
+  const getFilteredStories = (): Story[] => {
+    if (!reportData) return [];
+    
+    const now = new Date();
+    const stories = reportData.stories;
+    
+    switch (storyFilter) {
+      case 'quarter':
+        const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+        return stories.filter(s => new Date(s.createdAt) >= threeMonthsAgo);
+      case 'halfyear':
+        const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+        return stories.filter(s => new Date(s.createdAt) >= sixMonthsAgo);
+      case 'year':
+        const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        return stories.filter(s => new Date(s.createdAt) >= oneYearAgo);
+      default:
+        return stories;
     }
   };
 
+  const filteredStories = getFilteredStories();
+  const selectedStoriesData = filteredStories.filter(s => selectedStories.includes(s.id));
+
+  // Helper function to load images as base64
+  const loadImageAsBase64 = async (imagePath: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        } else {
+          reject(new Error('Failed to get canvas context'));
+        }
+      };
+      img.onerror = reject;
+      img.src = imagePath;
+    });
+  };
+
   const generatePDF = async () => {
-    if (!reportData) {
-      toast.error('No data available for report generation');
-      return;
-    }
+    if (!reportData || selectedStoriesData.length === 0) return;
 
     setIsGenerating(true);
-    toast.info('Generating your board-ready report...');
 
     try {
-      const doc = new jsPDF('p', 'mm', 'a4');
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 20;
-      const primaryColor = reportData.donor.primaryColor || '#DA291C';
+      const doc = new jsPDF();
+      const { donor } = reportData;
+      const stories = selectedStoriesData;
       
-      // Convert hex to RGB for jsPDF
-      const hexToRgb = (hex: string) => {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16)
-        } : { r: 218, g: 41, b: 28 };
-      };
+      // Calculate totals
+      const totalInvestment = stories.reduce((sum, story) => sum + story.donationAmount, 0);
+      const totalLikes = stories.reduce((sum, story) => sum + story._count.likes, 0);
+      const totalComments = stories.reduce((sum, story) => sum + story._count.comments, 0);
+      const totalReactions = stories.reduce((sum, story) => sum + story._count.reactions, 0);
+      const totalEngagement = totalLikes + totalComments + totalReactions;
 
-      const primaryRgb = hexToRgb(primaryColor);
+      // Aggregate impact metrics
+      const aggregateMetrics: { [key: string]: number } = {};
+      stories.forEach(story => {
+        Object.entries(story.impactMetrics).forEach(([key, value]) => {
+          aggregateMetrics[key] = (aggregateMetrics[key] || 0) + value;
+        });
+      });
 
       // Load Manchester United logo
       let manUtdLogoBase64 = '';
       try {
         manUtdLogoBase64 = await loadImageAsBase64('/images/man-united-logo.png');
-      } catch (e) {
-        console.error('Failed to load Man Utd logo', e);
+      } catch (error) {
+        console.error('Error loading Man Utd logo:', error);
       }
 
-      // ====== PAGE 1: COVER PAGE ======
-      // Gradient-like header background
-      doc.setFillColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.rect(0, 0, pageWidth, 100, 'F');
-
-      // Manchester United Logo
+      // ========== PAGE 1: COVER PAGE ==========
+      
+      // Compact header with logo
+      doc.setFillColor(218, 41, 28);
+      doc.rect(0, 0, 210, 60, 'F');
+      
       if (manUtdLogoBase64) {
-        doc.addImage(manUtdLogoBase64, 'PNG', pageWidth / 2 - 20, 15, 40, 40);
+        doc.addImage(manUtdLogoBase64, 'PNG', 20, 10, 35, 35);
       }
-
-      // Title
+      
+      // Report title - closer to logo
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(28);
+      doc.setFontSize(26);
       doc.setFont('helvetica', 'bold');
-      doc.text('IMPACT REPORT', pageWidth / 2, 70, { align: 'center' });
-
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'normal');
-      const reportTypeLabel = reportType.charAt(0).toUpperCase() + reportType.slice(1);
-      doc.text(`${reportTypeLabel} CSR Impact Review`, pageWidth / 2, 85, { align: 'center' });
-
-      // Reset text color
-      doc.setTextColor(0, 0, 0);
-
-      // Date and report info
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'normal');
-      const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-      doc.text(`Report Generated: ${today}`, pageWidth / 2, 115, { align: 'center' });
-
-      // Partnership statement
+      doc.text(reportTitle, 105, 80, { align: 'center' });
+      
       doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Corporate Social Responsibility', pageWidth / 2, 135, { align: 'center' });
-      doc.text('Community Partnership Programme', pageWidth / 2, 145, { align: 'center' });
-
-      // Subtitle
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'italic');
-      doc.setTextColor(100, 100, 100);
-      doc.text('Making a Real Difference Across Greater Manchester', pageWidth / 2, 160, { align: 'center' });
-
-      // Investment highlight box
-      doc.setFillColor(245, 245, 245);
-      doc.roundedRect(margin, 180, pageWidth - 2 * margin, 40, 3, 3, 'F');
-      
-      doc.setFontSize(11);
-      doc.setTextColor(80, 80, 80);
       doc.setFont('helvetica', 'normal');
-      doc.text('Total Community Investment:', margin + 10, 195);
+      doc.text(reportSubtitle, 105, 92, { align: 'center' });
       
-      doc.setFontSize(24);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      const totalInvestment = `£${(reportData.donor.donationAmount * reportData.stories.length).toLocaleString('en-GB')}`;
-      doc.text(totalInvestment, margin + 10, 210);
-
-      // Footer
-      doc.setFontSize(9);
-      doc.setTextColor(150, 150, 150);
-      doc.setFont('helvetica', 'italic');
-      doc.text('Confidential - For Board Review Only', pageWidth / 2, pageHeight - 15, { align: 'center' });
-      doc.text(`${reportData.donor.name} | ${today}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-
-      // ====== PAGE 2: EXECUTIVE SUMMARY ======
-      doc.addPage();
+      // Date
+      doc.setFontSize(11);
+      const reportDate = new Date().toLocaleDateString('en-GB', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+      doc.text(reportDate, 105, 105, { align: 'center' });
       
-      // Header
-      doc.setFillColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.rect(0, 0, pageWidth, 20, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.text('EXECUTIVE SUMMARY', margin, 13);
-
-      // Reset for content
+      // Investment highlight - more compact
+      doc.setFillColor(240, 240, 240);
+      doc.roundedRect(45, 120, 120, 35, 5, 5, 'F');
+      
       doc.setTextColor(0, 0, 0);
-      let yPos = 35;
-
-      // Overview section
-      doc.setFontSize(13);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Total Community Investment', 105, 133, { align: 'center' });
+      
+      doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Programme Overview', margin, yPos);
-      yPos += 8;
-
+      doc.setTextColor(218, 41, 28);
+      doc.text(`£${totalInvestment.toLocaleString()}`, 105, 147, { align: 'center' });
+      
+      // Template indicator
+      doc.setTextColor(100, 100, 100);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
-      const overviewText = [
-        `Manchester United's CSR partnership programme demonstrates our unwavering commitment to the Greater`,
-        `Manchester community. Through strategic partnerships with local charities, we are creating lasting impact`,
-        `and positive change for thousands of families and individuals across the region.`,
-        ``,
-        `This ${reportType} report showcases the tangible outcomes of our £${(reportData.donor.donationAmount * reportData.stories.length).toLocaleString('en-GB')} investment, highlighting`,
-        `real stories of transformation and the measurable social value we are generating.`
-      ];
-      overviewText.forEach(line => {
-        doc.text(line, margin, yPos);
-        yPos += 5;
-      });
-
-      yPos += 5;
-
-      // Key highlights section
-      doc.setFontSize(13);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Key Highlights', margin, yPos);
-      yPos += 8;
-
-      // Calculate aggregated metrics
-      const aggregateMetrics = reportData.stories.reduce((acc, story) => {
-        const metrics = story.impactMetrics as any;
-        if (metrics) {
-          acc.familiesHelped += metrics.families_helped || 0;
-          acc.hoursOfCare += metrics.hours_of_care || 0;
-          acc.peopleSupported += metrics.people_supported || metrics.young_people_supported || metrics.people_helped || 0;
-        }
-        return acc;
-      }, { familiesHelped: 0, hoursOfCare: 0, peopleSupported: 0 });
-
-      // Highlight boxes
-      const highlights = [
-        {
-          icon: '👨‍👩‍👧‍👦',
-          number: aggregateMetrics.familiesHelped.toLocaleString('en-GB'),
-          label: 'Families Supported',
-          color: [primaryRgb.r, primaryRgb.g, primaryRgb.b]
-        },
-        {
-          icon: '⏰',
-          number: aggregateMetrics.hoursOfCare.toLocaleString('en-GB'),
-          label: 'Hours of Care Delivered',
-          color: [20, 184, 166]
-        },
-        {
-          icon: '📖',
-          number: reportData.stories.length.toString(),
-          label: 'Impact Stories Published',
-          color: [234, 88, 12]
-        }
-      ];
-
-      const boxWidth = (pageWidth - 2 * margin - 10) / 3;
-      let xPos = margin;
-
-      highlights.forEach((highlight, idx) => {
-        // Draw box with subtle shadow effect
-        doc.setFillColor(248, 248, 248);
-        doc.roundedRect(xPos, yPos, boxWidth, 30, 2, 2, 'F');
-        
-        doc.setFillColor(highlight.color[0], highlight.color[1], highlight.color[2]);
-        doc.roundedRect(xPos, yPos, boxWidth, 5, 2, 2, 'F');
-
-        doc.setFontSize(20);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(highlight.color[0], highlight.color[1], highlight.color[2]);
-        doc.text(highlight.number, xPos + boxWidth / 2, yPos + 17, { align: 'center' });
-
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(100, 100, 100);
-        doc.text(highlight.label, xPos + boxWidth / 2, yPos + 25, { align: 'center' });
-
-        xPos += boxWidth + 5;
-      });
-
-      yPos += 40;
-
-      // Strategic Value section
-      doc.setFontSize(13);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Strategic Value for Manchester United', margin, yPos);
-      yPos += 8;
-
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
-
-      const strategicPoints = [
-        '• Brand Enhancement: Reinforcing our position as "More Than a Club" through authentic community engagement',
-        '• Stakeholder Relations: Strengthening ties with local government, community leaders, and regional partners',
-        '• Employee Engagement: Creating meaningful volunteer opportunities that boost staff morale and retention',
-        '• Commercial Value: Positive PR coverage and social media engagement reaching 250,000+ impressions',
-        '• Legacy Building: Establishing long-term partnerships that create generational impact in our community'
-      ];
-
-      strategicPoints.forEach(point => {
-        const lines = doc.splitTextToSize(point, pageWidth - 2 * margin);
-        lines.forEach((line: string) => {
-          doc.text(line, margin, yPos);
-          yPos += 5;
-        });
-      });
-
-      yPos += 5;
-
-      // Engagement metrics
-      const totalEngagement = reportData.stories.reduce((acc, story) => 
-        acc + story._count.likes + story._count.comments + story._count.reactions, 0);
-
-      doc.setFontSize(13);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Digital Engagement & Reach', margin, yPos);
-      yPos += 8;
-
-      doc.setFillColor(245, 251, 255);
-      doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 20, 2, 2, 'F');
-
-      doc.setFontSize(10);
-      doc.setTextColor(60, 60, 60);
-      doc.text(`Total Social Engagement: ${totalEngagement.toLocaleString('en-GB')} interactions`, margin + 5, yPos + 8);
-      doc.text(`Estimated Reach: ${(totalEngagement * 50).toLocaleString('en-GB')}+ people across social media platforms`, margin + 5, yPos + 15);
-
-      yPos += 30;
-
-      // Board recommendation
-      doc.setFillColor(255, 249, 235);
-      doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 28, 2, 2, 'F');
-
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(180, 83, 9);
-      doc.text('💡 Board Recommendation', margin + 5, yPos + 8);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(120, 53, 15);
-      const recommendationLines = doc.splitTextToSize(
-        'Continue and expand this programme. The measurable impact, positive brand association, and community goodwill generated significantly exceed the investment. Consider increasing funding by 25% in the next fiscal year to scale impact.',
-        pageWidth - 2 * margin - 10
-      );
-      let recYPos = yPos + 14;
-      recommendationLines.forEach((line: string) => {
-        doc.text(line, margin + 5, recYPos);
-        recYPos += 4;
-      });
-
+      const templateNames = {
+        executive: 'Executive Summary Template',
+        impact: 'Impact Showcase Template',
+        strategic: 'Strategic Review Template'
+      };
+      doc.text(templateNames[selectedTemplate], 105, 170, { align: 'center' });
+      
       // Footer
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text(`Page 2 | ${reportData.donor.name} CSR Impact Report`, margin, pageHeight - 10);
-
-      // ====== PAGE 3: IMPACT STORIES ======
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Confidential - For Board Review Only', 105, 280, { align: 'center' });
+      
+      // ========== PAGE 2: EXECUTIVE SUMMARY ==========
       doc.addPage();
-
+      
       // Header
-      doc.setFillColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.rect(0, 0, pageWidth, 20, 'F');
+      doc.setFillColor(218, 41, 28);
+      doc.rect(0, 0, 210, 20, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.text('IMPACT STORIES & PARTNER CHARITIES', margin, 13);
-
+      doc.text('Executive Summary', 15, 13);
+      
+      let yPos = 35;
+      
+      // Programme Overview
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Programme Overview', 15, yPos);
+      yPos += 8;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const splitOverview = doc.splitTextToSize(overviewText, 180);
+      doc.text(splitOverview, 15, yPos);
+      yPos += splitOverview.length * 5 + 8;
+      
+      // Key Highlights
+      const highlightBoxWidth = 58;
+      const highlightBoxHeight = 28;
+      const boxSpacing = 5;
+      const startX = 15;
+      
+      const familiesHelped = aggregateMetrics.families_helped || 0;
+      doc.setFillColor(240, 240, 240);
+      doc.roundedRect(startX, yPos, highlightBoxWidth, highlightBoxHeight, 3, 3, 'F');
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(218, 41, 28);
+      doc.text(familiesHelped.toString(), startX + highlightBoxWidth / 2, yPos + 13, { align: 'center' });
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text('Families Supported', startX + highlightBoxWidth / 2, yPos + 21, { align: 'center' });
+      
+      const supportHours = (aggregateMetrics.hours_of_care || 0) + (aggregateMetrics.counselling_hours || 0);
+      doc.setFillColor(240, 240, 240);
+      doc.roundedRect(startX + highlightBoxWidth + boxSpacing, yPos, highlightBoxWidth, highlightBoxHeight, 3, 3, 'F');
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(218, 41, 28);
+      doc.text(supportHours.toString(), startX + highlightBoxWidth + boxSpacing + highlightBoxWidth / 2, yPos + 13, { align: 'center' });
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text('Support Hours', startX + highlightBoxWidth + boxSpacing + highlightBoxWidth / 2, yPos + 21, { align: 'center' });
+      
+      doc.setFillColor(240, 240, 240);
+      doc.roundedRect(startX + (highlightBoxWidth + boxSpacing) * 2, yPos, highlightBoxWidth, highlightBoxHeight, 3, 3, 'F');
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(218, 41, 28);
+      doc.text(stories.length.toString(), startX + (highlightBoxWidth + boxSpacing) * 2 + highlightBoxWidth / 2, yPos + 13, { align: 'center' });
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      doc.text('Stories Published', startX + (highlightBoxWidth + boxSpacing) * 2 + highlightBoxWidth / 2, yPos + 21, { align: 'center' });
+      
+      yPos += highlightBoxHeight + 12;
+      
+      // Strategic Value
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(218, 41, 28);
+      doc.text('Strategic Value for Manchester United', 15, yPos);
+      yPos += 8;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      
+      const strategicLines = strategicValue.split('\n').filter(line => line.trim());
+      strategicLines.forEach((line) => {
+        const splitLine = doc.splitTextToSize(line, 180);
+        doc.text(splitLine, 15, yPos);
+        yPos += splitLine.length * 5 + 2;
+      });
+      
+      yPos += 8;
+      
+      // Digital Engagement
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Digital Engagement Metrics', 15, yPos);
+      yPos += 7;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Total Engagement: ${totalEngagement.toLocaleString()} interactions`, 15, yPos);
+      yPos += 5;
+      doc.text(`Likes: ${totalLikes.toLocaleString()} | Comments: ${totalComments.toLocaleString()} | Reactions: ${totalReactions.toLocaleString()}`, 15, yPos);
+      yPos += 5;
+      doc.text(`Estimated Reach: ${(totalEngagement * 12).toLocaleString()} people`, 15, yPos);
+      yPos += 10;
+      
+      // Board Recommendation
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(218, 41, 28);
+      doc.text('Board Recommendation', 15, yPos);
+      yPos += 8;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      const splitRecommendation = doc.splitTextToSize(recommendation, 180);
+      doc.text(splitRecommendation, 15, yPos);
+      
+      // ========== PAGE 3: IMPACT STORIES ==========
+      doc.addPage();
+      
+      doc.setFillColor(218, 41, 28);
+      doc.rect(0, 0, 210, 20, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Impact Stories', 15, 13);
+      
       yPos = 35;
-
-      // Stories with charity logos
-      for (let i = 0; i < Math.min(reportData.stories.length, 3); i++) {
-        const story = reportData.stories[i];
+      
+      const displayStories = stories.slice(0, 3);
+      
+      for (let i = 0; i < displayStories.length; i++) {
+        const story = displayStories[i];
         
-        // Story box with charity logo
-        doc.setDrawColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
+        doc.setDrawColor(200, 200, 200);
         doc.setLineWidth(0.5);
-        doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 55, 2, 2);
-
-        // Try to load charity logo
-        let charityLogoBase64 = '';
+        doc.rect(15, yPos, 180, 65);
+        
+        let contentX = 20;
+        
+        // Charity logo - smaller and positioned carefully
         if (story.charity.logoUrl) {
           try {
-            charityLogoBase64 = await loadImageAsBase64(story.charity.logoUrl);
-          } catch (e) {
-            console.log('Could not load charity logo', e);
+            const logoBase64 = await loadImageAsBase64(story.charity.logoUrl);
+            doc.addImage(logoBase64, 'PNG', contentX, yPos + 5, 18, 18);
+            contentX += 23;
+          } catch (error) {
+            console.error(`Error loading charity logo:`, error);
+            contentX += 23;
           }
+        } else {
+          contentX += 23;
         }
-
-        // Charity logo if available
-        if (charityLogoBase64) {
-          doc.addImage(charityLogoBase64, 'PNG', margin + 3, yPos + 3, 20, 20);
-        }
-
-        // Story title and charity
-        doc.setFontSize(12);
+        
+        // Story title
+        doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-        const titleLines = doc.splitTextToSize(story.title, pageWidth - 2 * margin - 50);
-        doc.text(titleLines[0], margin + (charityLogoBase64 ? 26 : 5), yPos + 8);
-
+        doc.setTextColor(0, 0, 0);
+        const titleLines = doc.splitTextToSize(story.title, 150);
+        doc.text(titleLines, contentX, yPos + 10);
+        
+        // Charity name
         doc.setFontSize(9);
         doc.setFont('helvetica', 'italic');
         doc.setTextColor(100, 100, 100);
-        doc.text(`Partner: ${story.charity.name}`, margin + (charityLogoBase64 ? 26 : 5), yPos + 14);
-
-        // Story excerpt/summary
+        doc.text(story.charity.name, contentX, yPos + 18);
+        
+        // Excerpt
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(60, 60, 60);
-        const excerptLines = doc.splitTextToSize(story.excerpt || story.content.substring(0, 200), pageWidth - 2 * margin - 10);
-        let excerptYPos = yPos + 20;
-        excerptLines.slice(0, 4).forEach((line: string) => {
-          doc.text(line, margin + 5, excerptYPos);
-          excerptYPos += 4;
-        });
-
-        // Impact metrics for this story
-        const metrics = story.impactMetrics as any;
-        if (metrics && Object.keys(metrics).length > 0) {
-          excerptYPos += 2;
-          doc.setFontSize(8);
-          doc.setFont('helvetica', 'bold');
-          doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-          
-          const metricEntries = Object.entries(metrics).filter(([k, v]) => v && v !== 0).slice(0, 3);
-          const metricsText = metricEntries.map(([key, val]) => {
-            const label = (key as string).split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-            return `${val} ${label}`;
-          }).join(' | ');
-          
-          doc.text(`📊 Impact: ${metricsText}`, margin + 5, excerptYPos);
-        }
-
+        doc.setTextColor(0, 0, 0);
+        const excerptLines = doc.splitTextToSize(story.excerpt, 170);
+        doc.text(excerptLines.slice(0, 3), 20, yPos + 27);
+        
+        // Impact metrics
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(218, 41, 28);
+        const metricsText = Object.entries(story.impactMetrics)
+          .slice(0, 3)
+          .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${value}`)
+          .join(' | ');
+        doc.text(metricsText, 20, yPos + 50);
+        
         // Engagement stats
-        excerptYPos += 4;
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(100, 100, 100);
-        doc.text(
-          `💬 ${story._count.comments} comments | ❤️ ${story._count.likes} likes | 🎯 ${story._count.reactions} reactions`,
-          margin + 5,
-          excerptYPos
-        );
-
-        yPos += 60;
-
-        if (i < Math.min(reportData.stories.length, 3) - 1) {
-          yPos += 2;
+        const engagementText = `Engagement: ${story._count.likes} likes, ${story._count.comments} comments, ${story._count.reactions} reactions`;
+        doc.text(engagementText, 20, yPos + 57);
+        
+        yPos += 72;
+        
+        if (i < displayStories.length - 1 && yPos > 200) {
+          doc.addPage();
+          yPos = 30;
         }
       }
-
-      // If more stories, add note
-      if (reportData.stories.length > 3) {
-        yPos += 5;
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'italic');
-        doc.setTextColor(100, 100, 100);
-        doc.text(
-          `+ ${reportData.stories.length - 3} additional impact stories available on the ImpactusAll platform`,
-          pageWidth / 2,
-          yPos,
-          { align: 'center' }
-        );
+      
+      // ========== CLOSING STATEMENT ==========
+      if (yPos > 220) {
+        doc.addPage();
+        yPos = 35;
+      } else {
+        yPos += 15;
       }
-
-      // Footer
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text(`Page 3 | ${reportData.donor.name} CSR Impact Report`, margin, pageHeight - 10);
-
+      
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(218, 41, 28);
+      doc.text('Closing Statement', 15, yPos);
+      yPos += 8;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(0, 0, 0);
+      const splitClosing = doc.splitTextToSize(closingStatement, 180);
+      doc.text(splitClosing, 15, yPos);
+      
       // Save PDF
-      const filename = `Manchester_United_Impact_Report_${reportType}_${new Date().toISOString().split('T')[0]}.pdf`;
-      doc.save(filename);
-
-      toast.success('Board report generated successfully!');
+      doc.save(`${donor.name}_Impact_Report_${new Date().toISOString().split('T')[0]}.pdf`);
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast.error('Failed to generate report');
+      console.error('Error generating report:', error);
+      alert('Failed to generate report. Please try again.');
     } finally {
       setIsGenerating(false);
     }
   };
 
-  if (status === 'loading' || !reportData) {
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <FileText className="h-12 w-12 mx-auto text-gray-400 animate-pulse" />
-          <p className="mt-4 text-gray-600">Loading report data...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Board Reports</h1>
-        <p className="text-gray-600 mt-1">
-          Generate professional, board-ready impact reports
+    <div className="p-6 max-w-6xl">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">Impact Report Builder</h1>
+        <p className="text-muted-foreground">
+          Customize and generate professional board reports
         </p>
       </div>
 
-      {/* Report Configuration */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Report Configuration</CardTitle>
-          <CardDescription>
-            Select report type and generate your board-ready PDF
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
-              Report Type
-            </label>
-            <Select value={reportType} onValueChange={setReportType}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="monthly">Monthly Review</SelectItem>
-                <SelectItem value="quarterly">Quarterly Impact Report</SelectItem>
-                <SelectItem value="annual">Annual Summary</SelectItem>
-                <SelectItem value="board">Board Presentation</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button
-            onClick={generatePDF}
-            disabled={isGenerating}
-            className="w-full"
-            style={{ backgroundColor: reportData.donor.primaryColor }}
-          >
-            {isGenerating ? (
-              <>
-                <FileText className="mr-2 h-4 w-4 animate-pulse" />
-                Generating Report...
-              </>
-            ) : (
-              <>
-                <Download className="mr-2 h-4 w-4" />
-                Generate Professional Board Report
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Preview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid gap-6">
+        {/* Template Selection */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Stories Included
-            </CardTitle>
+          <CardHeader>
+            <CardTitle>1. Select Report Template</CardTitle>
+            <CardDescription>Choose the report format that best suits your needs</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold" style={{ color: reportData.donor.primaryColor }}>
-              {reportData.stories.length}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button
+                onClick={() => setSelectedTemplate('executive')}
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  selectedTemplate === 'executive' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50'
+                }`}
+              >
+                <h3 className="font-semibold mb-2">Executive Summary</h3>
+                <p className="text-sm text-muted-foreground">
+                  Concise overview with key metrics and strategic value
+                </p>
+              </button>
+              
+              <button
+                onClick={() => setSelectedTemplate('impact')}
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  selectedTemplate === 'impact' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50'
+                }`}
+              >
+                <h3 className="font-semibold mb-2">Impact Showcase</h3>
+                <p className="text-sm text-muted-foreground">
+                  Story-focused report highlighting beneficiary experiences
+                </p>
+              </button>
+              
+              <button
+                onClick={() => setSelectedTemplate('strategic')}
+                className={`p-4 border-2 rounded-lg text-left transition-all ${
+                  selectedTemplate === 'strategic' ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50'
+                }`}
+              >
+                <h3 className="font-semibold mb-2">Strategic Review</h3>
+                <p className="text-sm text-muted-foreground">
+                  Detailed analysis with ROI and engagement metrics
+                </p>
+              </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Impact narratives</p>
           </CardContent>
         </Card>
 
+        {/* Story Selection */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Total Investment
-            </CardTitle>
+          <CardHeader>
+            <CardTitle>2. Select Stories to Include</CardTitle>
+            <CardDescription>Filter by time period and choose specific stories</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold" style={{ color: reportData.donor.primaryColor }}>
-              £{(reportData.donor.donationAmount * reportData.stories.length).toLocaleString('en-GB')}
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="story-filter">Time Period</Label>
+              <Select value={storyFilter} onValueChange={setStoryFilter}>
+                <SelectTrigger id="story-filter">
+                  <SelectValue placeholder="Select time period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Stories</SelectItem>
+                  <SelectItem value="quarter">Last Quarter (3 months)</SelectItem>
+                  <SelectItem value="halfyear">Last 6 Months</SelectItem>
+                  <SelectItem value="year">Last Year</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Community funding</p>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label>Stories ({filteredStories.length} available)</Label>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setSelectedStories(filteredStories.map(s => s.id))}
+                  >
+                    Select All
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setSelectedStories([])}
+                  >
+                    Deselect All
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto border rounded-lg p-4">
+                {filteredStories.map((story) => (
+                  <div key={story.id} className="flex items-start space-x-3">
+                    <Checkbox
+                      id={story.id}
+                      checked={selectedStories.includes(story.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedStories([...selectedStories, story.id]);
+                        } else {
+                          setSelectedStories(selectedStories.filter(id => id !== story.id));
+                        }
+                      }}
+                    />
+                    <Label htmlFor={story.id} className="flex-1 cursor-pointer">
+                      <div className="font-medium">{story.title}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {story.charity.name} • £{story.donationAmount.toLocaleString()}
+                      </div>
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
+        {/* Editable Content */}
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Total Engagement
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Edit3 className="h-5 w-5" />
+              3. Edit Report Content
             </CardTitle>
+            <CardDescription>Customize the text content for your report</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="report-title">Report Title</Label>
+                <Input
+                  id="report-title"
+                  value={reportTitle}
+                  onChange={(e) => setReportTitle(e.target.value)}
+                  placeholder="Community Impact Report"
+                />
+              </div>
+              <div>
+                <Label htmlFor="report-subtitle">Report Subtitle</Label>
+                <Input
+                  id="report-subtitle"
+                  value={reportSubtitle}
+                  onChange={(e) => setReportSubtitle(e.target.value)}
+                  placeholder="Board of Directors Review"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="overview-text">Programme Overview</Label>
+              <Textarea
+                id="overview-text"
+                value={overviewText}
+                onChange={(e) => setOverviewText(e.target.value)}
+                rows={4}
+                placeholder="Describe your community investment programme..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="strategic-value">Strategic Value Points</Label>
+              <Textarea
+                id="strategic-value"
+                value={strategicValue}
+                onChange={(e) => setStrategicValue(e.target.value)}
+                rows={6}
+                placeholder="Enter strategic value points (one per line)..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="recommendation">Board Recommendation</Label>
+              <Textarea
+                id="recommendation"
+                value={recommendation}
+                onChange={(e) => setRecommendation(e.target.value)}
+                rows={4}
+                placeholder="Enter your recommendation..."
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="closing-statement">Closing Statement</Label>
+              <Textarea
+                id="closing-statement"
+                value={closingStatement}
+                onChange={(e) => setClosingStatement(e.target.value)}
+                rows={4}
+                placeholder="Enter a closing statement for the report..."
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Summary and Generate */}
+        <Card>
+          <CardHeader>
+            <CardTitle>4. Generate Report</CardTitle>
+            <CardDescription>Review your selections and generate the PDF</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold" style={{ color: reportData.donor.primaryColor }}>
-              {reportData.stories.reduce((acc, s) => acc + s._count.likes + s._count.comments + s._count.reactions, 0).toLocaleString('en-GB')}
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-muted rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Heart className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Stories</span>
+                  </div>
+                  <p className="text-2xl font-bold">{selectedStoriesData.length}</p>
+                </div>
+                <div className="bg-muted rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Investment</span>
+                  </div>
+                  <p className="text-2xl font-bold">
+                    £{selectedStoriesData.reduce((sum, s) => sum + s.donationAmount, 0).toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-muted rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Charities</span>
+                  </div>
+                  <p className="text-2xl font-bold">
+                    {new Set(selectedStoriesData.map(s => s.charity.name)).size}
+                  </p>
+                </div>
+                <div className="bg-muted rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Award className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Engagement</span>
+                  </div>
+                  <p className="text-2xl font-bold">
+                    {selectedStoriesData.reduce(
+                      (sum, s) => sum + s._count.likes + s._count.comments + s._count.reactions,
+                      0
+                    ).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="text-sm text-muted-foreground">
+                  <strong>Template:</strong> {selectedTemplate === 'executive' ? 'Executive Summary' : selectedTemplate === 'impact' ? 'Impact Showcase' : 'Strategic Review'}
+                  <br />
+                  Report includes cover page, executive summary, impact stories, and closing statement
+                </div>
+                <Button
+                  onClick={generatePDF}
+                  disabled={isGenerating || selectedStoriesData.length === 0}
+                  className="gap-2"
+                  size="lg"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Generating PDF...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4" />
+                      Generate PDF Report
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Interactions</p>
           </CardContent>
         </Card>
       </div>
-
-      {/* What's Included */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5" style={{ color: reportData.donor.primaryColor }} />
-            What's Included in Your Board Report
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3 text-sm text-gray-700">
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 font-bold">✓</span>
-              <span><strong>Professional Cover Page</strong> - Branded with Manchester United logo and investment highlights</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 font-bold">✓</span>
-              <span><strong>Executive Summary</strong> - Programme overview, key highlights, and aggregate impact metrics</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 font-bold">✓</span>
-              <span><strong>Strategic Value Analysis</strong> - Why this programme benefits Manchester United (brand, stakeholder relations, employee engagement)</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 font-bold">✓</span>
-              <span><strong>Impact Stories with Charity Logos</strong> - Detailed narratives showing real transformation in the community</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 font-bold">✓</span>
-              <span><strong>Engagement Metrics</strong> - Social media reach, interactions, and digital engagement statistics</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-600 font-bold">✓</span>
-              <span><strong>Board Recommendation</strong> - Data-driven suggestions for programme continuation and expansion</span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Report History Placeholder */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Report History
-          </CardTitle>
-          <CardDescription>Previously generated reports</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-gray-500 text-center py-8">
-            Generated reports will appear here. Reports are saved locally to your device.
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 }
