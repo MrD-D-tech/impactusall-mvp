@@ -127,7 +127,7 @@ export default async function ContentLibraryPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {stories.map((story) => {
             const hasVideo = story.media.some(m => m.fileType === 'VIDEO');
-            const publicUrl = `/${user.donor?.slug || 'manchester-united'}/${story.slug}`;
+            const publicUrl = `/${user.donor?.slug || 'manchester-united'}/${story.slug}?ref=dashboard`;
 
             return (
               <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow">

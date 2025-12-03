@@ -62,27 +62,50 @@ export default async function CorporateDashboardPage() {
     },
   });
 
-  // Calculate aggregate impact metrics from all stories
+  // Calculate aggregate impact metrics from all stories - using meaningful, universal metrics
   const impactMetrics = stories.reduce(
     (acc, story) => {
       const metrics = story.impactMetrics as any;
       if (metrics) {
+        // Total People Impacted (aggregate all people-related metrics)
+        acc.peopleImpacted += 
+          (metrics.lives_changed || 0) +
+          (metrics.people_helped || 0) +
+          (metrics.people_supported || 0) +
+          (metrics.young_people_supported || 0);
+        
+        // Families Helped
         acc.familiesHelped += metrics.families_helped || 0;
-        acc.hoursOfCare += metrics.hours_of_care || 0;
-        acc.memorySessions += metrics.memory_making_sessions || 0;
-        acc.counsellingSessions += metrics.counselling_sessions || 0;
-        acc.employmentTraining += metrics.employment_training_hours || 0;
-        acc.peopleReached += metrics.people_reached || 0;
+        
+        // Jobs Created/Secured
+        acc.jobsCreated += metrics.jobs_secured || 0;
+        
+        // Total Support Hours (aggregate all time-based support)
+        acc.supportHours += 
+          (metrics.counselling_hours || 0) +
+          (metrics.hours_of_care || 0) +
+          (metrics.employment_training_hours || 0) +
+          (metrics.peer_support_sessions || 0) +
+          (metrics.counselling_sessions || 0) +
+          (metrics.memory_making_sessions || 0) +
+          (metrics.english_classes || 0);
+        
+        // Children Supported
+        acc.childrenSupported += 
+          (metrics.children_in_school || 0);
+        
+        // Safe Nights Provided
+        acc.safeNights += metrics.nights_of_shelter || 0;
       }
       return acc;
     },
     {
+      peopleImpacted: 0,
       familiesHelped: 0,
-      hoursOfCare: 0,
-      memorySessions: 0,
-      counsellingSessions: 0,
-      employmentTraining: 0,
-      peopleReached: 0,
+      jobsCreated: 0,
+      supportHours: 0,
+      childrenSupported: 0,
+      safeNights: 0,
     }
   );
 
@@ -172,27 +195,66 @@ export default async function CorporateDashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Families Helped</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">People Impacted</CardTitle>
               <Users className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold" style={{ color: user.donor.primaryColor || '#ea580c' }}>
-                {impactMetrics.familiesHelped.toLocaleString('en-GB')}
+                {impactMetrics.peopleImpacted.toLocaleString('en-GB')}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Across {stories.length} stories</p>
+              <p className="text-xs text-gray-500 mt-1">Lives changed across Greater Manchester</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Hours of Care</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">Families Helped</CardTitle>
+              <Heart className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold" style={{ color: user.donor.primaryColor || '#ea580c' }}>
+                {impactMetrics.familiesHelped.toLocaleString('en-GB')}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Families supported with care</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Jobs Created</CardTitle>
+              <TrendingUp className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold" style={{ color: user.donor.primaryColor || '#ea580c' }}>
+                {impactMetrics.jobsCreated.toLocaleString('en-GB')}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Employment opportunities secured</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Support Hours</CardTitle>
               <Clock className="h-4 w-4 text-gray-400" />
             </CardHeader>
             <CardContent>
               <div className="text-3xl font-bold" style={{ color: user.donor.primaryColor || '#ea580c' }}>
-                {impactMetrics.hoursOfCare.toLocaleString('en-GB')}
+                {impactMetrics.supportHours.toLocaleString('en-GB')}
               </div>
-              <p className="text-xs text-gray-500 mt-1">Provided to families</p>
+              <p className="text-xs text-gray-500 mt-1">Hours of care & training provided</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Safe Nights</CardTitle>
+              <Users className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold" style={{ color: user.donor.primaryColor || '#ea580c' }}>
+                {impactMetrics.safeNights.toLocaleString('en-GB')}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Nights of shelter provided</p>
             </CardContent>
           </Card>
 
