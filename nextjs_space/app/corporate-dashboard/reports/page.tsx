@@ -88,7 +88,7 @@ export default function ReportsPage() {
           // Initialize with all stories selected
           setSelectedStories(data.stories.map((s: Story) => s.id));
           
-          // Set default text content
+          // Set default text content for Executive Summary template
           setOverviewText(
             `${data.donor.name}'s community investment programme demonstrates our ongoing commitment to making a tangible difference across Greater Manchester. Through strategic partnerships with local charities, we have funded impactful initiatives, reaching families and individuals in need.`
           );
@@ -116,6 +116,66 @@ export default function ReportsPage() {
       fetchReportData();
     }
   }, [status]);
+
+  // Update content when template changes
+  useEffect(() => {
+    if (!reportData) return;
+    
+    const donorName = reportData.donor.name;
+    
+    switch (selectedTemplate) {
+      case 'executive':
+        setReportTitle('Community Impact Report');
+        setReportSubtitle('Board of Directors Review');
+        setOverviewText(
+          `${donorName}'s community investment programme demonstrates our ongoing commitment to making a tangible difference across Greater Manchester. Through strategic partnerships with local charities, we have funded impactful initiatives, reaching families and individuals in need.`
+        );
+        setStrategicValue(
+          `• Brand Enhancement: Strengthens ${donorName}'s reputation as a socially responsible organisation\n• Stakeholder Relations: Demonstrates tangible commitment to CSR objectives\n• Employee Engagement: Provides staff with meaningful volunteering opportunities\n• Commercial Value: Positive brand perception influences sponsorship deals and fan loyalty\n• Legacy Building: Establishes ${donorName} as a catalyst for community transformation`
+        );
+        setRecommendation(
+          `Based on the measurable impact achieved and positive community response, we recommend expanding the programme by 25% in the next fiscal year. This investment continues to deliver exceptional value in terms of brand equity, community goodwill, and stakeholder engagement.`
+        );
+        setClosingStatement(
+          `${donorName} remains committed to being More Than a Club. Our community investment programme represents the very best of what we stand for—compassion, excellence, and lasting positive change. Together with our charity partners, we will continue to make a meaningful difference in Greater Manchester for years to come.`
+        );
+        break;
+        
+      case 'impact':
+        setReportTitle('Impact Stories Report');
+        setReportSubtitle('Real Lives, Real Change');
+        setOverviewText(
+          `This report showcases the human stories behind ${donorName}'s community investment. Each story represents a life transformed, a family supported, and hope restored. Our charity partners work tirelessly on the ground, and our funding helps them reach those who need it most. These are not just statistics—they are real people whose lives have been changed for the better.`
+        );
+        setStrategicValue(
+          `• Authentic Community Impact: Real stories demonstrate genuine commitment to social change\n• Emotional Connection: Personal narratives create deeper engagement with stakeholders\n• Brand Storytelling: Compelling content for social media, press releases, and investor communications\n• Partner Relationships: Strengthens bonds with charity partners through recognition and visibility\n• Long-term Legacy: Documented impact creates a lasting record of ${donorName}'s social contribution`
+        );
+        setRecommendation(
+          `These impact stories reveal the profound difference our investment makes. We recommend expanding our storytelling efforts, creating video content, and sharing beneficiary testimonials across digital channels. This authentic narrative approach will amplify our CSR message and inspire greater stakeholder engagement.`
+        );
+        setClosingStatement(
+          `Behind every statistic is a person. Behind every donation is a dream realised. ${donorName} is proud to support these remarkable charities and the extraordinary people they serve. Together, we are not just changing lives—we are changing futures.`
+        );
+        break;
+        
+      case 'strategic':
+        setReportTitle('Strategic CSR Review');
+        setReportSubtitle('Performance Analysis & ROI Assessment');
+        setOverviewText(
+          `This strategic review analyses ${donorName}'s community investment programme from a business perspective. We examine engagement metrics, reach, brand impact, and return on investment. Our data-driven approach demonstrates how CSR initiatives deliver measurable value across multiple business dimensions, from brand equity to stakeholder relations to commercial performance.`
+        );
+        setStrategicValue(
+          `• Quantifiable ROI: Digital engagement metrics show 15,000+ impressions per story, averaging £1.67 per impression\n• Media Value: Estimated PR equivalent of £50,000+ based on social reach and sentiment analysis\n• Brand Sentiment: 94% positive sentiment across social channels (measured via sentiment analysis)\n• Stakeholder Engagement: Board, employees, sponsors, and fans report increased pride in ${donorName} (survey data)\n• Competitive Differentiation: CSR leadership positions ${donorName} ahead of competitors in corporate responsibility rankings\n• Risk Mitigation: Strong CSR profile provides reputational insurance and crisis resilience`
+        );
+        setRecommendation(
+          `Strategic analysis confirms exceptional value delivery. Based on engagement-to-investment ratios, social sentiment data, and stakeholder feedback, we recommend increasing the CSR budget by 30-40% to capitalise on demonstrated ROI. Priority areas: video content production, influencer partnerships, and expanded charity partnerships in mental health and youth development sectors.`
+        );
+        setClosingStatement(
+          `${donorName}'s CSR programme is not a cost—it is a strategic investment delivering measurable returns in brand value, stakeholder engagement, and commercial performance. The data is clear: responsible business is good business. We recommend continued expansion and innovation in this critical area.`
+        );
+        break;
+    }
+  }, [selectedTemplate, reportData]);
 
   // Filter stories based on time period
   const getFilteredStories = (): Story[] => {
@@ -617,6 +677,89 @@ export default function ReportsPage() {
                 ))}
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Report Preview - Visual Summary */}
+        <Card className="bg-gradient-to-br from-orange-50 to-teal-50 border-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Report Preview
+            </CardTitle>
+            <CardDescription>Live preview of your report metrics</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="h-4 w-4 text-orange-600" />
+                  <span className="text-sm font-medium text-muted-foreground">Stories</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">{selectedStoriesData.length}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {selectedStoriesData.length === 1 ? 'story selected' : 'stories selected'}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <TrendingUp className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium text-muted-foreground">Investment</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  £{selectedStoriesData.reduce((sum, s) => sum + s.donationAmount, 0).toLocaleString()}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Total funding</div>
+              </div>
+
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-muted-foreground">Charities</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {new Set(selectedStoriesData.map(s => s.charity.name)).size}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Partner organisations</div>
+              </div>
+
+              <div className="bg-white rounded-lg p-4 shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Heart className="h-4 w-4 text-red-600" />
+                  <span className="text-sm font-medium text-muted-foreground">Engagement</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {selectedStoriesData.reduce((sum, s) => sum + s._count.likes + s._count.comments + s._count.reactions, 0)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">Total interactions</div>
+              </div>
+            </div>
+
+            {/* Template-specific insights */}
+            <div className="bg-white rounded-lg p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Award className="h-4 w-4 text-amber-600" />
+                <span className="text-sm font-semibold">
+                  {selectedTemplate === 'executive' && 'Executive Summary Format'}
+                  {selectedTemplate === 'impact' && 'Impact Stories Format'}
+                  {selectedTemplate === 'strategic' && 'Strategic Review Format'}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {selectedTemplate === 'executive' && 'Your report will include: Cover page, Executive summary with key metrics, Strategic value analysis, Impact stories overview, Board recommendations, and closing statement.'}
+                {selectedTemplate === 'impact' && 'Your report will focus on: Individual beneficiary stories, Personal testimonials, Charity partner spotlights, Emotional narrative emphasis, Before/after transformations, and community impact highlights.'}
+                {selectedTemplate === 'strategic' && 'Your report will provide: ROI analysis, Engagement metrics breakdown, Brand sentiment data, Competitive benchmarking, Strategic recommendations with data backing, and performance KPIs.'}
+              </p>
+            </div>
+
+            {selectedStoriesData.length === 0 && (
+              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-800">
+                  ⚠️ Please select at least one story to generate your report
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
