@@ -328,7 +328,7 @@ export default function ReportsPage() {
       const totalJobs = aggregateMetrics.jobs_secured || 0;
       const totalNights = aggregateMetrics.nights_of_shelter || 0;
       
-      // Four metric boxes in a 2x2 grid
+      // Four metric boxes in a 2x2 grid with professional design
       const boxW = 80;
       const boxH = 32;
       const gapX = 10;
@@ -336,11 +336,16 @@ export default function ReportsPage() {
       const gridStartX = 25;
       
       // Box 1: People Impacted
-      doc.setFillColor(255, 248, 240); // Light orange
-      doc.roundedRect(gridStartX, yPos, boxW, boxH, 4, 4, 'F');
-      doc.setDrawColor(218, 41, 28);
-      doc.setLineWidth(1);
-      doc.roundedRect(gridStartX, yPos, boxW, boxH, 4, 4, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(gridStartX + 0.8, yPos + 0.8, boxW, boxH, 3, 3, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(gridStartX, yPos, boxW, boxH, 3, 3, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.5);
+      doc.roundedRect(gridStartX, yPos, boxW, boxH, 3, 3, 'S');
       
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
@@ -352,15 +357,20 @@ export default function ReportsPage() {
       doc.text('Lives Impacted', gridStartX + boxW / 2, yPos + 23, { align: 'center' });
       
       // Box 2: Stories Published
-      doc.setFillColor(240, 255, 250); // Light teal
-      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 4, 4, 'F');
-      doc.setDrawColor(0, 150, 136);
-      doc.setLineWidth(1);
-      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 4, 4, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(gridStartX + boxW + gapX + 0.8, yPos + 0.8, boxW, boxH, 3, 3, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 3, 3, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.5);
+      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 3, 3, 'S');
       
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 150, 136);
+      doc.setTextColor(218, 41, 28);
       doc.text(stories.length.toString(), gridStartX + boxW + gapX + boxW / 2, yPos + 14, { align: 'center' });
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
@@ -370,11 +380,16 @@ export default function ReportsPage() {
       yPos += boxH + gapY;
       
       // Box 3: Jobs Created
-      doc.setFillColor(255, 248, 240);
-      doc.roundedRect(gridStartX, yPos, boxW, boxH, 4, 4, 'F');
-      doc.setDrawColor(218, 41, 28);
-      doc.setLineWidth(1);
-      doc.roundedRect(gridStartX, yPos, boxW, boxH, 4, 4, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(gridStartX + 0.8, yPos + 0.8, boxW, boxH, 3, 3, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(gridStartX, yPos, boxW, boxH, 3, 3, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.5);
+      doc.roundedRect(gridStartX, yPos, boxW, boxH, 3, 3, 'S');
       
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
@@ -386,15 +401,20 @@ export default function ReportsPage() {
       doc.text('Jobs Created', gridStartX + boxW / 2, yPos + 23, { align: 'center' });
       
       // Box 4: Safe Nights Provided
-      doc.setFillColor(240, 255, 250);
-      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 4, 4, 'F');
-      doc.setDrawColor(0, 150, 136);
-      doc.setLineWidth(1);
-      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 4, 4, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(gridStartX + boxW + gapX + 0.8, yPos + 0.8, boxW, boxH, 3, 3, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 3, 3, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.5);
+      doc.roundedRect(gridStartX + boxW + gapX, yPos, boxW, boxH, 3, 3, 'S');
       
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0, 150, 136);
+      doc.setTextColor(218, 41, 28);
       doc.text(totalNights.toLocaleString(), gridStartX + boxW + gapX + boxW / 2, yPos + 14, { align: 'center' });
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
@@ -433,15 +453,24 @@ export default function ReportsPage() {
       doc.text(splitOverview, 15, yPos);
       yPos += splitOverview.length * 5 + 8;
       
-      // Key Highlights
+      // Key Highlights with professional design
       const highlightBoxWidth = 58;
       const highlightBoxHeight = 28;
       const boxSpacing = 5;
       const startX = 15;
       
       const familiesHelped = aggregateMetrics.families_helped || 0;
-      doc.setFillColor(240, 240, 240);
-      doc.roundedRect(startX, yPos, highlightBoxWidth, highlightBoxHeight, 3, 3, 'F');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(startX + 0.6, yPos + 0.6, highlightBoxWidth, highlightBoxHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(startX, yPos, highlightBoxWidth, highlightBoxHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(startX, yPos, highlightBoxWidth, highlightBoxHeight, 2, 2, 'S');
+      
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(218, 41, 28);
@@ -452,8 +481,17 @@ export default function ReportsPage() {
       doc.text('Families Supported', startX + highlightBoxWidth / 2, yPos + 21, { align: 'center' });
       
       const supportHours = (aggregateMetrics.hours_of_care || 0) + (aggregateMetrics.counselling_hours || 0);
-      doc.setFillColor(240, 240, 240);
-      doc.roundedRect(startX + highlightBoxWidth + boxSpacing, yPos, highlightBoxWidth, highlightBoxHeight, 3, 3, 'F');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(startX + highlightBoxWidth + boxSpacing + 0.6, yPos + 0.6, highlightBoxWidth, highlightBoxHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(startX + highlightBoxWidth + boxSpacing, yPos, highlightBoxWidth, highlightBoxHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(startX + highlightBoxWidth + boxSpacing, yPos, highlightBoxWidth, highlightBoxHeight, 2, 2, 'S');
+      
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(218, 41, 28);
@@ -463,8 +501,17 @@ export default function ReportsPage() {
       doc.setTextColor(0, 0, 0);
       doc.text('Support Hours', startX + highlightBoxWidth + boxSpacing + highlightBoxWidth / 2, yPos + 21, { align: 'center' });
       
-      doc.setFillColor(240, 240, 240);
-      doc.roundedRect(startX + (highlightBoxWidth + boxSpacing) * 2, yPos, highlightBoxWidth, highlightBoxHeight, 3, 3, 'F');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(startX + (highlightBoxWidth + boxSpacing) * 2 + 0.6, yPos + 0.6, highlightBoxWidth, highlightBoxHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(startX + (highlightBoxWidth + boxSpacing) * 2, yPos, highlightBoxWidth, highlightBoxHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(startX + (highlightBoxWidth + boxSpacing) * 2, yPos, highlightBoxWidth, highlightBoxHeight, 2, 2, 'S');
+      
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(218, 41, 28);
@@ -510,192 +557,193 @@ export default function ReportsPage() {
       const totalShares = stories.reduce((sum, s) => sum + (s._count.likes * 0.15), 0); // Estimated shares
       const estimatedImpressions = estimatedReach * 2.5; // Average person sees content 2.5x
       
-      // Main engagement box with gradient effect
-      doc.setFillColor(255, 245, 235); // Very light orange
-      doc.roundedRect(15, yPos, 180, 50, 5, 5, 'F');
-      doc.setDrawColor(218, 41, 28);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(15, yPos, 180, 50, 5, 5, 'S');
+      // Main engagement box with professional thick border and shadow effect
+      doc.setFillColor(255, 255, 255); // Clean white background
+      doc.roundedRect(15, yPos, 180, 45, 3, 3, 'F');
+      
+      // Shadow effect (offset darker rectangles)
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(16.5, yPos + 1.5, 180, 45, 3, 3, 'F');
+      
+      // Main white box on top
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(15, yPos, 180, 45, 3, 3, 'F');
+      
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.5);
+      doc.roundedRect(15, yPos, 180, 45, 3, 3, 'S');
       
       // Large total engagement number - centered and prominent
-      doc.setFontSize(32);
+      doc.setFontSize(28);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(218, 41, 28);
       doc.text(totalEngagement.toLocaleString(), 105, yPos + 20, { align: 'center' });
       
-      doc.setFontSize(11);
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(80, 80, 80);
       doc.text('Total Engagement Interactions', 105, yPos + 28, { align: 'center' });
       
-      // Engagement rate badge
-      doc.setFillColor(0, 150, 136);
-      doc.roundedRect(150, yPos + 5, 38, 12, 3, 3, 'F');
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
-      doc.text(`${engagementRate}% Rate`, 169, yPos + 12, { align: 'center' });
-      
-      // Avg per story indicator
+      // Engagement rate badge - subtle
       doc.setFontSize(8);
-      doc.setFont('helvetica', 'italic');
+      doc.setFont('helvetica', 'normal');
       doc.setTextColor(100, 100, 100);
-      doc.text(`Average ${avgEngagementPerStory} interactions per story`, 105, yPos + 38, { align: 'center' });
+      doc.text(`${engagementRate}% engagement rate  |  ${avgEngagementPerStory} avg. per story`, 105, yPos + 38, { align: 'center' });
       
-      yPos += 58;
+      yPos += 52;
       
-      // Detailed breakdown - Four metric cards in a row
+      // Detailed breakdown - Four metric cards in a row with professional design
       const metricCardWidth = 43;
-      const metricCardHeight = 30;
+      const metricCardHeight = 28;
       const cardGap = 2;
       const cardsStartX = 16;
       
-      // Card 1: Likes with heart icon
-      doc.setFillColor(255, 240, 245); // Light pink
-      doc.roundedRect(cardsStartX, yPos, metricCardWidth, metricCardHeight, 3, 3, 'F');
-      doc.setDrawColor(220, 20, 60);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(cardsStartX, yPos, metricCardWidth, metricCardHeight, 3, 3, 'S');
+      // Card 1: Likes
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(cardsStartX + 0.8, yPos + 0.8, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(cardsStartX, yPos, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(cardsStartX, yPos, metricCardWidth, metricCardHeight, 2, 2, 'S');
       
-      // Heart icon (simple version)
-      doc.setFillColor(220, 20, 60);
-      doc.circle(cardsStartX + 10, yPos + 8, 2, 'F');
-      doc.circle(cardsStartX + 14, yPos + 8, 2, 'F');
-      doc.triangle(cardsStartX + 8, yPos + 9, cardsStartX + 12, yPos + 14, cardsStartX + 16, yPos + 9, 'F');
-      
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(220, 20, 60);
-      doc.text(totalLikes.toString(), cardsStartX + metricCardWidth / 2, yPos + 19, { align: 'center' });
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      doc.text('Likes', cardsStartX + metricCardWidth / 2, yPos + 25, { align: 'center' });
+      doc.setTextColor(120, 120, 120);
+      doc.text('LIKES', cardsStartX + metricCardWidth / 2, yPos + 7, { align: 'center' });
+      
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 30, 30);
+      doc.text(totalLikes.toString(), cardsStartX + metricCardWidth / 2, yPos + 19, { align: 'center' });
       
       // Card 2: Comments
-      doc.setFillColor(240, 248, 255); // Light blue
-      doc.roundedRect(cardsStartX + metricCardWidth + cardGap, yPos, metricCardWidth, metricCardHeight, 3, 3, 'F');
-      doc.setDrawColor(30, 144, 255);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(cardsStartX + metricCardWidth + cardGap, yPos, metricCardWidth, metricCardHeight, 3, 3, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(cardsStartX + metricCardWidth + cardGap + 0.8, yPos + 0.8, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(cardsStartX + metricCardWidth + cardGap, yPos, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(cardsStartX + metricCardWidth + cardGap, yPos, metricCardWidth, metricCardHeight, 2, 2, 'S');
       
-      // Comment icon (speech bubble)
-      doc.setFillColor(30, 144, 255);
-      doc.roundedRect(cardsStartX + metricCardWidth + cardGap + 8, yPos + 6, 8, 6, 1, 1, 'F');
-      doc.triangle(
-        cardsStartX + metricCardWidth + cardGap + 10, yPos + 12,
-        cardsStartX + metricCardWidth + cardGap + 12, yPos + 14,
-        cardsStartX + metricCardWidth + cardGap + 12, yPos + 12,
-        'F'
-      );
-      
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(30, 144, 255);
-      doc.text(totalComments.toString(), cardsStartX + metricCardWidth + cardGap + metricCardWidth / 2, yPos + 19, { align: 'center' });
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      doc.text('Comments', cardsStartX + metricCardWidth + cardGap + metricCardWidth / 2, yPos + 25, { align: 'center' });
+      doc.setTextColor(120, 120, 120);
+      doc.text('COMMENTS', cardsStartX + metricCardWidth + cardGap + metricCardWidth / 2, yPos + 7, { align: 'center' });
+      
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 30, 30);
+      doc.text(totalComments.toString(), cardsStartX + metricCardWidth + cardGap + metricCardWidth / 2, yPos + 19, { align: 'center' });
       
       // Card 3: Reactions
-      doc.setFillColor(255, 248, 220); // Light gold
-      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 2, yPos, metricCardWidth, metricCardHeight, 3, 3, 'F');
-      doc.setDrawColor(255, 165, 0);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 2, yPos, metricCardWidth, metricCardHeight, 3, 3, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 2 + 0.8, yPos + 0.8, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 2, yPos, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 2, yPos, metricCardWidth, metricCardHeight, 2, 2, 'S');
       
-      // Emoji icon (simple circle with smile)
-      doc.setFillColor(255, 165, 0);
-      doc.circle(cardsStartX + (metricCardWidth + cardGap) * 2 + 12, yPos + 9, 3, 'F');
-      
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 165, 0);
-      doc.text(totalReactions.toString(), cardsStartX + (metricCardWidth + cardGap) * 2 + metricCardWidth / 2, yPos + 19, { align: 'center' });
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      doc.text('Reactions', cardsStartX + (metricCardWidth + cardGap) * 2 + metricCardWidth / 2, yPos + 25, { align: 'center' });
+      doc.setTextColor(120, 120, 120);
+      doc.text('REACTIONS', cardsStartX + (metricCardWidth + cardGap) * 2 + metricCardWidth / 2, yPos + 7, { align: 'center' });
+      
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 30, 30);
+      doc.text(totalReactions.toString(), cardsStartX + (metricCardWidth + cardGap) * 2 + metricCardWidth / 2, yPos + 19, { align: 'center' });
       
       // Card 4: Estimated Shares
-      doc.setFillColor(240, 255, 240); // Light green
-      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 3, yPos, metricCardWidth, metricCardHeight, 3, 3, 'F');
-      doc.setDrawColor(34, 139, 34);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 3, yPos, metricCardWidth, metricCardHeight, 3, 3, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 3 + 0.8, yPos + 0.8, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 3, yPos, metricCardWidth, metricCardHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(cardsStartX + (metricCardWidth + cardGap) * 3, yPos, metricCardWidth, metricCardHeight, 2, 2, 'S');
       
-      // Share icon (arrow)
-      doc.setFillColor(34, 139, 34);
-      doc.setLineWidth(1.5);
-      doc.setDrawColor(34, 139, 34);
-      doc.line(
-        cardsStartX + (metricCardWidth + cardGap) * 3 + 10, yPos + 12,
-        cardsStartX + (metricCardWidth + cardGap) * 3 + 15, yPos + 7
-      );
-      doc.line(
-        cardsStartX + (metricCardWidth + cardGap) * 3 + 15, yPos + 7,
-        cardsStartX + (metricCardWidth + cardGap) * 3 + 13, yPos + 7
-      );
-      doc.line(
-        cardsStartX + (metricCardWidth + cardGap) * 3 + 15, yPos + 7,
-        cardsStartX + (metricCardWidth + cardGap) * 3 + 15, yPos + 9
-      );
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(120, 120, 120);
+      doc.text('EST. SHARES', cardsStartX + (metricCardWidth + cardGap) * 3 + metricCardWidth / 2, yPos + 7, { align: 'center' });
+      
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 30, 30);
+      doc.text(Math.round(totalShares).toString(), cardsStartX + (metricCardWidth + cardGap) * 3 + metricCardWidth / 2, yPos + 19, { align: 'center' });
+      
+      yPos += metricCardHeight + 6;
+      
+      // Reach & Impressions - Two larger metrics side by side with professional design
+      const reachBoxWidth = 88;
+      const reachBoxHeight = 22;
+      
+      // Estimated Reach
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(15.8, yPos + 0.8, reachBoxWidth, reachBoxHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(15, yPos, reachBoxWidth, reachBoxHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(15, yPos, reachBoxWidth, reachBoxHeight, 2, 2, 'S');
+      
+      doc.setFontSize(7);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(120, 120, 120);
+      doc.text('ESTIMATED REACH', 15 + reachBoxWidth / 2, yPos + 6, { align: 'center' });
       
       doc.setFontSize(16);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(34, 139, 34);
-      doc.text(Math.round(totalShares).toString(), cardsStartX + (metricCardWidth + cardGap) * 3 + metricCardWidth / 2, yPos + 19, { align: 'center' });
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      doc.text('Est. Shares', cardsStartX + (metricCardWidth + cardGap) * 3 + metricCardWidth / 2, yPos + 25, { align: 'center' });
-      
-      yPos += metricCardHeight + 8;
-      
-      // Reach & Impressions - Two larger metrics side by side
-      const reachBoxWidth = 88;
-      const reachBoxHeight = 24;
-      
-      // Estimated Reach
-      doc.setFillColor(245, 245, 255); // Very light purple
-      doc.roundedRect(15, yPos, reachBoxWidth, reachBoxHeight, 3, 3, 'F');
-      doc.setDrawColor(138, 43, 226);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(15, yPos, reachBoxWidth, reachBoxHeight, 3, 3, 'S');
-      
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(138, 43, 226);
-      doc.text(estimatedReach.toLocaleString(), 15 + reachBoxWidth / 2, yPos + 11, { align: 'center' });
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      doc.text('Estimated Reach (unique people)', 15 + reachBoxWidth / 2, yPos + 18, { align: 'center' });
+      doc.setTextColor(30, 30, 30);
+      doc.text(estimatedReach.toLocaleString(), 15 + reachBoxWidth / 2, yPos + 15, { align: 'center' });
       
       // Estimated Impressions
-      doc.setFillColor(255, 240, 255); // Very light magenta
-      doc.roundedRect(107, yPos, reachBoxWidth, reachBoxHeight, 3, 3, 'F');
-      doc.setDrawColor(199, 21, 133);
-      doc.setLineWidth(0.5);
-      doc.roundedRect(107, yPos, reachBoxWidth, reachBoxHeight, 3, 3, 'S');
+      // Shadow
+      doc.setFillColor(220, 220, 220);
+      doc.roundedRect(107.8, yPos + 0.8, reachBoxWidth, reachBoxHeight, 2, 2, 'F');
+      // White background
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(107, yPos, reachBoxWidth, reachBoxHeight, 2, 2, 'F');
+      // Thick border
+      doc.setDrawColor(60, 60, 60);
+      doc.setLineWidth(1.2);
+      doc.roundedRect(107, yPos, reachBoxWidth, reachBoxHeight, 2, 2, 'S');
       
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(199, 21, 133);
-      doc.text(Math.round(estimatedImpressions).toLocaleString(), 107 + reachBoxWidth / 2, yPos + 11, { align: 'center' });
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      doc.text('Total Impressions (views)', 107 + reachBoxWidth / 2, yPos + 18, { align: 'center' });
+      doc.setTextColor(120, 120, 120);
+      doc.text('TOTAL IMPRESSIONS', 107 + reachBoxWidth / 2, yPos + 6, { align: 'center' });
       
-      yPos += reachBoxHeight + 6;
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(30, 30, 30);
+      doc.text(Math.round(estimatedImpressions).toLocaleString(), 107 + reachBoxWidth / 2, yPos + 15, { align: 'center' });
+      
+      yPos += reachBoxHeight + 5;
       
       // Social Impact Indicator
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setFont('helvetica', 'italic');
-      doc.setTextColor(100, 100, 100);
-      doc.text('📊 Metrics calculated using industry-standard social media engagement ratios', 15, yPos);
+      doc.setTextColor(140, 140, 140);
+      doc.text('Metrics calculated using industry-standard social media engagement ratios', 15, yPos);
       
       yPos += 10;
       
@@ -960,7 +1008,7 @@ export default function ReportsPage() {
         </Card>
 
         {/* Report Preview - Visual Summary */}
-        <Card className="bg-gradient-to-br from-orange-50 to-teal-50 border-2">
+        <Card className="bg-white border-2 border-gray-300 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
@@ -970,62 +1018,62 @@ export default function ReportsPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white rounded-lg p-4 shadow-sm">
+              <div className="bg-white rounded-md p-4 border-2 border-gray-400 shadow-md">
                 <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-4 w-4 text-orange-600" />
-                  <span className="text-sm font-medium text-muted-foreground">Stories</span>
+                  <FileText className="h-4 w-4 text-gray-600" />
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Stories</span>
                 </div>
                 <div className="text-2xl font-bold text-gray-900">{selectedStoriesData.length}</div>
-                <div className="text-xs text-muted-foreground mt-1">
+                <div className="text-xs text-gray-500 mt-1">
                   {selectedStoriesData.length === 1 ? 'story selected' : 'stories selected'}
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg p-4 shadow-sm">
+              <div className="bg-white rounded-md p-4 border-2 border-gray-400 shadow-md">
                 <div className="flex items-center gap-2 mb-2">
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                  <span className="text-sm font-medium text-muted-foreground">Investment</span>
+                  <TrendingUp className="h-4 w-4 text-gray-600" />
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Investment</span>
                 </div>
                 <div className="text-2xl font-bold text-gray-900">
                   £{selectedStoriesData.reduce((sum, s) => sum + s.donationAmount, 0).toLocaleString()}
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">Total funding</div>
+                <div className="text-xs text-gray-500 mt-1">Total funding</div>
               </div>
 
-              <div className="bg-white rounded-lg p-4 shadow-sm">
+              <div className="bg-white rounded-md p-4 border-2 border-gray-400 shadow-md">
                 <div className="flex items-center gap-2 mb-2">
-                  <Users className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-muted-foreground">Charities</span>
+                  <Users className="h-4 w-4 text-gray-600" />
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Charities</span>
                 </div>
                 <div className="text-2xl font-bold text-gray-900">
                   {new Set(selectedStoriesData.map(s => s.charity.name)).size}
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">Partner organisations</div>
+                <div className="text-xs text-gray-500 mt-1">Partner organisations</div>
               </div>
 
-              <div className="bg-white rounded-lg p-4 shadow-sm">
+              <div className="bg-white rounded-md p-4 border-2 border-gray-400 shadow-md">
                 <div className="flex items-center gap-2 mb-2">
-                  <Heart className="h-4 w-4 text-red-600" />
-                  <span className="text-sm font-medium text-muted-foreground">Engagement</span>
+                  <Heart className="h-4 w-4 text-gray-600" />
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Engagement</span>
                 </div>
                 <div className="text-2xl font-bold text-gray-900">
                   {selectedStoriesData.reduce((sum, s) => sum + s._count.likes + s._count.comments + s._count.reactions, 0)}
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">Total interactions</div>
+                <div className="text-xs text-gray-500 mt-1">Total interactions</div>
               </div>
             </div>
 
             {/* Template-specific insights */}
-            <div className="bg-white rounded-lg p-4 shadow-sm">
+            <div className="bg-white rounded-md p-4 border-2 border-gray-400 shadow-md">
               <div className="flex items-center gap-2 mb-3">
-                <Award className="h-4 w-4 text-amber-600" />
-                <span className="text-sm font-semibold">
+                <Award className="h-4 w-4 text-gray-700" />
+                <span className="text-sm font-bold text-gray-800">
                   {selectedTemplate === 'executive' && 'Executive Summary Format'}
                   {selectedTemplate === 'impact' && 'Impact Stories Format'}
                   {selectedTemplate === 'strategic' && 'Strategic Review Format'}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-gray-600">
                 {selectedTemplate === 'executive' && 'Your report will include: Cover page, Executive summary with key metrics, Strategic value analysis, Impact stories overview, Board recommendations, and closing statement.'}
                 {selectedTemplate === 'impact' && 'Your report will focus on: Individual beneficiary stories, Personal testimonials, Charity partner spotlights, Emotional narrative emphasis, Before/after transformations, and community impact highlights.'}
                 {selectedTemplate === 'strategic' && 'Your report will provide: ROI analysis, Engagement metrics breakdown, Brand sentiment data, Competitive benchmarking, Strategic recommendations with data backing, and performance KPIs.'}
@@ -1033,8 +1081,8 @@ export default function ReportsPage() {
             </div>
 
             {selectedStoriesData.length === 0 && (
-              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <p className="text-sm text-amber-800">
+              <div className="mt-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-md shadow-sm">
+                <p className="text-sm text-amber-800 font-medium">
                   ⚠️ Please select at least one story to generate your report
                 </p>
               </div>
