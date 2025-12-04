@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
-import { uploadFile } from '@/lib/s3';
+import { uploadFile, getSignedDownloadUrl } from '@/lib/s3';
+
+// Configure route segment to allow larger request bodies
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // 60 seconds timeout
 
 /**
  * POST /api/charity-admin/stories
@@ -65,18 +70,23 @@ export async function POST(request: NextRequest) {
     let featuredImageUrl = null;
     if (featuredImage && featuredImage.size > 0) {
       try {
+        console.log('Starting image upload, size:', featuredImage.size, 'bytes');
         const buffer = Buffer.from(await featuredImage.arrayBuffer());
-        const fileName = `stories/${Date.now()}-${featuredImage.name.replace(/\s+/g, '-')}`;
+        const sanitizedName = featuredImage.name.replace(/[^a-zA-Z0-9.-]/g, '-');
+        const fileName = `stories/${Date.now()}-${sanitizedName}`;
+        console.log('Uploading to S3 with filename:', fileName);
         const s3Key = await uploadFile(buffer, fileName, featuredImage.type);
+        console.log('S3 upload successful, key:', s3Key);
         
         // Generate signed URL for immediate access
-        const { getSignedDownloadUrl } = await import('@/lib/s3');
         featuredImageUrl = await getSignedDownloadUrl(s3Key, 86400 * 365); // 1 year expiry
+        console.log('Generated signed URL for image');
       } catch (error) {
         console.error('Error uploading image:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2));
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Error message:', errorMessage);
         return NextResponse.json(
-          { error: `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}` },
+          { error: `Failed to upload image: ${errorMessage}` },
           { status: 500 }
         );
       }
@@ -123,11 +133,11 @@ export async function POST(request: NextRequest) {
     if (video && video.size > 0) {
       try {
         const buffer = Buffer.from(await video.arrayBuffer());
-        const fileName = `videos/${Date.now()}-${video.name.replace(/\s+/g, '-')}`;
+        const sanitizedVideoName = video.name.replace(/[^a-zA-Z0-9.-]/g, '-');
+        const fileName = `videos/${Date.now()}-${sanitizedVideoName}`;
         const videoS3Key = await uploadFile(buffer, fileName, video.type);
         
         // Generate signed URL for video
-        const { getSignedDownloadUrl } = await import('@/lib/s3');
         const videoUrl = await getSignedDownloadUrl(videoS3Key, 86400 * 365); // 1 year expiry
         
         // Create Media record for the video

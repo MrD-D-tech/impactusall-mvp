@@ -188,17 +188,29 @@ export default function StoryForm({
       
       const method = initialData ? 'PUT' : 'POST';
 
+      // Show upload progress for large files
+      if (imageFile && imageFile.size > 1024 * 1024) {
+        toast.info('Uploading image... Please wait');
+      }
+
       const response = await fetch(url, {
         method,
         body: submitData,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to save story');
+      // Handle response - check for connection errors first
+      let result;
+      try {
+        const text = await response.text();
+        result = text ? JSON.parse(text) : {};
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        throw new Error('Connection error - please try again. If the issue persists, try with a smaller image (under 2MB).');
       }
 
-      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to save story');
+      }
       
       toast.success(
         initialData
