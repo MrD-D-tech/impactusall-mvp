@@ -41,7 +41,7 @@ export const NewStoryNotificationEmail = ({
   storyUrl = 'https://impactusall.abacusai.app/manchester-united/emmas-story',
   featuredImageUrl,
 }: NewStoryNotificationEmailProps) => {
-  const previewText = `New impact story from ${charityName}: ${storyTitle}`;
+  const previewText = `${donorName}: New impact story from ${charityName}`;
 
   return (
     <Html>
@@ -49,105 +49,98 @@ export const NewStoryNotificationEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Header */}
+          {/* Minimal Header with Logo */}
           <Section style={header}>
-            <Heading style={headerTitle}>ImpactusAll</Heading>
-            <Text style={headerSubtitle}>Your Impact in Action</Text>
+            <Text style={headerBrand}>IMPACTUS<span style={headerBrandAccent}>ALL</span></Text>
           </Section>
 
-          {/* Main Content */}
-          <Section style={content}>
-            {/* Notification Badge */}
-            <Section style={badgeSection}>
-              <Text style={badge}>📢 New Impact Story Published</Text>
+          {/* Hero Section */}
+          <Section style={heroSection}>
+            <Text style={newStoryLabel}>NEW IMPACT STORY</Text>
+            <Heading style={heroTitle}>{storyTitle}</Heading>
+            <Text style={heroSubtitle}>
+              From <strong>{charityName}</strong> · Funded by {donorName}
+            </Text>
+          </Section>
+
+          {/* Featured Image - Full Width */}
+          {featuredImageUrl && (
+            <Section style={imageWrapper}>
+              <Img
+                src={featuredImageUrl}
+                alt={storyTitle}
+                style={heroImage}
+                width="600"
+              />
             </Section>
+          )}
 
-            {/* Charity Info */}
-            <Section style={charitySection}>
-              {charityLogo && (
-                <Img
-                  src={charityLogo}
-                  alt={charityName}
-                  style={charityLogoStyle}
-                  width="60"
-                  height="60"
-                />
-              )}
-              <Text style={charityNameStyle}>
-                {charityName} has published a new story for {donorName}
-              </Text>
-            </Section>
+          {/* Story Excerpt */}
+          <Section style={contentSection}>
+            <Text style={excerptText}>{storyExcerpt}</Text>
+          </Section>
 
-            {/* Featured Image */}
-            {featuredImageUrl && (
-              <Section style={imageSection}>
-                <Img
-                  src={featuredImageUrl}
-                  alt={storyTitle}
-                  style={featuredImage}
-                  width="560"
-                />
-              </Section>
-            )}
-
-            {/* Story Title */}
-            <Heading style={storyTitleStyle}>{storyTitle}</Heading>
-
-            {/* Story Excerpt */}
-            <Text style={excerpt}>{storyExcerpt}</Text>
-
-            {/* Impact Metrics */}
-            {impactMetrics && impactMetrics.length > 0 && (
-              <Section style={metricsSection}>
-                <Text style={metricsTitle}>Impact Highlights</Text>
-                <table style={metricsTable}>
-                  <tbody>
+          {/* Impact Metrics - Clean Grid */}
+          {impactMetrics && impactMetrics.length > 0 && (
+            <Section style={metricsWrapper}>
+              <Text style={metricsHeading}>IMPACT AT A GLANCE</Text>
+              <table style={metricsGrid}>
+                <tbody>
+                  <tr>
+                    {impactMetrics.slice(0, 2).map((metric, index) => (
+                      <td key={index} style={metricBox}>
+                        <Text style={metricNumber}>{metric.value}</Text>
+                        <Text style={metricText}>{metric.label}</Text>
+                      </td>
+                    ))}
+                  </tr>
+                  {impactMetrics.length > 2 && (
                     <tr>
-                      {impactMetrics.map((metric, index) => (
-                        <td key={index} style={metricCell}>
-                          <Text style={metricValue}>{metric.value}</Text>
-                          <Text style={metricLabel}>{metric.label}</Text>
+                      {impactMetrics.slice(2, 4).map((metric, index) => (
+                        <td key={index} style={metricBox}>
+                          <Text style={metricNumber}>{metric.value}</Text>
+                          <Text style={metricText}>{metric.label}</Text>
                         </td>
                       ))}
                     </tr>
-                  </tbody>
-                </table>
-              </Section>
-            )}
-
-            {/* CTA Button */}
-            <Section style={buttonSection}>
-              <Button style={button} href={storyUrl}>
-                Read Full Story
-              </Button>
+                  )}
+                </tbody>
+              </table>
             </Section>
+          )}
 
-            {/* Secondary Link */}
-            <Section style={linkSection}>
-              <Text style={linkText}>
-                Or copy this link:{' '}
-                <Link href={storyUrl} style={link}>
-                  {storyUrl}
-                </Link>
-              </Text>
-            </Section>
+          {/* CTA Button - Prominent */}
+          <Section style={ctaSection}>
+            <Button style={ctaButton} href={storyUrl}>
+              Read the Full Story →
+            </Button>
           </Section>
 
-          {/* Footer */}
-          <Hr style={hr} />
-          <Section style={footer}>
-            <Text style={footerText}>
-              You're receiving this email because you're part of the {donorName} team on ImpactusAll.
-            </Text>
-            <Text style={footerText}>
-              Manage your notification preferences in your{' '}
-              <Link href="https://impactusall.abacusai.app/corporate-dashboard/settings" style={link}>
-                account settings
+          {/* Charity Branding */}
+          {charityLogo && (
+            <Section style={charityBrand}>
+              <Img
+                src={charityLogo}
+                alt={charityName}
+                style={charityLogoStyle}
+                width="48"
+                height="48"
+              />
+              <Text style={charityText}>{charityName}</Text>
+            </Section>
+          )}
+
+          {/* Minimal Footer */}
+          <Section style={footerSection}>
+            <Hr style={divider} />
+            <Text style={footerSmall}>
+              You're receiving this because your organization supports {charityName}.{' '}
+              <Link href="https://impactusall.abacusai.app/corporate-dashboard/settings" style={footerLink}>
+                Manage preferences
               </Link>
-              .
             </Text>
             <Text style={footerCopyright}>
-              © {new Date().getFullYear()} ImpactusAll. All rights reserved.
+              © {new Date().getFullYear()} ImpactusAll · Making Impact Visible
             </Text>
           </Section>
         </Container>
@@ -158,195 +151,203 @@ export const NewStoryNotificationEmail = ({
 
 export default NewStoryNotificationEmail;
 
-// Styles
+// Premium Styles - Inspired by Apple, Airbnb, Stripe
 const main = {
-  backgroundColor: '#f6f9fc',
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+  backgroundColor: '#ffffff',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  WebkitFontSmoothing: 'antialiased' as const,
+  MozOsxFontSmoothing: 'grayscale' as const,
 };
 
 const container = {
-  backgroundColor: '#ffffff',
   margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
   maxWidth: '600px',
+  backgroundColor: '#ffffff',
 };
 
 const header = {
-  background: 'linear-gradient(135deg, #ff7a00 0%, #14b8a6 100%)',
-  padding: '32px 24px',
+  padding: '48px 40px 32px',
+  textAlign: 'center' as const,
+  borderBottom: '1px solid #f0f0f0',
+};
+
+const headerBrand = {
+  fontSize: '20px',
+  fontWeight: '700',
+  letterSpacing: '-0.5px',
+  color: '#000000',
+  margin: '0',
+};
+
+const headerBrandAccent = {
+  color: '#ff7a00',
+};
+
+const heroSection = {
+  padding: '48px 40px 32px',
   textAlign: 'center' as const,
 };
 
-const headerTitle = {
-  color: '#ffffff',
+const newStoryLabel = {
+  fontSize: '11px',
+  fontWeight: '600',
+  letterSpacing: '1.5px',
+  color: '#ff7a00',
+  textTransform: 'uppercase' as const,
+  margin: '0 0 16px',
+};
+
+const heroTitle = {
   fontSize: '32px',
   fontWeight: '700',
-  margin: '0 0 8px',
+  letterSpacing: '-1px',
+  lineHeight: '1.2',
+  color: '#000000',
+  margin: '0 0 16px',
 };
 
-const headerSubtitle = {
-  color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: '400',
+const heroSubtitle = {
+  fontSize: '15px',
+  color: '#666666',
+  lineHeight: '1.5',
   margin: '0',
-  opacity: 0.9,
 };
 
-const content = {
-  padding: '0 24px',
+const imageWrapper = {
+  padding: '0',
+  margin: '0',
 };
 
-const badgeSection = {
-  marginTop: '32px',
-  textAlign: 'center' as const,
+const heroImage = {
+  width: '100%',
+  height: 'auto',
+  display: 'block',
+  margin: '0',
+  padding: '0',
 };
 
-const badge = {
-  backgroundColor: '#fef3c7',
-  color: '#92400e',
-  padding: '8px 16px',
-  borderRadius: '20px',
-  fontSize: '14px',
+const contentSection = {
+  padding: '40px 40px 32px',
+};
+
+const excerptText = {
+  fontSize: '17px',
+  lineHeight: '1.6',
+  color: '#333333',
+  margin: '0',
+};
+
+const metricsWrapper = {
+  padding: '32px 40px',
+  backgroundColor: '#fafafa',
+};
+
+const metricsHeading = {
+  fontSize: '11px',
   fontWeight: '600',
-  display: 'inline-block',
-  margin: '0',
+  letterSpacing: '1.5px',
+  color: '#999999',
+  textTransform: 'uppercase' as const,
+  textAlign: 'center' as const,
+  margin: '0 0 24px',
 };
 
-const charitySection = {
-  marginTop: '24px',
+const metricsGrid = {
+  width: '100%',
+  borderCollapse: 'separate' as const,
+  borderSpacing: '12px',
+};
+
+const metricBox = {
+  backgroundColor: '#ffffff',
+  border: '1px solid #e0e0e0',
+  borderRadius: '12px',
+  padding: '24px 16px',
   textAlign: 'center' as const,
+  width: '50%',
+};
+
+const metricNumber = {
+  fontSize: '36px',
+  fontWeight: '700',
+  color: '#000000',
+  lineHeight: '1',
+  margin: '0 0 8px',
+  letterSpacing: '-1px',
+};
+
+const metricText = {
+  fontSize: '13px',
+  color: '#666666',
+  fontWeight: '500',
+  margin: '0',
+  textTransform: 'uppercase' as const,
+  letterSpacing: '0.5px',
+};
+
+const ctaSection = {
+  padding: '32px 40px',
+  textAlign: 'center' as const,
+};
+
+const ctaButton = {
+  backgroundColor: '#000000',
+  color: '#ffffff',
+  fontSize: '15px',
+  fontWeight: '600',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '16px 40px',
+  borderRadius: '8px',
+  lineHeight: '1',
+  letterSpacing: '-0.2px',
+};
+
+const charityBrand = {
+  padding: '32px 40px',
+  textAlign: 'center' as const,
+  borderTop: '1px solid #f0f0f0',
 };
 
 const charityLogoStyle = {
   borderRadius: '50%',
   margin: '0 auto 12px',
+  border: '1px solid #e0e0e0',
 } as React.CSSProperties;
 
-const charityNameStyle = {
-  color: '#64748b',
+const charityText = {
   fontSize: '14px',
+  color: '#666666',
   margin: '0',
-} as React.CSSProperties;
-
-const imageSection = {
-  marginTop: '24px',
 };
 
-const featuredImage = {
-  width: '100%',
-  borderRadius: '12px',
-  objectFit: 'cover' as const,
+const footerSection = {
+  padding: '24px 40px 48px',
 };
 
-const storyTitleStyle = {
-  color: '#1e293b',
-  fontSize: '28px',
-  fontWeight: '700',
-  lineHeight: '1.3',
-  margin: '24px 0 16px',
-};
-
-const excerpt = {
-  color: '#475569',
-  fontSize: '16px',
-  lineHeight: '1.6',
+const divider = {
+  border: 'none',
+  borderTop: '1px solid #f0f0f0',
   margin: '0 0 24px',
 };
 
-const metricsSection = {
-  backgroundColor: '#f8fafc',
-  borderRadius: '12px',
-  padding: '24px',
-  marginTop: '24px',
-};
-
-const metricsTitle = {
-  color: '#1e293b',
-  fontSize: '18px',
-  fontWeight: '600',
-  margin: '0 0 16px',
+const footerSmall = {
+  fontSize: '13px',
+  color: '#999999',
+  lineHeight: '1.5',
   textAlign: 'center' as const,
+  margin: '0 0 8px',
 };
 
-const metricsTable = {
-  width: '100%',
-  borderCollapse: 'collapse' as const,
-};
-
-const metricCell = {
-  textAlign: 'center' as const,
-  padding: '8px',
-};
-
-const metricValue = {
-  color: '#ff7a00',
-  fontSize: '32px',
-  fontWeight: '700',
-  margin: '0 0 4px',
-};
-
-const metricLabel = {
-  color: '#64748b',
-  fontSize: '14px',
-  margin: '0',
-};
-
-const buttonSection = {
-  marginTop: '32px',
-  textAlign: 'center' as const,
-};
-
-const button = {
-  backgroundColor: '#ff7a00',
-  borderRadius: '8px',
-  color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: '600',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'inline-block',
-  padding: '14px 32px',
-  lineHeight: '1',
-};
-
-const linkSection = {
-  marginTop: '16px',
-  textAlign: 'center' as const,
-};
-
-const linkText = {
-  color: '#64748b',
-  fontSize: '14px',
-  margin: '0',
-};
-
-const link = {
-  color: '#14b8a6',
+const footerLink = {
+  color: '#000000',
   textDecoration: 'underline',
 };
 
-const hr = {
-  borderColor: '#e2e8f0',
-  margin: '32px 0',
-};
-
-const footer = {
-  padding: '0 24px',
-};
-
-const footerText = {
-  color: '#64748b',
-  fontSize: '14px',
-  lineHeight: '1.6',
-  margin: '0 0 8px',
-  textAlign: 'center' as const,
-};
-
 const footerCopyright = {
-  color: '#94a3b8',
   fontSize: '12px',
-  margin: '16px 0 0',
+  color: '#cccccc',
   textAlign: 'center' as const,
+  margin: '12px 0 0',
 };
