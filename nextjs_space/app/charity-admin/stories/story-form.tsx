@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Upload, X, Save, Sparkles, Plus, Trash2, Calendar, Loader2 } from 'lucide-react';
+import { ArrowLeft, Upload, X, Save, Sparkles, Plus, Trash2, Calendar, Loader2, Eye, EyeOff, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -62,6 +62,7 @@ export default function StoryForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showAIForm, setShowAIForm] = useState(!initialData);
+  const [showContentPreview, setShowContentPreview] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData?.featuredImageUrl || null
   );
@@ -202,6 +203,12 @@ export default function StoryForm({
   const removeImage = () => {
     setImageFile(null);
     setImagePreview(null);
+  };
+
+  const usePlaceholderImage = () => {
+    setImagePreview('/images/story-placeholder.jpg');
+    setImageFile(null);
+    toast.success('Placeholder image added');
   };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -526,18 +533,46 @@ export default function StoryForm({
           </div>
 
           <div>
-            <Label htmlFor="content">Story Content *</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              placeholder="The full impact story with HTML formatting..."
-              rows={16}
-              required
-              className="mt-1 font-mono text-sm"
-            />
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="content">Story Content *</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowContentPreview(!showContentPreview)}
+                className="gap-2"
+              >
+                {showContentPreview ? (
+                  <>
+                    <EyeOff className="h-4 w-4" />
+                    Edit HTML
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4" />
+                    Preview
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {showContentPreview ? (
+              <div className="mt-1 p-6 border rounded-lg bg-white prose prose-sm max-w-none min-h-[400px]">
+                <div dangerouslySetInnerHTML={{ __html: formData.content }} />
+              </div>
+            ) : (
+              <Textarea
+                id="content"
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="The full impact story with HTML formatting..."
+                rows={16}
+                required
+                className="mt-1 font-mono text-sm"
+              />
+            )}
             <p className="text-sm text-gray-500 mt-1">
-              HTML formatting supported. Use &lt;h3&gt; for headings, &lt;p&gt; for paragraphs.
+              HTML formatting supported. Use &lt;h3&gt; for headings, &lt;p&gt; for paragraphs, and quote blocks for emotional quotes.
             </p>
           </div>
         </CardContent>
@@ -634,12 +669,25 @@ export default function StoryForm({
           ) : (
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <Upload className="mx-auto h-12 w-12 text-gray-400" />
-              <div className="mt-4">
+              <div className="mt-4 space-y-3">
                 <Label htmlFor="image" className="cursor-pointer">
                   <span className="text-[#ea580c] hover:text-[#c2410c] font-medium">Upload an image</span>
                   <Input id="image" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                 </Label>
-                <p className="text-sm text-gray-500 mt-2">PNG, JPG, WebP up to 10MB</p>
+                <p className="text-sm text-gray-500">PNG, JPG, WebP up to 10MB</p>
+                
+                <div className="pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={usePlaceholderImage}
+                    className="gap-2"
+                  >
+                    <ImageIcon className="h-4 w-4" />
+                    Use Placeholder Image
+                  </Button>
+                </div>
               </div>
             </div>
           )}
