@@ -762,10 +762,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">People Impacted</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.people_impacted || ''}
+                  value={formData.impactMetrics.people_impacted ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, people_impacted: parseInt(e.target.value) || 0 }
+                    impactMetrics: { ...formData.impactMetrics, people_impacted: e.target.value === '' ? '' : parseInt(e.target.value) }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -775,10 +775,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Families Helped</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.families_helped || ''}
+                  value={formData.impactMetrics.families_helped ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, families_helped: parseInt(e.target.value) || 0 }
+                    impactMetrics: { ...formData.impactMetrics, families_helped: e.target.value === '' ? '' : parseInt(e.target.value) }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -788,10 +788,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Jobs Created/Secured</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.jobs_secured || ''}
+                  value={formData.impactMetrics.jobs_secured ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, jobs_secured: parseInt(e.target.value) || 0 }
+                    impactMetrics: { ...formData.impactMetrics, jobs_secured: e.target.value === '' ? '' : parseInt(e.target.value) }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -801,10 +801,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Support Hours Provided</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.support_hours || ''}
+                  value={formData.impactMetrics.support_hours ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, support_hours: parseInt(e.target.value) || 0 }
+                    impactMetrics: { ...formData.impactMetrics, support_hours: e.target.value === '' ? '' : parseInt(e.target.value) }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -814,10 +814,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Safe Nights Provided</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.safe_nights || ''}
+                  value={formData.impactMetrics.safe_nights ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, safe_nights: parseInt(e.target.value) || 0 }
+                    impactMetrics: { ...formData.impactMetrics, safe_nights: e.target.value === '' ? '' : parseInt(e.target.value) }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -827,10 +827,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Counselling Sessions</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.counselling_sessions || ''}
+                  value={formData.impactMetrics.counselling_sessions ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, counselling_sessions: parseInt(e.target.value) || 0 }
+                    impactMetrics: { ...formData.impactMetrics, counselling_sessions: e.target.value === '' ? '' : parseInt(e.target.value) }
                   })}
                   placeholder="0"
                   className="mt-1"

@@ -121,8 +121,10 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
   };
   const storyUrl = `https://impactusall.abacusai.app/${donorSlug}/${storySlug}`;
 
-  // Resolve S3 keys to signed URLs
-  const resolvedFeaturedImage = await resolveImageUrl(story.featuredImageUrl);
+  // Resolve S3 keys to signed URLs (use placeholder if no featured image)
+  const resolvedFeaturedImage = story.featuredImageUrl 
+    ? (await resolveImageUrl(story.featuredImageUrl)) || '/images/story-placeholder.jpg'
+    : '/images/story-placeholder.jpg';
   const resolvedCharityLogo = await resolveImageUrl(story.charity.logoUrl);
   const resolvedDonorLogo = donor.logoUrl ? await resolveImageUrl(donor.logoUrl) : null;
   
@@ -164,39 +166,39 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
       </div>
 
       {/* Hero Section - Full Width Featured Image */}
-      {resolvedFeaturedImage && (
-        <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden">
-          <Image
-            src={resolvedFeaturedImage}
-            alt={story.title}
-            fill
-            priority
-            className="object-cover"
-          />
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-          
-          {/* Story Title Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-12">
-            <div className="max-w-4xl mx-auto">
-              {/* Badges */}
-              <div className="mb-4 flex flex-wrap items-center gap-3">
-                {/* Charity Badge */}
-                <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl">
-                  {resolvedCharityLogo && (
-                    <div className="relative w-6 h-6">
-                      <Image
-                        src={resolvedCharityLogo}
-                        alt={story.charity.name}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  )}
-                  <span className="text-sm font-semibold text-slate-700">{story.charity.name}</span>
-                </div>
-                
-                {/* Donation Badge */}
+      <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden">
+        <Image
+          src={resolvedFeaturedImage}
+          alt={story.title}
+          fill
+          priority
+          className="object-cover"
+        />
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        
+        {/* Story Title Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="max-w-4xl mx-auto">
+            {/* Badges */}
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              {/* Charity Badge */}
+              <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl">
+                {resolvedCharityLogo && (
+                  <div className="relative w-6 h-6">
+                    <Image
+                      src={resolvedCharityLogo}
+                      alt={story.charity.name}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                )}
+                <span className="text-sm font-semibold text-slate-700">{story.charity.name}</span>
+              </div>
+              
+              {/* Donation Badge */}
+              {donor.donationAmount && (
                 <div 
                   className="inline-flex items-center px-4 py-2 rounded-full shadow-xl font-bold text-sm backdrop-blur-sm"
                   style={{
@@ -204,32 +206,32 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
                     color: 'white',
                   }}
                 >
-                  £25,000 Donation
-                </div>
-              </div>
-
-              {/* Title */}
-              <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-2xl leading-tight">
-                {story.title}
-              </h1>
-
-              {/* Date */}
-              {story.publishedAt && (
-                <div className="flex items-center gap-2 text-white/90 text-lg">
-                  <Calendar className="w-5 h-5" />
-                  <time dateTime={story.publishedAt.toISOString()}>
-                    {new Date(story.publishedAt).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                  </time>
+                  £{parseInt(donor.donationAmount.toString()).toLocaleString()} Investment
                 </div>
               )}
             </div>
+
+            {/* Title */}
+            <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-2xl leading-tight">
+              {story.title}
+            </h1>
+
+            {/* Date */}
+            {story.publishedAt && (
+              <div className="flex items-center gap-2 text-white/90 text-lg">
+                <Calendar className="w-5 h-5" />
+                <time dateTime={story.publishedAt.toISOString()}>
+                  {new Date(story.publishedAt).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </time>
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Story Content Area */}
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

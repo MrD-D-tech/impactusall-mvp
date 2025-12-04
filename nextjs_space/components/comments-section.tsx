@@ -23,6 +23,7 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
   const router = useRouter();
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
+  const [guestName, setGuestName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,6 +36,12 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
       return;
     }
 
+    // For guest users, require a name
+    if (!session && !guestName.trim()) {
+      toast.error('Please enter your name');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -44,14 +51,23 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
         body: JSON.stringify({
           storyId,
           content: newComment.trim(),
-          guestName: !session ? 'Anonymous' : undefined,
+          guestName: !session ? guestName.trim() : undefined,
         }),
       });
 
       if (!response.ok) throw new Error();
 
-      toast.success('Thank you! Your comment will appear shortly after review.');
+      const successMessage = session 
+        ? 'Your comment has been posted!' 
+        : 'Thank you! Your comment will appear shortly after review.';
+      toast.success(successMessage);
       setNewComment('');
+      setGuestName('');
+      
+      // Refresh to show new comment for authenticated users
+      if (session) {
+        router.refresh();
+      }
     } catch (error) {
       toast.error('Failed to submit comment');
     } finally {
@@ -68,6 +84,25 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
 
       {/* Comment Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name field - only for guest users */}
+        {!session && (
+          <div>
+            <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 mb-2">
+              Your Name
+            </label>
+            <input
+              type="text"
+              id="guestName"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              placeholder="Enter your name"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              disabled={isSubmitting}
+              autoComplete="name"
+            />
+          </div>
+        )}
+        
         <div>
           <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-2">
             Share your thoughts
@@ -95,9 +130,11 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
           <Send className="w-4 h-4" />
           {isSubmitting ? 'Submitting...' : 'Post Comment'}
         </button>
-        <p className="text-sm text-gray-500">
-          Comments are moderated and will appear after approval.
-        </p>
+        {!session && (
+          <p className="text-sm text-gray-500">
+            Guest comments are moderated and will appear after approval.
+          </p>
+        )}
       </form>
 
       {/* Comments List */}

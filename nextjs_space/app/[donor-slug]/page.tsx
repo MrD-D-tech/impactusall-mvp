@@ -270,35 +270,35 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
                 className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
               >
                 {/* Story Image */}
-                {story.featuredImageUrl && (
-                  <div className="relative aspect-[16/10] bg-slate-100 overflow-hidden">
-                    <Image
-                      src={story.featuredImageUrl}
-                      alt={story.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    
-                    {/* Charity Badge */}
-                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl flex items-center gap-2 transform group-hover:scale-105 transition-transform duration-300">
-                      {story.charity.logoUrl && (
-                        <div className="relative w-6 h-6">
-                          <Image
-                            src={story.charity.logoUrl}
-                            alt={story.charity.name}
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
-                      )}
-                      <span className="text-sm font-semibold text-slate-700">
-                        {story.charity.name}
-                      </span>
-                    </div>
+                <div className="relative aspect-[16/10] bg-slate-100 overflow-hidden">
+                  <Image
+                    src={story.featuredImageUrl || '/images/story-placeholder.jpg'}
+                    alt={story.title}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  
+                  {/* Charity Badge */}
+                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl flex items-center gap-2 transform group-hover:scale-105 transition-transform duration-300">
+                    {story.charity.logoUrl && (
+                      <div className="relative w-6 h-6">
+                        <Image
+                          src={story.charity.logoUrl}
+                          alt={story.charity.name}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    )}
+                    <span className="text-sm font-semibold text-slate-700">
+                      {story.charity.name}
+                    </span>
+                  </div>
 
-                    {/* Donation Badge */}
+                  {/* Donation Badge */}
+                  {donor.donationAmount && (
                     <div 
                       className="absolute top-4 right-4 px-4 py-2 rounded-full shadow-xl font-bold text-sm backdrop-blur-sm transform group-hover:scale-105 transition-transform duration-300"
                       style={{
@@ -306,10 +306,10 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
                         color: 'white',
                       }}
                     >
-                      £25,000
+                      £{(parseInt(donor.donationAmount.toString()) / donor.stories.length).toLocaleString()}
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {/* Story Content */}
                 <div className="p-8">

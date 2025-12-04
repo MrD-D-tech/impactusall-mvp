@@ -22,7 +22,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
-    // Create comment (pending moderation)
+    // Determine comment status: Auto-approve authenticated users, moderate guests
+    const commentStatus = session?.user ? 'APPROVED' : 'PENDING';
+
+    // Create comment
     await prisma.comment.create({
       data: {
         storyId,
@@ -30,7 +33,7 @@ export async function POST(request: NextRequest) {
         userName: session?.user ? (session.user.name || 'Anonymous') : guestName.trim(),
         userEmail: session?.user?.email || undefined,
         content: content.trim(),
-        status: 'PENDING',
+        status: commentStatus,
       },
     });
 
