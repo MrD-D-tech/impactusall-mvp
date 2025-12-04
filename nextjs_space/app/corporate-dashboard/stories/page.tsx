@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
+import { resolveImageUrl } from '@/lib/s3';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,6 +59,18 @@ export default async function ContentLibraryPage() {
       publishedAt: 'desc',
     },
   });
+
+  // Resolve S3 keys to signed URLs
+  const storiesWithResolvedImages = await Promise.all(
+    stories.map(async (story) => ({
+      ...story,
+      featuredImageUrl: await resolveImageUrl(story.featuredImageUrl),
+      charity: {
+        ...story.charity,
+        logoUrl: await resolveImageUrl(story.charity.logoUrl),
+      },
+    }))
+  );
 
   return (
     <div className="space-y-8">
@@ -117,7 +130,7 @@ export default async function ContentLibraryPage() {
       </div>
 
       {/* Stories Grid */}
-      {stories.length === 0 ? (
+      {storiesWithResolvedImages.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-gray-500">No stories published yet.</p>
@@ -125,7 +138,7 @@ export default async function ContentLibraryPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {stories.map((story) => {
+          {storiesWithResolvedImages.map((story) => {
             const hasVideo = story.media.some(m => m.fileType === 'VIDEO');
             const publicUrl = `/${user.donor?.slug || 'manchester-united'}/${story.slug}?ref=dashboard`;
 

@@ -78,9 +78,10 @@ export async function POST(request: NextRequest) {
         const s3Key = await uploadFile(buffer, fileName, featuredImage.type);
         console.log('S3 upload successful, key:', s3Key);
         
-        // Generate signed URL for immediate access
-        featuredImageUrl = await getSignedDownloadUrl(s3Key, 86400 * 365); // 1 year expiry
-        console.log('Generated signed URL for image');
+        // Store the S3 key with a prefix so we can identify it later
+        // Format: s3key::{actual_key} - this allows us to generate signed URLs on demand
+        featuredImageUrl = `s3key::${s3Key}`;
+        console.log('Stored S3 key for image');
       } catch (error) {
         console.error('Error uploading image:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -137,8 +138,8 @@ export async function POST(request: NextRequest) {
         const fileName = `videos/${Date.now()}-${sanitizedVideoName}`;
         const videoS3Key = await uploadFile(buffer, fileName, video.type);
         
-        // Generate signed URL for video
-        const videoUrl = await getSignedDownloadUrl(videoS3Key, 86400 * 365); // 1 year expiry
+        // Store S3 key for video (generate signed URLs on demand)
+        const videoUrl = `s3key::${videoS3Key}`;
         
         // Create Media record for the video
         await prisma.media.create({

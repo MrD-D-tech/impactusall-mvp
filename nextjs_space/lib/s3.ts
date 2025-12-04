@@ -6,6 +6,29 @@ const s3Client = createS3Client();
 const { bucketName, folderPrefix } = getBucketConfig();
 
 /**
+ * Resolves a URL that might be an S3 key (prefixed with s3key::) to a signed URL
+ * If it's already a regular URL, returns it as-is
+ */
+export async function resolveImageUrl(url: string | null | undefined): Promise<string | null> {
+  if (!url) return null;
+  
+  // Check if this is an S3 key reference
+  if (url.startsWith('s3key::')) {
+    const s3Key = url.replace('s3key::', '');
+    try {
+      // Generate a signed URL valid for 6 days (under the 7-day limit)
+      return await getSignedDownloadUrl(s3Key, 518400); // 6 days in seconds
+    } catch (error) {
+      console.error('Error generating signed URL for:', s3Key, error);
+      return null;
+    }
+  }
+  
+  // Already a regular URL
+  return url;
+}
+
+/**
  * Upload a file to S3
  * @param buffer - File buffer
  * @param fileName - Desired file name (will be prefixed with folder)

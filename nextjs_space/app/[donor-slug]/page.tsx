@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { AnimatedCounter } from '@/components/animated-counter';
+import { resolveImageUrl } from '@/lib/s3';
 
 interface DonorHubPageProps {
   params: {
@@ -69,6 +70,18 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
   });
   
   const totalShares = analyticsData.reduce((sum, record) => sum + (record.shares || 0), 0);
+
+  // Resolve S3 keys to signed URLs for all story images
+  const storiesWithResolvedImages = await Promise.all(
+    donor.stories.map(async (story: any) => ({
+      ...story,
+      featuredImageUrl: await resolveImageUrl(story.featuredImageUrl),
+      charity: {
+        ...story.charity,
+        logoUrl: await resolveImageUrl(story.charity.logoUrl),
+      },
+    }))
+  );
 
   return (
     <div className="min-h-screen bg-white">
@@ -234,13 +247,13 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
           </p>
         </div>
 
-        {donor.stories.length === 0 ? (
+        {storiesWithResolvedImages.length === 0 ? (
           <div className="text-center py-20 bg-slate-50 rounded-2xl">
             <p className="text-xl text-slate-600">No stories published yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {donor.stories.map((story: any) => (
+            {storiesWithResolvedImages.map((story: any) => (
               <Link
                 key={story.id}
                 href={`/${donorSlug}/${story.slug}`}

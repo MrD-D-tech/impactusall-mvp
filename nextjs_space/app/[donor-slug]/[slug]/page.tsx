@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
 import { prisma } from '@/lib/db';
+import { resolveImageUrl } from '@/lib/s3';
 import { StoryTimeline } from '@/components/story-timeline';
 import { ThankYouMessages } from '@/components/thank-you-messages';
 import { AnimatedCounter } from '@/components/animated-counter';
@@ -120,6 +121,19 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
   };
   const storyUrl = `https://impactusall.abacusai.app/${donorSlug}/${storySlug}`;
 
+  // Resolve S3 keys to signed URLs
+  const resolvedFeaturedImage = await resolveImageUrl(story.featuredImageUrl);
+  const resolvedCharityLogo = await resolveImageUrl(story.charity.logoUrl);
+  const resolvedDonorLogo = donor.logoUrl ? await resolveImageUrl(donor.logoUrl) : null;
+  
+  // Resolve video URLs
+  const resolvedMedia = await Promise.all(
+    story.media.map(async (media: any) => ({
+      ...media,
+      fileUrl: await resolveImageUrl(media.fileUrl),
+    }))
+  );
+
   return (
     <div className="min-h-screen bg-white">
       {/* Donor-Branded Header - Sticky */}
@@ -133,13 +147,13 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
           <BackToDashboardButton 
             donorSlug={donorSlug}
             donorName={donor.name}
-            donorLogo={donor.logoUrl}
+            donorLogo={resolvedDonorLogo}
             primaryColor={donor.primaryColor || '#ea580c'}
           />
-          {donor.logoUrl && (
+          {resolvedDonorLogo && (
             <div className="relative w-12 h-12 bg-white rounded-lg p-2">
               <Image
-                src={donor.logoUrl}
+                src={resolvedDonorLogo}
                 alt={donor.name}
                 fill
                 className="object-contain p-1"
@@ -150,10 +164,10 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
       </div>
 
       {/* Hero Section - Full Width Featured Image */}
-      {story.featuredImageUrl && (
+      {resolvedFeaturedImage && (
         <div className="relative h-[60vh] min-h-[500px] w-full overflow-hidden">
           <Image
-            src={story.featuredImageUrl}
+            src={resolvedFeaturedImage}
             alt={story.title}
             fill
             priority
@@ -169,10 +183,10 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
               <div className="mb-4 flex flex-wrap items-center gap-3">
                 {/* Charity Badge */}
                 <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-full shadow-xl">
-                  {story.charity.logoUrl && (
+                  {resolvedCharityLogo && (
                     <div className="relative w-6 h-6">
                       <Image
-                        src={story.charity.logoUrl}
+                        src={resolvedCharityLogo}
                         alt={story.charity.name}
                         fill
                         className="object-contain"
@@ -263,19 +277,19 @@ export default async function DonorStoryPage({ params }: StoryPageProps) {
         )}
 
         {/* Video Section */}
-        {story.media && story.media.length > 0 && (
+        {resolvedMedia && resolvedMedia.length > 0 && (
           <div className="mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-800 mb-8">
               Watch the Impact
             </h2>
-            {story.media.map((video: any) => (
+            {resolvedMedia.map((video: any) => (
               <div key={video.id} className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
                 <video
                   src={video.fileUrl}
                   controls
                   className="w-full h-full"
                   preload="metadata"
-                  poster={story.featuredImageUrl || undefined}
+                  poster={resolvedFeaturedImage || undefined}
                 >
                   Your browser does not support the video tag.
                 </video>
