@@ -24,7 +24,7 @@ interface SendNewStoryNotificationParams {
 export async function sendNewStoryNotification(params: SendNewStoryNotificationParams) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'ImpactusAll <notifications@resend.dev>', // Use onboarding@resend.dev for testing
+      from: 'ImpactusAll <onboarding@resend.dev>',
       to: Array.isArray(params.to) ? params.to : [params.to],
       subject: `New Impact Story: ${params.storyTitle}`,
       react: NewStoryNotificationEmail({
