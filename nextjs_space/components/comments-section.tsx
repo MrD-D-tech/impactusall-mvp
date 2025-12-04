@@ -23,19 +23,12 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
   const router = useRouter();
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
-  const [guestName, setGuestName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (status === 'loading') return;
-
-    // Check if guest name is provided when not logged in
-    if (!session && !guestName.trim()) {
-      toast.error('Please enter your name');
-      return;
-    }
 
     if (!newComment.trim()) {
       toast.error('Please enter a comment');
@@ -51,15 +44,14 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
         body: JSON.stringify({
           storyId,
           content: newComment.trim(),
-          guestName: !session ? guestName.trim() : undefined,
+          guestName: !session ? 'Anonymous' : undefined,
         }),
       });
 
       if (!response.ok) throw new Error();
 
-      toast.success('Comment submitted for moderation');
+      toast.success('Thank you! Your comment will appear shortly after review.');
       setNewComment('');
-      setGuestName('');
     } catch (error) {
       toast.error('Failed to submit comment');
     } finally {
@@ -76,22 +68,6 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
 
       {/* Comment Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {!session && (
-          <div>
-            <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 mb-2">
-              Your Name
-            </label>
-            <input
-              id="guestName"
-              type="text"
-              value={guestName}
-              onChange={(e) => setGuestName(e.target.value)}
-              placeholder="Enter your name"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              disabled={isSubmitting}
-            />
-          </div>
-        )}
         <div>
           <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-2">
             Share your thoughts

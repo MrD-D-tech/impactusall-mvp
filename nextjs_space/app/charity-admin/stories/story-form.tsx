@@ -753,59 +753,89 @@ export default function StoryForm({
             </Select>
           </div>
 
-          {/* Impact Metrics - Dynamic */}
+          {/* Impact Metrics - Simplified with predefined options */}
           <div>
-            <Label>Impact Metrics</Label>
-            <div className="mt-2 space-y-2">
-              {Object.entries(formData.impactMetrics).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2">
-                  <Input
-                    value={key.replace(/_/g, ' ')}
-                    onChange={(e) => {
-                      const newKey = e.target.value.toLowerCase().replace(/\s+/g, '_');
-                      const newMetrics = { ...formData.impactMetrics };
-                      delete newMetrics[key];
-                      newMetrics[newKey] = value;
-                      setFormData({ ...formData, impactMetrics: newMetrics });
-                    }}
-                    placeholder="Metric name"
-                    className="flex-1"
-                  />
-                  <Input
-                    type="number"
-                    value={value as number}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      impactMetrics: { ...formData.impactMetrics, [key]: parseInt(e.target.value) || 0 }
-                    })}
-                    placeholder="Value"
-                    className="w-24"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      const newMetrics = { ...formData.impactMetrics };
-                      delete newMetrics[key];
-                      setFormData({ ...formData, impactMetrics: newMetrics });
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setFormData({
-                  ...formData,
-                  impactMetrics: { ...formData.impactMetrics, new_metric: 0 }
-                })}
-              >
-                <Plus className="mr-1 h-4 w-4" /> Add Metric
-              </Button>
+            <Label>Impact Metrics (Optional)</Label>
+            <p className="text-sm text-gray-500 mt-1 mb-3">Select and fill in relevant metrics for this story</p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-normal">People Impacted</Label>
+                <Input
+                  type="number"
+                  value={formData.impactMetrics.people_impacted || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    impactMetrics: { ...formData.impactMetrics, people_impacted: parseInt(e.target.value) || 0 }
+                  })}
+                  placeholder="0"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-normal">Families Helped</Label>
+                <Input
+                  type="number"
+                  value={formData.impactMetrics.families_helped || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    impactMetrics: { ...formData.impactMetrics, families_helped: parseInt(e.target.value) || 0 }
+                  })}
+                  placeholder="0"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-normal">Jobs Created/Secured</Label>
+                <Input
+                  type="number"
+                  value={formData.impactMetrics.jobs_secured || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    impactMetrics: { ...formData.impactMetrics, jobs_secured: parseInt(e.target.value) || 0 }
+                  })}
+                  placeholder="0"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-normal">Support Hours Provided</Label>
+                <Input
+                  type="number"
+                  value={formData.impactMetrics.support_hours || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    impactMetrics: { ...formData.impactMetrics, support_hours: parseInt(e.target.value) || 0 }
+                  })}
+                  placeholder="0"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-normal">Safe Nights Provided</Label>
+                <Input
+                  type="number"
+                  value={formData.impactMetrics.safe_nights || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    impactMetrics: { ...formData.impactMetrics, safe_nights: parseInt(e.target.value) || 0 }
+                  })}
+                  placeholder="0"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-normal">Counselling Sessions</Label>
+                <Input
+                  type="number"
+                  value={formData.impactMetrics.counselling_sessions || ''}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    impactMetrics: { ...formData.impactMetrics, counselling_sessions: parseInt(e.target.value) || 0 }
+                  })}
+                  placeholder="0"
+                  className="mt-1"
+                />
+              </div>
             </div>
           </div>
 
