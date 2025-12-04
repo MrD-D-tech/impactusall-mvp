@@ -4,7 +4,6 @@ import {
   Container,
   Head,
   Heading,
-  Hr,
   Html,
   Img,
   Link,
@@ -49,57 +48,63 @@ export const NewStoryNotificationEmail = ({
       <Preview>{previewText}</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Minimal Header with Logo */}
+          {/* Minimal Header */}
           <Section style={header}>
             <Text style={headerBrand}>IMPACTUS<span style={headerBrandAccent}>ALL</span></Text>
           </Section>
 
-          {/* Hero Section */}
-          <Section style={heroSection}>
-            <Text style={newStoryLabel}>NEW IMPACT STORY</Text>
-            <Heading style={heroTitle}>{storyTitle}</Heading>
-            <Text style={heroSubtitle}>
-              From <strong>{charityName}</strong> · Funded by {donorName}
-            </Text>
-          </Section>
-
-          {/* Featured Image - Full Width */}
+          {/* Featured Image - Full Width at Top (Apple style) */}
           {featuredImageUrl && (
-            <Section style={imageWrapper}>
-              <Img
-                src={featuredImageUrl}
-                alt={storyTitle}
-                style={heroImage}
-                width="600"
-              />
-            </Section>
+            <Img
+              src={featuredImageUrl}
+              alt={storyTitle}
+              style={heroImage}
+              width="600"
+            />
           )}
 
-          {/* Story Excerpt */}
+          {/* Story Content */}
           <Section style={contentSection}>
+            {/* New Story Badge */}
+            <Text style={newStoryLabel}>NEW IMPACT STORY</Text>
+            
+            {/* Title */}
+            <Heading style={heroTitle}>{storyTitle}</Heading>
+            
+            {/* Attribution - Clean, No Box */}
+            <Text style={attribution}>
+              by <span style={charityNameStyle}>{charityName}</span>
+            </Text>
+            <Text style={fundedBy}>Funded by {donorName}</Text>
+            
+            {/* Excerpt */}
             <Text style={excerptText}>{storyExcerpt}</Text>
           </Section>
 
-          {/* Impact Metrics - Clean Grid */}
+          {/* Impact Metrics - Beautiful Cards */}
           {impactMetrics && impactMetrics.length > 0 && (
-            <Section style={metricsWrapper}>
-              <Text style={metricsHeading}>IMPACT AT A GLANCE</Text>
-              <table style={metricsGrid}>
+            <Section style={metricsSection}>
+              <Text style={metricsHeading}>YOUR IMPACT</Text>
+              <table style={metricsTable} cellPadding="0" cellSpacing="0">
                 <tbody>
                   <tr>
                     {impactMetrics.slice(0, 2).map((metric, index) => (
-                      <td key={index} style={metricBox}>
-                        <Text style={metricNumber}>{metric.value}</Text>
-                        <Text style={metricText}>{metric.label}</Text>
+                      <td key={index} style={metricCell}>
+                        <div style={metricCard}>
+                          <Text style={metricNumber}>{metric.value}</Text>
+                          <Text style={metricLabel}>{metric.label}</Text>
+                        </div>
                       </td>
                     ))}
                   </tr>
                   {impactMetrics.length > 2 && (
                     <tr>
                       {impactMetrics.slice(2, 4).map((metric, index) => (
-                        <td key={index} style={metricBox}>
-                          <Text style={metricNumber}>{metric.value}</Text>
-                          <Text style={metricText}>{metric.label}</Text>
+                        <td key={index} style={metricCell}>
+                          <div style={metricCard}>
+                            <Text style={metricNumber}>{metric.value}</Text>
+                            <Text style={metricLabel}>{metric.label}</Text>
+                          </div>
                         </td>
                       ))}
                     </tr>
@@ -109,38 +114,25 @@ export const NewStoryNotificationEmail = ({
             </Section>
           )}
 
-          {/* CTA Button - Prominent */}
+          {/* CTA Button */}
           <Section style={ctaSection}>
             <Button style={ctaButton} href={storyUrl}>
-              Read the Full Story →
+              Read Full Story
             </Button>
           </Section>
 
-          {/* Charity Branding */}
-          {charityLogo && (
-            <Section style={charityBrand}>
-              <Img
-                src={charityLogo}
-                alt={charityName}
-                style={charityLogoStyle}
-                width="48"
-                height="48"
-              />
-              <Text style={charityText}>{charityName}</Text>
-            </Section>
-          )}
-
-          {/* Minimal Footer */}
+          {/* Footer */}
           <Section style={footerSection}>
-            <Hr style={divider} />
-            <Text style={footerSmall}>
-              You're receiving this because your organization supports {charityName}.{' '}
+            <Text style={footerText}>
+              You're receiving this because {donorName} supports {charityName}.
+            </Text>
+            <Text style={footerLinks}>
               <Link href="https://impactusall.abacusai.app/corporate-dashboard/settings" style={footerLink}>
-                Manage preferences
+                Manage email preferences
               </Link>
             </Text>
             <Text style={footerCopyright}>
-              © {new Date().getFullYear()} ImpactusAll · Making Impact Visible
+              © 2025 ImpactusAll
             </Text>
           </Section>
         </Container>
@@ -151,203 +143,189 @@ export const NewStoryNotificationEmail = ({
 
 export default NewStoryNotificationEmail;
 
-// Premium Styles - Inspired by Apple, Airbnb, Stripe
-const main = {
-  backgroundColor: '#ffffff',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  WebkitFontSmoothing: 'antialiased' as const,
-  MozOsxFontSmoothing: 'grayscale' as const,
+// ============================================
+// PREMIUM STYLES - Apple/Airbnb Inspired
+// ============================================
+
+const main: React.CSSProperties = {
+  backgroundColor: '#f5f5f7',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  WebkitFontSmoothing: 'antialiased',
+  MozOsxFontSmoothing: 'grayscale',
+  padding: '40px 20px',
 };
 
-const container = {
+const container: React.CSSProperties = {
   margin: '0 auto',
   maxWidth: '600px',
   backgroundColor: '#ffffff',
+  borderRadius: '16px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.06)',
 };
 
-const header = {
-  padding: '48px 40px 32px',
-  textAlign: 'center' as const,
-  borderBottom: '1px solid #f0f0f0',
+const header: React.CSSProperties = {
+  padding: '32px 40px 24px',
+  textAlign: 'center',
 };
 
-const headerBrand = {
-  fontSize: '20px',
-  fontWeight: '700',
+const headerBrand: React.CSSProperties = {
+  fontSize: '18px',
+  fontWeight: 700,
   letterSpacing: '-0.5px',
-  color: '#000000',
-  margin: '0',
+  color: '#1d1d1f',
+  margin: 0,
 };
 
-const headerBrandAccent = {
-  color: '#ff7a00',
+const headerBrandAccent: React.CSSProperties = {
+  color: '#ff6600',
 };
 
-const heroSection = {
-  padding: '48px 40px 32px',
-  textAlign: 'center' as const,
-};
-
-const newStoryLabel = {
-  fontSize: '11px',
-  fontWeight: '600',
-  letterSpacing: '1.5px',
-  color: '#ff7a00',
-  textTransform: 'uppercase' as const,
-  margin: '0 0 16px',
-};
-
-const heroTitle = {
-  fontSize: '32px',
-  fontWeight: '700',
-  letterSpacing: '-1px',
-  lineHeight: '1.2',
-  color: '#000000',
-  margin: '0 0 16px',
-};
-
-const heroSubtitle = {
-  fontSize: '15px',
-  color: '#666666',
-  lineHeight: '1.5',
-  margin: '0',
-};
-
-const imageWrapper = {
-  padding: '0',
-  margin: '0',
-};
-
-const heroImage = {
+const heroImage: React.CSSProperties = {
   width: '100%',
   height: 'auto',
   display: 'block',
-  margin: '0',
-  padding: '0',
 };
 
-const contentSection = {
+const contentSection: React.CSSProperties = {
   padding: '40px 40px 32px',
 };
 
-const excerptText = {
-  fontSize: '17px',
-  lineHeight: '1.6',
-  color: '#333333',
-  margin: '0',
+const newStoryLabel: React.CSSProperties = {
+  fontSize: '12px',
+  fontWeight: 600,
+  letterSpacing: '1px',
+  color: '#ff6600',
+  textTransform: 'uppercase',
+  margin: '0 0 16px',
 };
 
-const metricsWrapper = {
-  padding: '32px 40px',
-  backgroundColor: '#fafafa',
+const heroTitle: React.CSSProperties = {
+  fontSize: '28px',
+  fontWeight: 700,
+  letterSpacing: '-0.5px',
+  lineHeight: 1.25,
+  color: '#1d1d1f',
+  margin: '0 0 12px',
 };
 
-const metricsHeading = {
-  fontSize: '11px',
-  fontWeight: '600',
-  letterSpacing: '1.5px',
-  color: '#999999',
-  textTransform: 'uppercase' as const,
-  textAlign: 'center' as const,
+const attribution: React.CSSProperties = {
+  fontSize: '15px',
+  color: '#86868b',
+  margin: '0 0 4px',
+  lineHeight: 1.5,
+};
+
+const charityNameStyle: React.CSSProperties = {
+  color: '#1d1d1f',
+  fontWeight: 600,
+};
+
+const fundedBy: React.CSSProperties = {
+  fontSize: '13px',
+  color: '#86868b',
   margin: '0 0 24px',
+  lineHeight: 1.5,
 };
 
-const metricsGrid = {
+const excerptText: React.CSSProperties = {
+  fontSize: '16px',
+  lineHeight: 1.7,
+  color: '#424245',
+  margin: 0,
+};
+
+const metricsSection: React.CSSProperties = {
+  padding: '0 40px 32px',
+};
+
+const metricsHeading: React.CSSProperties = {
+  fontSize: '11px',
+  fontWeight: 600,
+  letterSpacing: '1px',
+  color: '#86868b',
+  textTransform: 'uppercase',
+  margin: '0 0 16px',
+};
+
+const metricsTable: React.CSSProperties = {
   width: '100%',
-  borderCollapse: 'separate' as const,
-  borderSpacing: '12px',
 };
 
-const metricBox = {
-  backgroundColor: '#ffffff',
-  border: '1px solid #e0e0e0',
-  borderRadius: '12px',
-  padding: '24px 16px',
-  textAlign: 'center' as const,
+const metricCell: React.CSSProperties = {
+  padding: '6px',
   width: '50%',
+  verticalAlign: 'top',
 };
 
-const metricNumber = {
-  fontSize: '36px',
-  fontWeight: '700',
-  color: '#000000',
-  lineHeight: '1',
-  margin: '0 0 8px',
+const metricCard: React.CSSProperties = {
+  backgroundColor: '#f5f5f7',
+  borderRadius: '12px',
+  padding: '20px 16px',
+  textAlign: 'center',
+};
+
+const metricNumber: React.CSSProperties = {
+  fontSize: '32px',
+  fontWeight: 700,
+  color: '#1d1d1f',
+  lineHeight: 1,
+  margin: '0 0 6px',
   letterSpacing: '-1px',
 };
 
-const metricText = {
-  fontSize: '13px',
-  color: '#666666',
-  fontWeight: '500',
-  margin: '0',
-  textTransform: 'uppercase' as const,
+const metricLabel: React.CSSProperties = {
+  fontSize: '12px',
+  color: '#86868b',
+  fontWeight: 500,
+  margin: 0,
+  textTransform: 'uppercase',
   letterSpacing: '0.5px',
 };
 
-const ctaSection = {
-  padding: '32px 40px',
-  textAlign: 'center' as const,
+const ctaSection: React.CSSProperties = {
+  padding: '8px 40px 40px',
+  textAlign: 'center',
 };
 
-const ctaButton = {
-  backgroundColor: '#000000',
+const ctaButton: React.CSSProperties = {
+  backgroundColor: '#1d1d1f',
   color: '#ffffff',
   fontSize: '15px',
-  fontWeight: '600',
+  fontWeight: 600,
   textDecoration: 'none',
-  textAlign: 'center' as const,
+  textAlign: 'center',
   display: 'inline-block',
-  padding: '16px 40px',
-  borderRadius: '8px',
-  lineHeight: '1',
-  letterSpacing: '-0.2px',
+  padding: '14px 32px',
+  borderRadius: '980px',
+  lineHeight: 1,
 };
 
-const charityBrand = {
-  padding: '32px 40px',
-  textAlign: 'center' as const,
-  borderTop: '1px solid #f0f0f0',
+const footerSection: React.CSSProperties = {
+  padding: '24px 40px 32px',
+  backgroundColor: '#f5f5f7',
+  textAlign: 'center',
 };
 
-const charityLogoStyle = {
-  borderRadius: '50%',
-  margin: '0 auto 12px',
-  border: '1px solid #e0e0e0',
-} as React.CSSProperties;
-
-const charityText = {
-  fontSize: '14px',
-  color: '#666666',
-  margin: '0',
-};
-
-const footerSection = {
-  padding: '24px 40px 48px',
-};
-
-const divider = {
-  border: 'none',
-  borderTop: '1px solid #f0f0f0',
-  margin: '0 0 24px',
-};
-
-const footerSmall = {
+const footerText: React.CSSProperties = {
   fontSize: '13px',
-  color: '#999999',
-  lineHeight: '1.5',
-  textAlign: 'center' as const,
-  margin: '0 0 8px',
+  color: '#86868b',
+  lineHeight: 1.5,
+  margin: '0 0 12px',
 };
 
-const footerLink = {
-  color: '#000000',
-  textDecoration: 'underline',
+const footerLinks: React.CSSProperties = {
+  fontSize: '13px',
+  margin: '0 0 16px',
 };
 
-const footerCopyright = {
+const footerLink: React.CSSProperties = {
+  color: '#0066cc',
+  textDecoration: 'none',
+};
+
+const footerCopyright: React.CSSProperties = {
   fontSize: '12px',
-  color: '#cccccc',
-  textAlign: 'center' as const,
-  margin: '12px 0 0',
+  color: '#aeaeb2',
+  margin: 0,
 };
