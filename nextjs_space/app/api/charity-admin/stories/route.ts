@@ -42,6 +42,7 @@ export async function POST(request: NextRequest) {
     const donorIdRaw = formData.get('donorId') as string;
     const status = formData.get('status') as string;
     const impactMetricsRaw = formData.get('impactMetrics') as string;
+    const milestonesRaw = formData.get('milestones') as string;
     const featuredImage = formData.get('featuredImage') as File | null;
     const video = formData.get('video') as File | null;
 
@@ -63,6 +64,16 @@ export async function POST(request: NextRequest) {
         impactMetrics = JSON.parse(impactMetricsRaw);
       } catch (e) {
         console.error('Failed to parse impact metrics:', e);
+      }
+    }
+
+    // Parse milestones
+    let milestones: Array<{ title: string; description: string; date: string; displayOrder: number }> = [];
+    if (milestonesRaw) {
+      try {
+        milestones = JSON.parse(milestonesRaw);
+      } catch (e) {
+        console.error('Failed to parse milestones:', e);
       }
     }
 
@@ -129,6 +140,25 @@ export async function POST(request: NextRequest) {
         updatedById: session.user.id,
       },
     });
+
+    // Create milestones if provided
+    if (milestones.length > 0) {
+      try {
+        await prisma.storyMilestone.createMany({
+          data: milestones.map((m) => ({
+            storyId: story.id,
+            title: m.title,
+            description: m.description,
+            date: m.date ? new Date(m.date) : new Date(),
+            displayOrder: m.displayOrder,
+          })),
+        });
+        console.log(`Created ${milestones.length} milestones for story`);
+      } catch (error) {
+        console.error('Error creating milestones:', error);
+        // Don't fail the story creation if milestones fail
+      }
+    }
 
     // Handle video upload if provided
     if (video && video.size > 0) {
