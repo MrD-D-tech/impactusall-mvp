@@ -74,8 +74,9 @@ export async function POST(request: NextRequest) {
         featuredImageUrl = await getSignedDownloadUrl(s3Key, 86400 * 365); // 1 year expiry
       } catch (error) {
         console.error('Error uploading image:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
         return NextResponse.json(
-          { error: 'Failed to upload image' },
+          { error: `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}` },
           { status: 500 }
         );
       }
