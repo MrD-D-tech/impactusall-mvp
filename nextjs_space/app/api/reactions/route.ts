@@ -43,39 +43,37 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { storyId, reactionType } = await request.json();
 
     if (!storyId || !reactionType) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Check if reaction already exists
-    const existing = await prisma.reaction.findFirst({
-      where: {
-        storyId,
-        userId: session.user.id,
-        reactionType,
-      },
-    });
+    // For logged-in users, check if reaction already exists and create record
+    if (session?.user?.id) {
+      const existing = await prisma.reaction.findFirst({
+        where: {
+          storyId,
+          userId: session.user.id,
+          reactionType,
+        },
+      });
 
-    if (existing) {
-      return NextResponse.json({ error: 'Reaction already exists' }, { status: 400 });
+      if (existing) {
+        return NextResponse.json({ error: 'Reaction already exists' }, { status: 400 });
+      }
+
+      // Create reaction record for authenticated user
+      await prisma.reaction.create({
+        data: {
+          storyId,
+          userId: session.user.id,
+          reactionType,
+        },
+      });
     }
 
-    // Create reaction
-    await prisma.reaction.create({
-      data: {
-        storyId,
-        userId: session.user.id,
-        reactionType,
-      },
-    });
-
-    // Update analytics
+    // For both logged-in and anonymous users, update analytics
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -112,26 +110,24 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { storyId, reactionType } = await request.json();
 
     if (!storyId || !reactionType) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Delete reaction
-    await prisma.reaction.deleteMany({
-      where: {
-        storyId,
-        userId: session.user.id,
-        reactionType,
-      },
-    });
+    // For logged-in users, delete reaction record
+    if (session?.user?.id) {
+      await prisma.reaction.deleteMany({
+        where: {
+          storyId,
+          userId: session.user.id,
+          reactionType,
+        },
+      });
+    }
 
-    // Update analytics
+    // For both logged-in and anonymous users, update analytics
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 

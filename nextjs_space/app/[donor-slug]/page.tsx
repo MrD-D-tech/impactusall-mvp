@@ -126,6 +126,16 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
             {donor.name}
           </h1>
 
+          {/* Donation Amount Badge */}
+          {donor.donationAmount && (
+            <div className="mb-6 inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full shadow-xl">
+              <span className="text-sm font-semibold text-slate-600 uppercase tracking-wider">Investment</span>
+              <span className="text-2xl font-black" style={{ color: donor.primaryColor || '#DA291C' }}>
+                £{parseInt(donor.donationAmount.toString()).toLocaleString()}
+              </span>
+            </div>
+          )}
+
           {/* Tagline */}
           {donor.tagline && (
             <p className="text-2xl md:text-3xl text-white font-medium max-w-4xl mx-auto mb-8 drop-shadow-lg">

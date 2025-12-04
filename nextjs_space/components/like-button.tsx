@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface LikeButtonProps {
@@ -13,14 +12,21 @@ interface LikeButtonProps {
 
 export function LikeButton({ storyId, initialLikes }: LikeButtonProps) {
   const { data: session } = useSession() || {};
-  const router = useRouter();
   const [likes, setLikes] = useState(initialLikes);
   const [isLiking, setIsLiking] = useState(false);
+  const [hasLiked, setHasLiked] = useState(false);
+
+  // Check if user has already liked this story (using localStorage for anonymous users)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const likedStories = JSON.parse(localStorage.getItem('likedStories') || '[]');
+      setHasLiked(likedStories.includes(storyId));
+    }
+  }, [storyId]);
 
   const handleLike = async () => {
-    if (!session?.user) {
-      toast.error('Please log in to like stories');
-      router.push('/login');
+    if (hasLiked) {
+      toast.info('You already liked this story!');
       return;
     }
 
@@ -37,6 +43,15 @@ export function LikeButton({ storyId, initialLikes }: LikeButtonProps) {
 
       if (response.ok) {
         setLikes(data.likes);
+        setHasLiked(true);
+        
+        // Store in localStorage for anonymous users
+        if (typeof window !== 'undefined') {
+          const likedStories = JSON.parse(localStorage.getItem('likedStories') || '[]');
+          likedStories.push(storyId);
+          localStorage.setItem('likedStories', JSON.stringify(likedStories));
+        }
+        
         toast.success('Story liked!');
       } else {
         toast.error(data.error || 'Failed to like story');
@@ -51,11 +66,15 @@ export function LikeButton({ storyId, initialLikes }: LikeButtonProps) {
   return (
     <button
       onClick={handleLike}
-      disabled={isLiking}
-      className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-teal-500 text-white rounded-full font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+      disabled={isLiking || hasLiked}
+      className={`flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all ${
+        hasLiked
+          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+          : 'bg-gradient-to-r from-orange-500 to-teal-500 text-white hover:opacity-90'
+      } disabled:opacity-50`}
     >
-      <Heart className="w-5 h-5" />
-      <span>Like ({likes})</span>
+      <Heart className={`w-5 h-5 ${hasLiked ? 'fill-current' : ''}`} />
+      <span>{hasLiked ? 'Liked' : 'Like'} ({likes})</span>
     </button>
   );
 }

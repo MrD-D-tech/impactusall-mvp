@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type ReactionType = 'LOVE' | 'APPLAUSE' | 'MOVED' | 'INSPIRED' | 'GRATEFUL';
@@ -27,7 +26,6 @@ const REACTIONS = [
 
 export function ReactionButtons({ storyId, initialReactions }: ReactionButtonsProps) {
   const { data: session, status } = useSession() || {};
-  const router = useRouter();
   const [reactions, setReactions] = useState<ReactionCount[]>(initialReactions);
   const [userReactions, setUserReactions] = useState<ReactionType[]>([]);
   const [loading, setLoading] = useState<string | null>(null);
@@ -35,6 +33,7 @@ export function ReactionButtons({ storyId, initialReactions }: ReactionButtonsPr
   // Fetch user's reactions on mount
   useEffect(() => {
     if (session?.user?.id) {
+      // Logged in users: fetch from API
       fetch(`/api/reactions?storyId=${storyId}`)
         .then((res) => res.json())
         .then((data) => {
@@ -43,17 +42,16 @@ export function ReactionButtons({ storyId, initialReactions }: ReactionButtonsPr
           }
         })
         .catch(() => {});
+    } else if (typeof window !== 'undefined') {
+      // Anonymous users: load from localStorage
+      const storageKey = `reactions_${storyId}`;
+      const savedReactions = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      setUserReactions(savedReactions);
     }
   }, [storyId, session?.user?.id]);
 
   const handleReaction = async (type: ReactionType) => {
     if (status === 'loading') return;
-
-    if (!session) {
-      toast.error('Please log in to react to stories');
-      router.push('/login');
-      return;
-    }
 
     setLoading(type);
 
@@ -75,13 +73,19 @@ export function ReactionButtons({ storyId, initialReactions }: ReactionButtonsPr
       setReactions(data.reactions);
 
       // Update user reactions
-      if (isRemoving) {
-        setUserReactions(userReactions.filter((r) => r !== type));
-        toast.success(`Reaction removed`);
-      } else {
-        setUserReactions([...userReactions, type]);
-        toast.success(`Reaction added!`);
+      const newUserReactions = isRemoving
+        ? userReactions.filter((r) => r !== type)
+        : [...userReactions, type];
+      
+      setUserReactions(newUserReactions);
+
+      // For anonymous users, save to localStorage
+      if (!session?.user?.id && typeof window !== 'undefined') {
+        const storageKey = `reactions_${storyId}`;
+        localStorage.setItem(storageKey, JSON.stringify(newUserReactions));
       }
+
+      toast.success(isRemoving ? 'Reaction removed' : 'Reaction added!');
     } catch (error) {
       toast.error('Failed to update reaction');
     } finally {
