@@ -41,7 +41,9 @@ export default function LoginPage() {
         if (sessionData?.user?.role === 'CHARITY_ADMIN') {
           router.push('/charity-admin');
         } else if (sessionData?.user?.role === 'CORPORATE_DONOR') {
-          router.push('/corporate-dashboard'); // For future implementation
+          router.push('/corporate-dashboard');
+        } else if (sessionData?.user?.role === 'PLATFORM_ADMIN') {
+          router.push('/platform-admin');
         } else {
           router.push('/');
         }

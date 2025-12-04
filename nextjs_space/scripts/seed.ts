@@ -102,6 +102,18 @@ async function main() {
     },
   });
 
+  // Platform admin user
+  const platformAdminPassword = await bcrypt.hash('admin123', 10);
+  const platformAdmin = await prisma.user.create({
+    data: {
+      email: 'platform@impactusall.com',
+      password: platformAdminPassword,
+      name: 'Platform Administrator',
+      role: 'PLATFORM_ADMIN',
+      emailVerified: new Date(),
+    },
+  });
+
   // Charity admin user for Northern Hospice
   const charityAdminPassword = await bcrypt.hash('admin123', 10);
   const charityAdmin = await prisma.user.create({
@@ -662,6 +674,7 @@ async function main() {
   console.log('✅ Database seeded successfully!');
   console.log('\n📊 Summary:');
   console.log('- 1 test user created (john@doe.com / johndoe123)');
+  console.log('- 1 platform admin created (platform@impactusall.com / admin123)');
   console.log('- 1 charity admin created (admin@northernhospice.org.uk / admin123)');
   console.log('- 1 corporate user created (corporate@manutd.com / corporate123)');
   console.log('- 4 charities created');

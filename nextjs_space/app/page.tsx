@@ -4,37 +4,66 @@ import { Heart, ArrowRight } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-teal-50 flex items-center justify-center px-4">
-      <div className="max-w-2xl text-center">
-        <div className="mb-8 inline-block">
-          <Heart className="h-20 w-20 text-[#ea580c]" />
-        </div>
-        
-        <h1 className="text-5xl font-bold text-gray-900 mb-4">
-          ImpactusAll
-        </h1>
-        
-        <p className="text-xl text-gray-600 mb-8">
-          Connecting corporate generosity with charitable impact through powerful storytelling.
-        </p>
-        
-        <div className="space-y-4">
-          <Link href="/manchester-united">
-            <Button size="lg" className="gradient-primary">
-              View Manchester United Impact Hub
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-teal-50 flex flex-col">
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="max-w-2xl text-center">
+          <div className="mb-8 inline-block">
+            <Heart className="h-20 w-20 text-[#ea580c]" />
+          </div>
           
-          <div className="pt-4 space-y-2">
-            <Link href="/login">
-              <Button variant="link" className="text-gray-600">
-                Charity Admin Login
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+            ImpactusAll
+          </h1>
+          
+          <p className="text-xl text-gray-600 mb-8">
+            Connecting corporate generosity with charitable impact through powerful storytelling.
+          </p>
+          
+          <div className="space-y-4">
+            <Link href="/manchester-united">
+              <Button size="lg" className="gradient-primary">
+                View Manchester United Impact Hub
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
+            
+            <div className="pt-4 space-y-2">
+              <Link href="/login">
+                <Button variant="link" className="text-gray-600">
+                  Charity Admin Login
+                </Button>
+              </Link>
+              <div>
+                <Link href="/charity-signup">
+                  <Button variant="link" className="text-teal-600">
+                    Join as a Charity
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      
+      {/* Footer */}
+      <footer className="py-8 px-4 border-t border-gray-200 bg-white/50">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-sm text-gray-600">
+            © {new Date().getFullYear()} ImpactusAll Ltd. All rights reserved.
+          </div>
+          <div className="flex gap-6 text-sm">
+            <Link href="/terms" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Terms of Service
+            </Link>
+            <Link href="/privacy" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/charity-signup" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Join as a Charity
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

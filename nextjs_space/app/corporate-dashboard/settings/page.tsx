@@ -46,6 +46,15 @@ export default function SettingsPage() {
       if (response.ok) {
         const data = await response.json();
         setDonorData(data.donor);
+        
+        // Load email preferences from donor data
+        if (data.donor?.emailPreferences) {
+          const prefs = data.donor.emailPreferences;
+          setNewStoryNotif(prefs.newStories ?? true);
+          setWeeklyDigest(prefs.weeklyDigest ?? false);
+          setMonthlyReport(prefs.monthlyReports ?? false);
+          setEmailNotifications(prefs.newStories || prefs.weeklyDigest || prefs.monthlyReports);
+        }
       }
     } catch (error) {
       console.error('Error fetching settings:', error);

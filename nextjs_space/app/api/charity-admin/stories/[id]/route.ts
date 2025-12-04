@@ -178,6 +178,60 @@ export async function PUT(
       }
     }
 
+    // Send email notification if story was just published (DRAFT -> PUBLISHED) and has a donor
+    const wasJustPublished = 
+      status === 'PUBLISHED' && 
+      existingStory.status === 'DRAFT' && 
+      donorId;
+
+    if (wasJustPublished) {
+      try {
+        const { sendNewStoryNotification, getCorporateDonorEmails } = await import('@/lib/email');
+        
+        // Get donor details
+        const donor = await prisma.donor.findUnique({
+          where: { id: donorId },
+        });
+
+        if (donor) {
+          // Get all corporate donor emails
+          const recipientEmails = await getCorporateDonorEmails(donorId);
+
+          if (recipientEmails.length > 0) {
+            // Format impact metrics for email
+            const emailMetrics = impactMetrics
+              ? Object.entries(impactMetrics)
+                  .filter(([_, value]) => value)
+                  .map(([key, value]) => ({
+                    label: key
+                      .replace(/_/g, ' ')
+                      .replace(/\b\w/g, (l) => l.toUpperCase()),
+                    value: value as string | number,
+                  }))
+              : undefined;
+
+            // Send notification email
+            await sendNewStoryNotification({
+              to: recipientEmails,
+              storyTitle: title,
+              storyExcerpt: excerpt || content.substring(0, 200) + '...',
+              charityName: user.charity.name,
+              charityLogo: user.charity.logoUrl || undefined,
+              donorName: donor.name,
+              impactMetrics: emailMetrics,
+              storyUrl: `https://impactusall.abacusai.app/${donor.slug}/${slug}`,
+              featuredImageUrl: featuredImageUrl || undefined,
+            });
+
+            console.log(`Email notification sent to ${recipientEmails.length} recipients`);
+          }
+        }
+      } catch (error) {
+        console.error('Error sending email notification:', error);
+        // Don't fail the story update if email fails
+      }
+    }
+
     return NextResponse.json({
       success: true,
       story: updatedStory,
