@@ -131,6 +131,13 @@ enum CharityStatus {
   REJECTED
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  CANCELLED
+}
+
 model Charity {
   id                  String         @id @default(cuid())
   name                String
@@ -142,6 +149,12 @@ model Charity {
   registrationNumber  String?        // UK charity registration number
   status              CharityStatus  @default(PENDING)
   
+  // Subscription tracking
+  monthlyFee          Decimal?       @db.Decimal(10, 2)  // Monthly subscription fee
+  subscriptionStatus  SubscriptionStatus?  // Current subscription status
+  lastPaymentDate     DateTime?      // Last successful payment
+  nextPaymentDue      DateTime?      // Next payment due date
+  
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
   
@@ -152,6 +165,8 @@ model Charity {
 
   @@index([name])
   @@index([status])
+  @@index([subscriptionStatus])
+  @@index([nextPaymentDue])
 }
 
 model Donor {
@@ -205,6 +220,12 @@ model Story {
   status              StoryStatus  @default(DRAFT)
   publishedAt         DateTime?
   
+  // Content flagging
+  isFlagged           Boolean      @default(false)
+  flagReason          String?      @db.Text  // Reason for flagging
+  flaggedAt           DateTime?    // When it was flagged
+  flaggedBy           String?      // User ID who flagged it
+  
   // Metadata
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
@@ -230,6 +251,7 @@ model Story {
   @@index([donorId])
   @@index([status])
   @@index([publishedAt])
+  @@index([isFlagged])
 }
 
 model Media {
@@ -365,6 +387,12 @@ model Comment {
   moderatedById       String?
   moderatedBy         User?         @relation("CommentModerator", fields: [moderatedById], references: [id])
   
+  // Content flagging
+  isFlagged           Boolean       @default(false)
+  flagReason          String?       @db.Text  // Reason for flagging
+  flaggedAt           DateTime?     // When it was flagged
+  flaggedBy           String?       // User ID who flagged it
+  
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   
@@ -376,6 +404,7 @@ model Comment {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([isFlagged])
 }
 
 model StoryMilestone {
@@ -424,4 +453,29 @@ model ThankYouMessage {
 
   @@index([storyId])
   @@index([featured])
+}
+
+// ============================================
+// PLATFORM ADMIN ACTIVITY LOG
+// ============================================
+
+model ActivityLog {
+  id                  String       @id @default(cuid())
+  
+  // Admin Info
+  userId              String       // Platform admin who performed the action
+  
+  // Action Details
+  action              String       // e.g., "APPROVED_CHARITY", "FLAGGED_CONTENT", "UPDATED_USER"
+  entityType          String       // e.g., "CHARITY", "STORY", "COMMENT", "USER", "DONOR"
+  entityId            String?      // ID of the affected entity
+  details             Json?        // Additional details about the action
+  
+  // Timestamp
+  timestamp           DateTime     @default(now())
+  
+  @@index([userId])
+  @@index([entityType])
+  @@index([timestamp])
+  @@index([action])
 }

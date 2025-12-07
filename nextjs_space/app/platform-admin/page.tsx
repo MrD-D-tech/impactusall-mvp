@@ -2,20 +2,23 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
+import { logActivity } from '@/lib/activity-log';
+import { SidebarNav } from '@/components/platform-admin/sidebar-nav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { 
   Building2, 
-  CheckCircle, 
-  XCircle, 
+  Users, 
+  FileText,
+  TrendingUp,
+  DollarSign,
+  CheckCircle,
+  AlertTriangle,
   Clock,
-  Mail,
-  Globe,
-  MapPin,
-  FileText
+  Flag,
+  Activity,
 } from 'lucide-react';
-import Link from 'next/link';
 
 export default async function PlatformAdminPage() {
   const session = await getServerSession(authOptions);
@@ -24,203 +27,371 @@ export default async function PlatformAdminPage() {
     redirect('/login');
   }
 
-  // Fetch all charities with their admin users
-  const charities = await prisma.charity.findMany({
-    include: {
-      users: {
-        where: {
-          role: 'CHARITY_ADMIN',
-        },
-        select: {
-          name: true,
-          email: true,
-        },
-      },
-      _count: {
-        select: {
-          stories: true,
-        },
-      },
-    },
-    orderBy: [
-      { status: 'asc' }, // PENDING first
-      { createdAt: 'desc' },
-    ],
-  });
+  // Log admin dashboard view
+  await logActivity(
+    session.user.id,
+    'VIEWED_DASHBOARD',
+    'SYSTEM',
+    null,
+    { timestamp: new Date() }
+  );
 
-  const pendingCount = charities.filter(c => c.status === 'PENDING').length;
-  const approvedCount = charities.filter(c => c.status === 'APPROVED').length;
-  const rejectedCount = charities.filter(c => c.status === 'REJECTED').length;
+  // Fetch comprehensive stats
+  const [
+    charitiesStats,
+    donorsCount,
+    storiesStats,
+    engagementMetrics,
+    subscriptionStats,
+    overduePayments,
+    inactiveCharities,
+    flaggedContent,
+    recentActivities,
+  ] = await Promise.all([
+    // Charities stats
+    prisma.charity.groupBy({
+      by: ['status'],
+      _count: true,
+    }),
+    
+    // Active donors
+    prisma.donor.count(),
+    
+    // Stories stats
+    prisma.story.groupBy({
+      by: ['status'],
+      _count: true,
+    }),
+    
+    // Engagement metrics (likes + reactions + comments)
+    prisma.$transaction([
+      prisma.like.count(),
+      prisma.reaction.count(),
+      prisma.comment.count(),
+    ]),
+    
+    // Subscription stats
+    prisma.charity.aggregate({
+      _count: {
+        id: true,
+      },
+      _sum: {
+        monthlyFee: true,
+      },
+      where: {
+        subscriptionStatus: 'ACTIVE',
+      },
+    }),
+    
+    // Overdue payments
+    prisma.charity.findMany({
+      where: {
+        nextPaymentDue: {
+          lt: new Date(),
+        },
+        status: 'APPROVED',
+      },
+      select: {
+        id: true,
+        name: true,
+        nextPaymentDue: true,
+        monthlyFee: true,
+      },
+      take: 5,
+    }),
+    
+    // Inactive charities (no stories in 30+ days)
+    prisma.$queryRaw<Array<{ id: string; name: string; lastStoryDate: Date | null }>>`
+      SELECT c.id, c.name, MAX(s."publishedAt") as "lastStoryDate"
+      FROM "Charity" c
+      LEFT JOIN "Story" s ON s."charityId" = c.id AND s.status = 'PUBLISHED'
+      WHERE c.status = 'APPROVED'
+      GROUP BY c.id, c.name
+      HAVING MAX(s."publishedAt") < NOW() - INTERVAL '30 days' OR MAX(s."publishedAt") IS NULL
+      LIMIT 5
+    `,
+    
+    // Flagged content
+    prisma.$transaction([
+      prisma.story.count({ where: { isFlagged: true } }),
+      prisma.comment.count({ where: { isFlagged: true } }),
+    ]),
+    
+    // Recent activities
+    prisma.activityLog.findMany({
+      take: 20,
+      orderBy: {
+        timestamp: 'desc',
+      },
+      select: {
+        id: true,
+        userId: true,
+        action: true,
+        entityType: true,
+        entityId: true,
+        details: true,
+        timestamp: true,
+      },
+    }),
+  ]);
+
+  // Process stats
+  const totalCharities = charitiesStats.reduce((acc, curr) => acc + curr._count, 0);
+  const pendingCharities = charitiesStats.find(s => s.status === 'PENDING')?._count || 0;
+  const approvedCharities = charitiesStats.find(s => s.status === 'APPROVED')?._count || 0;
+  const rejectedCharities = charitiesStats.find(s => s.status === 'REJECTED')?._count || 0;
+
+  const totalStories = storiesStats.reduce((acc, curr) => acc + curr._count, 0);
+  const draftStories = storiesStats.find(s => s.status === 'DRAFT')?._count || 0;
+  const publishedStories = storiesStats.find(s => s.status === 'PUBLISHED')?._count || 0;
+  const archivedStories = storiesStats.find(s => s.status === 'ARCHIVED')?._count || 0;
+
+  const totalEngagement = engagementMetrics[0] + engagementMetrics[1] + engagementMetrics[2];
+  const monthlyRevenue = subscriptionStats._sum.monthlyFee || 0;
+  const activeSubscriptions = subscriptionStats._count.id || 0;
+
+  const [flaggedStories, flaggedComments] = flaggedContent;
+  const totalFlaggedContent = flaggedStories + flaggedComments;
+
+  // Get admin names for activity log
+  const adminIds = [...new Set(recentActivities.map(a => a.userId))];
+  const admins = await prisma.user.findMany({
+    where: { id: { in: adminIds } },
+    select: { id: true, name: true },
+  });
+  const adminMap = new Map(admins.map(a => [a.id, a.name]));
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <aside className="w-64 border-r border-gray-200 bg-white p-6">
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900">Platform Admin</h2>
+          <p className="text-sm text-gray-600 mt-1">God Mode Dashboard</p>
+        </div>
+        <SidebarNav />
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Platform Administration</h1>
-          <p className="text-gray-600 mt-1">Manage charity applications and approvals</p>
+          <h1 className="text-3xl font-bold text-gray-900">Overview Dashboard</h1>
+          <p className="text-gray-600 mt-1">Monitor and manage your platform at a glance</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Alert Banners */}
+        {(overduePayments.length > 0 || inactiveCharities.length > 0 || totalFlaggedContent > 0) && (
+          <div className="space-y-4 mb-8">
+            {/* Overdue Payments Alert */}
+            {overduePayments.length > 0 && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>Overdue Payments Detected</AlertTitle>
+                <AlertDescription>
+                  {overduePayments.length} {overduePayments.length === 1 ? 'charity has' : 'charities have'} overdue payments:
+                  <ul className="mt-2 list-disc list-inside">
+                    {overduePayments.slice(0, 3).map((charity) => (
+                      <li key={charity.id}>
+                        <strong>{charity.name}</strong> - Due{' '}
+                        {new Date(charity.nextPaymentDue!).toLocaleDateString('en-GB')}
+                        {charity.monthlyFee && ` (£${charity.monthlyFee})`}
+                      </li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Inactive Charities Alert */}
+            {inactiveCharities.length > 0 && (
+              <Alert>
+                <Clock className="h-4 w-4" />
+                <AlertTitle>Inactive Charities</AlertTitle>
+                <AlertDescription>
+                  {inactiveCharities.length} approved {inactiveCharities.length === 1 ? 'charity has' : 'charities have'} not published stories in 30+ days:
+                  <ul className="mt-2 list-disc list-inside">
+                    {inactiveCharities.slice(0, 3).map((charity) => (
+                      <li key={charity.id}>
+                        <strong>{charity.name}</strong>
+                        {charity.lastStoryDate 
+                          ? ` - Last story on ${new Date(charity.lastStoryDate).toLocaleDateString('en-GB')}`
+                          : ' - No stories yet'
+                        }
+                      </li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Flagged Content Alert */}
+            {totalFlaggedContent > 0 && (
+              <Alert>
+                <Flag className="h-4 w-4" />
+                <AlertTitle>Flagged Content Requires Review</AlertTitle>
+                <AlertDescription>
+                  {flaggedStories} {flaggedStories === 1 ? 'story' : 'stories'} and{' '}
+                  {flaggedComments} {flaggedComments === 1 ? 'comment' : 'comments'} have been flagged for review.
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Total Charities */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-600">Pending Review</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Total Charities
+              </CardTitle>
+              <Building2 className="h-5 w-5 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2">
-                <Clock className="h-8 w-8 text-yellow-600" />
-                <span className="text-3xl font-bold text-gray-900">{pendingCount}</span>
+              <div className="text-3xl font-bold text-gray-900">{totalCharities}</div>
+              <div className="mt-2 flex gap-2 text-sm">
+                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                  {pendingCharities} Pending
+                </Badge>
+                <Badge variant="default" className="bg-green-100 text-green-800">
+                  {approvedCharities} Approved
+                </Badge>
+                <Badge variant="destructive" className="bg-red-100 text-red-800">
+                  {rejectedCharities} Rejected
+                </Badge>
               </div>
             </CardContent>
           </Card>
 
+          {/* Active Donors */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-600">Approved</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Active Donors
+              </CardTitle>
+              <Users className="h-5 w-5 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-8 w-8 text-green-600" />
-                <span className="text-3xl font-bold text-gray-900">{approvedCount}</span>
+              <div className="text-3xl font-bold text-gray-900">{donorsCount}</div>
+              <p className="text-sm text-gray-600 mt-2">Corporate donors on platform</p>
+            </CardContent>
+          </Card>
+
+          {/* Total Stories */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Total Stories
+              </CardTitle>
+              <FileText className="h-5 w-5 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-gray-900">{totalStories}</div>
+              <div className="mt-2 flex gap-2 text-sm">
+                <Badge variant="secondary" className="bg-gray-100 text-gray-800">
+                  {draftStories} Draft
+                </Badge>
+                <Badge variant="default" className="bg-blue-100 text-blue-800">
+                  {publishedStories} Published
+                </Badge>
+                <Badge variant="outline" className="bg-orange-100 text-orange-800">
+                  {archivedStories} Archived
+                </Badge>
               </div>
             </CardContent>
           </Card>
 
+          {/* Engagement Metrics */}
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-gray-600">Rejected</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Engagement Metrics
+              </CardTitle>
+              <TrendingUp className="h-5 w-5 text-gray-400" />
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-2">
-                <XCircle className="h-8 w-8 text-red-600" />
-                <span className="text-3xl font-bold text-gray-900">{rejectedCount}</span>
+              <div className="text-3xl font-bold text-gray-900">{totalEngagement.toLocaleString()}</div>
+              <p className="text-sm text-gray-600 mt-2">
+                {engagementMetrics[0]} likes · {engagementMetrics[1]} reactions · {engagementMetrics[2]} comments
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Monthly Revenue */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Monthly Revenue
+              </CardTitle>
+              <DollarSign className="h-5 w-5 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-gray-900">
+                £{Number(monthlyRevenue).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
+              <p className="text-sm text-gray-600 mt-2">From active subscriptions</p>
+            </CardContent>
+          </Card>
+
+          {/* Active Subscriptions */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Active Subscriptions
+              </CardTitle>
+              <CheckCircle className="h-5 w-5 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-gray-900">{activeSubscriptions}</div>
+              <p className="text-sm text-gray-600 mt-2">Charities with active subscriptions</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Charities List */}
+        {/* Activity Feed */}
         <Card>
           <CardHeader>
-            <CardTitle>All Charities</CardTitle>
+            <div className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-gray-600" />
+              <CardTitle>Recent Activity</CardTitle>
+            </div>
             <CardDescription>
-              Review and manage charity applications
+              Last 20 admin actions on the platform
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {charities.length === 0 ? (
+            {recentActivities.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
-                <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No charity applications yet</p>
+                <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No recent activity to display</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {charities.map((charity) => (
+              <div className="space-y-3">
+                {recentActivities.map((activity) => (
                   <div
-                    key={charity.id}
-                    className="border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
+                    key={activity.id}
+                    className="flex items-start gap-3 border-l-2 border-teal-500 pl-3 py-2"
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start gap-4">
-                        <Building2 className="h-6 w-6 text-gray-400 mt-1" />
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            {charity.name}
-                          </h3>
-                          {charity.registrationNumber && (
-                            <p className="text-sm text-gray-600">
-                              Reg. No: {charity.registrationNumber}
-                            </p>
-                          )}
-                        </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900">
+                          {(adminMap.get(activity.userId) as string | undefined) || 'Unknown Admin'}
+                        </span>
+                        <Badge variant="outline" className="text-xs">
+                          {activity.action.replace(/_/g, ' ')}
+                        </Badge>
                       </div>
-                      <Badge
-                        variant={charity.status === 'APPROVED' ? 'default' : charity.status === 'PENDING' ? 'secondary' : 'destructive'}
-                      >
-                        {charity.status}
-                      </Badge>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      {charity.location && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <MapPin className="h-4 w-4" />
-                          {charity.location}
-                        </div>
-                      )}
-                      {charity.websiteUrl && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Globe className="h-4 w-4" />
-                          <a
-                            href={charity.websiteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-teal-600 hover:underline"
-                          >
-                            {charity.websiteUrl}
-                          </a>
-                        </div>
-                      )}
-                      {charity.focusArea && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <FileText className="h-4 w-4" />
-                          {charity.focusArea}
-                        </div>
-                      )}
-                      {charity.users[0] && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Mail className="h-4 w-4" />
-                          {charity.users[0].email}
-                        </div>
-                      )}
-                    </div>
-
-                    {charity.description && (
-                      <p className="text-sm text-gray-700 mb-4">
-                        {charity.description}
+                      <p className="text-sm text-gray-600 mt-1">
+                        {activity.entityType} {activity.entityId && `· ID: ${activity.entityId.slice(0, 8)}`}
                       </p>
-                    )}
-
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="text-sm text-gray-600">
-                        <span className="font-medium">{charity._count.stories}</span> stories published
-                        {' • '}
-                        Applied {new Date(charity.createdAt).toLocaleDateString('en-GB')}
-                      </div>
-                      <div className="flex gap-2">
-                        {charity.status === 'PENDING' && (
-                          <>
-                            <form action="/api/platform-admin/approve-charity" method="POST">
-                              <input type="hidden" name="charityId" value={charity.id} />
-                              <Button
-                                type="submit"
-                                size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                              >
-                                <CheckCircle className="h-4 w-4 mr-1" />
-                                Approve
-                              </Button>
-                            </form>
-                            <form action="/api/platform-admin/reject-charity" method="POST">
-                              <input type="hidden" name="charityId" value={charity.id} />
-                              <Button
-                                type="submit"
-                                size="sm"
-                                variant="destructive"
-                              >
-                                <XCircle className="h-4 w-4 mr-1" />
-                                Reject
-                              </Button>
-                            </form>
-                          </>
-                        )}
-                        {charity.status === 'APPROVED' && (
-                          <Badge variant="outline" className="text-green-700 border-green-300">
-                            Active
-                          </Badge>
-                        )}
-                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {new Date(activity.timestamp).toLocaleString('en-GB', {
+                          dateStyle: 'medium',
+                          timeStyle: 'short',
+                        })}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -228,7 +399,7 @@ export default async function PlatformAdminPage() {
             )}
           </CardContent>
         </Card>
-      </div>
+      </main>
     </div>
   );
 }
