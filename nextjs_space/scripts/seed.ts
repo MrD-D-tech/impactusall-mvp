@@ -51,6 +51,8 @@ async function main() {
       websiteUrl: 'https://northernhospice.org.uk',
       location: 'Greater Manchester',
       focusArea: 'Children\'s Palliative Care',
+      status: 'APPROVED', // Pre-approved for testing
+      registrationNumber: 'CH123456',
     },
   });
 
@@ -62,6 +64,8 @@ async function main() {
       websiteUrl: 'https://streetstohomes.org.uk',
       location: 'Manchester',
       focusArea: 'Homelessness & Employment',
+      status: 'PENDING', // For testing approval workflow
+      registrationNumber: 'CH789012',
     },
   });
 
@@ -73,6 +77,8 @@ async function main() {
       websiteUrl: 'https://newbeginningsmanchester.org.uk',
       location: 'Manchester',
       focusArea: 'Refugee Support & Integration',
+      status: 'PENDING', // For testing approval workflow
+      registrationNumber: 'CH345678',
     },
   });
 
@@ -84,6 +90,8 @@ async function main() {
       websiteUrl: 'https://mindsmatteryouth.org.uk',
       location: 'Manchester',
       focusArea: 'Youth Mental Health',
+      status: 'PENDING', // For testing approval workflow
+      registrationNumber: 'CH901234',
     },
   });
 
