@@ -55,6 +55,7 @@ export async function PUT(
     const featuredImage = formData.get('featuredImage') as File | null;
     const existingImageUrl = formData.get('existingImageUrl') as string | null;
     const video = formData.get('video') as File | null;
+    const usePlaceholder = formData.get('usePlaceholder') as string | null;
 
     // Validation
     if (!title || !content) {
@@ -79,7 +80,11 @@ export async function PUT(
 
     // Handle featured image upload
     let featuredImageUrl = existingImageUrl || existingStory.featuredImageUrl;
-    if (featuredImage && featuredImage.size > 0) {
+    if (usePlaceholder === 'true') {
+      // Use the placeholder image
+      featuredImageUrl = '/images/story-placeholder.jpg';
+      console.log('Using placeholder image for story');
+    } else if (featuredImage && featuredImage.size > 0) {
       try {
         const buffer = Buffer.from(await featuredImage.arrayBuffer());
         const fileName = `stories/${Date.now()}-${featuredImage.name.replace(/\s+/g, '-')}`;

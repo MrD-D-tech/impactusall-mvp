@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
     const milestonesRaw = formData.get('milestones') as string;
     const featuredImage = formData.get('featuredImage') as File | null;
     const video = formData.get('video') as File | null;
+    const usePlaceholder = formData.get('usePlaceholder') as string | null;
 
     // Validation
     if (!title || !content) {
@@ -79,7 +80,11 @@ export async function POST(request: NextRequest) {
 
     // Handle featured image upload
     let featuredImageUrl = null;
-    if (featuredImage && featuredImage.size > 0) {
+    if (usePlaceholder === 'true') {
+      // Use the placeholder image
+      featuredImageUrl = '/images/story-placeholder.jpg';
+      console.log('Using placeholder image for story');
+    } else if (featuredImage && featuredImage.size > 0) {
       try {
         console.log('Starting image upload, size:', featuredImage.size, 'bytes');
         const buffer = Buffer.from(await featuredImage.arrayBuffer());

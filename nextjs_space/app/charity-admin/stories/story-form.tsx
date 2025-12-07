@@ -171,8 +171,12 @@ export default function StoryForm({
           setMilestones(generatedMilestones);
         }
 
+        // Automatically set placeholder image for AI-generated stories
+        setImagePreview('/images/story-placeholder.jpg');
+        setImageFile(null);
+
         setShowAIForm(false);
-        toast.success('Story generated! Review and edit below, then add an image.');
+        toast.success('Story generated! Placeholder image added. Review and publish when ready.');
       }
     } catch (error: any) {
       console.error('Generation error:', error);
@@ -292,6 +296,9 @@ export default function StoryForm({
 
       if (imageFile) {
         submitData.append('featuredImage', imageFile);
+      } else if (imagePreview === '/images/story-placeholder.jpg') {
+        // Signal to use the placeholder image
+        submitData.append('usePlaceholder', 'true');
       } else if (initialData?.featuredImageUrl) {
         submitData.append('existingImageUrl', initialData.featuredImageUrl);
       }
@@ -762,10 +769,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">People Impacted</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.people_impacted ?? ''}
+                  value={formData.impactMetrics.people_impacted?.toString() ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, people_impacted: e.target.value === '' ? '' : parseInt(e.target.value) }
+                    impactMetrics: { ...formData.impactMetrics, people_impacted: e.target.value ? parseInt(e.target.value) : undefined }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -775,10 +782,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Families Helped</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.families_helped ?? ''}
+                  value={formData.impactMetrics.families_helped?.toString() ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, families_helped: e.target.value === '' ? '' : parseInt(e.target.value) }
+                    impactMetrics: { ...formData.impactMetrics, families_helped: e.target.value ? parseInt(e.target.value) : undefined }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -788,10 +795,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Jobs Created/Secured</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.jobs_secured ?? ''}
+                  value={formData.impactMetrics.jobs_secured?.toString() ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, jobs_secured: e.target.value === '' ? '' : parseInt(e.target.value) }
+                    impactMetrics: { ...formData.impactMetrics, jobs_secured: e.target.value ? parseInt(e.target.value) : undefined }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -801,10 +808,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Support Hours Provided</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.support_hours ?? ''}
+                  value={formData.impactMetrics.support_hours?.toString() ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, support_hours: e.target.value === '' ? '' : parseInt(e.target.value) }
+                    impactMetrics: { ...formData.impactMetrics, support_hours: e.target.value ? parseInt(e.target.value) : undefined }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -814,10 +821,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Safe Nights Provided</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.safe_nights ?? ''}
+                  value={formData.impactMetrics.safe_nights?.toString() ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, safe_nights: e.target.value === '' ? '' : parseInt(e.target.value) }
+                    impactMetrics: { ...formData.impactMetrics, safe_nights: e.target.value ? parseInt(e.target.value) : undefined }
                   })}
                   placeholder="0"
                   className="mt-1"
@@ -827,10 +834,10 @@ export default function StoryForm({
                 <Label className="text-sm font-normal">Counselling Sessions</Label>
                 <Input
                   type="number"
-                  value={formData.impactMetrics.counselling_sessions ?? ''}
+                  value={formData.impactMetrics.counselling_sessions?.toString() ?? ''}
                   onChange={(e) => setFormData({
                     ...formData,
-                    impactMetrics: { ...formData.impactMetrics, counselling_sessions: e.target.value === '' ? '' : parseInt(e.target.value) }
+                    impactMetrics: { ...formData.impactMetrics, counselling_sessions: e.target.value ? parseInt(e.target.value) : undefined }
                   })}
                   placeholder="0"
                   className="mt-1"

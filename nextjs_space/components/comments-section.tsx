@@ -23,7 +23,6 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
   const router = useRouter();
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState('');
-  const [guestName, setGuestName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,12 +35,6 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
       return;
     }
 
-    // For guest users, require a name
-    if (!session && !guestName.trim()) {
-      toast.error('Please enter your name');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -51,7 +44,6 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
         body: JSON.stringify({
           storyId,
           content: newComment.trim(),
-          guestName: !session ? guestName.trim() : undefined,
         }),
       });
 
@@ -60,7 +52,6 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
       // All comments are auto-approved now
       toast.success('Your comment has been posted!');
       setNewComment('');
-      setGuestName('');
       
       // Refresh to show new comment immediately
       router.refresh();
@@ -80,25 +71,6 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
 
       {/* Comment Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Name field - only for guest users */}
-        {!session && (
-          <div>
-            <label htmlFor="guestName" className="block text-sm font-medium text-gray-700 mb-2">
-              Your Name
-            </label>
-            <input
-              type="text"
-              id="guestName"
-              value={guestName}
-              onChange={(e) => setGuestName(e.target.value)}
-              placeholder="Enter your name"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              disabled={isSubmitting}
-              autoComplete="name"
-            />
-          </div>
-        )}
-        
         <div>
           <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-2">
             Share your thoughts
