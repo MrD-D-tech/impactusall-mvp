@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
+import { sendNewCommentNotification } from '@/lib/email';
 
 // POST - Submit a new comment
 export async function POST(request: NextRequest) {
@@ -22,11 +23,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
-    // Determine comment status: Auto-approve authenticated users, moderate guests
-    const commentStatus = session?.user ? 'APPROVED' : 'PENDING';
+    // AUTO-APPROVE ALL COMMENTS (no moderation)
+    const commentStatus = 'APPROVED';
 
     // Create comment
-    await prisma.comment.create({
+    const comment = await prisma.comment.create({
       data: {
         storyId,
         userId: session?.user?.id || null,
@@ -59,6 +60,32 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // Send email notification to charity and/or corporate donor
+    try {
+      const story = await prisma.story.findUnique({
+        where: { id: storyId },
+        include: {
+          charity: true,
+          donor: true,
+        },
+      });
+
+      if (story) {
+        await sendNewCommentNotification({
+          storyTitle: story.title,
+          storySlug: story.slug,
+          commenterName: comment.userName,
+          commentContent: comment.content,
+          charityId: story.charityId,
+          donorId: story.donorId,
+          donorSlug: story.donor?.slug || null,
+        });
+      }
+    } catch (emailError) {
+      // Log email error but don't fail the comment submission
+      console.error('Failed to send comment notification email:', emailError);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

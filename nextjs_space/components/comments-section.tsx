@@ -57,17 +57,13 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
 
       if (!response.ok) throw new Error();
 
-      const successMessage = session 
-        ? 'Your comment has been posted!' 
-        : 'Thank you! Your comment will appear shortly after review.';
-      toast.success(successMessage);
+      // All comments are auto-approved now
+      toast.success('Your comment has been posted!');
       setNewComment('');
       setGuestName('');
       
-      // Refresh to show new comment for authenticated users
-      if (session) {
-        router.refresh();
-      }
+      // Refresh to show new comment immediately
+      router.refresh();
     } catch (error) {
       toast.error('Failed to submit comment');
     } finally {
@@ -130,11 +126,6 @@ export function CommentsSection({ storyId, initialComments }: CommentsSectionPro
           <Send className="w-4 h-4" />
           {isSubmitting ? 'Submitting...' : 'Post Comment'}
         </button>
-        {!session && (
-          <p className="text-sm text-gray-500">
-            Guest comments are moderated and will appear after approval.
-          </p>
-        )}
       </form>
 
       {/* Comments List */}
