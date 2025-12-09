@@ -17,22 +17,30 @@ export type ActionType =
   | 'REJECTED_CHARITY'
   | 'SUSPENDED_CHARITY'
   | 'UPDATED_CHARITY'
+  | 'DELETED_CHARITY'
   // Content actions
   | 'FLAGGED_STORY'
   | 'UNFLAGGED_STORY'
   | 'DELETED_STORY'
+  | 'UPDATED_STORY'
   | 'FLAGGED_COMMENT'
   | 'UNFLAGGED_COMMENT'
   | 'DELETED_COMMENT'
+  | 'UPDATED_COMMENT'
   // User actions
   | 'CREATED_USER'
   | 'UPDATED_USER'
   | 'DELETED_USER'
+  | 'SUSPENDED_USER'
+  | 'ACTIVATED_USER'
   | 'RESET_PASSWORD'
+  | 'CHANGED_USER_ROLE'
   // Donor actions
   | 'CREATED_DONOR'
   | 'UPDATED_DONOR'
   | 'DELETED_DONOR'
+  | 'SUSPENDED_DONOR'
+  | 'ACTIVATED_DONOR'
   // System actions
   | 'VIEWED_DASHBOARD'
   | 'EXPORTED_DATA'
@@ -62,7 +70,7 @@ export async function logActivity(
         action,
         entityType,
         entityId: entityId || null,
-        details: details || null,
+        details: details || undefined,
       },
     });
 
@@ -100,10 +108,6 @@ export async function getRecentActivities(
         timestamp: 'desc',
       },
       take: limit,
-      include: {
-        // Note: ActivityLog doesn't have a direct relation to User in the schema
-        // We'll need to join manually or add the relation if needed
-      },
     });
 
     return activities;

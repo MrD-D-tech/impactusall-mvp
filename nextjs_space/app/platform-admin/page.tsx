@@ -7,6 +7,8 @@ import { SidebarNav } from '@/components/platform-admin/sidebar-nav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ActivityFeed } from '@/components/platform-admin/activity-feed';
+import Link from 'next/link';
 import { 
   Building2, 
   Users, 
@@ -153,14 +155,6 @@ export default async function PlatformAdminPage() {
   const [flaggedStories, flaggedComments] = flaggedContent;
   const totalFlaggedContent = flaggedStories + flaggedComments;
 
-  // Get admin names for activity log
-  const adminIds = [...new Set(recentActivities.map(a => a.userId))];
-  const admins = await prisma.user.findMany({
-    where: { id: { in: adminIds } },
-    select: { id: true, name: true },
-  });
-  const adminMap = new Map(admins.map(a => [a.id, a.name]));
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
@@ -242,163 +236,128 @@ export default async function PlatformAdminPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {/* Total Charities */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Total Charities
-              </CardTitle>
-              <Building2 className="h-5 w-5 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">{totalCharities}</div>
-              <div className="mt-2 flex gap-2 text-sm">
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                  {pendingCharities} Pending
-                </Badge>
-                <Badge variant="default" className="bg-green-100 text-green-800">
-                  {approvedCharities} Approved
-                </Badge>
-                <Badge variant="destructive" className="bg-red-100 text-red-800">
-                  {rejectedCharities} Rejected
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+          <Link href="/platform-admin/charities" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Total Charities
+                </CardTitle>
+                <Building2 className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">{totalCharities}</div>
+                <div className="mt-2 flex gap-2 text-sm flex-wrap">
+                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                    {pendingCharities} Pending
+                  </Badge>
+                  <Badge variant="default" className="bg-green-100 text-green-800">
+                    {approvedCharities} Approved
+                  </Badge>
+                  <Badge variant="destructive" className="bg-red-100 text-red-800">
+                    {rejectedCharities} Rejected
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Active Donors */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Active Donors
-              </CardTitle>
-              <Users className="h-5 w-5 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">{donorsCount}</div>
-              <p className="text-sm text-gray-600 mt-2">Corporate donors on platform</p>
-            </CardContent>
-          </Card>
+          <Link href="/platform-admin/donors" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Active Donors
+                </CardTitle>
+                <Users className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">{donorsCount}</div>
+                <p className="text-sm text-gray-600 mt-2">Corporate donors on platform</p>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Total Stories */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Total Stories
-              </CardTitle>
-              <FileText className="h-5 w-5 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">{totalStories}</div>
-              <div className="mt-2 flex gap-2 text-sm">
-                <Badge variant="secondary" className="bg-gray-100 text-gray-800">
-                  {draftStories} Draft
-                </Badge>
-                <Badge variant="default" className="bg-blue-100 text-blue-800">
-                  {publishedStories} Published
-                </Badge>
-                <Badge variant="outline" className="bg-orange-100 text-orange-800">
-                  {archivedStories} Archived
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+          <Link href="/platform-admin/content" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Total Stories
+                </CardTitle>
+                <FileText className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">{totalStories}</div>
+                <div className="mt-2 flex gap-2 text-sm flex-wrap">
+                  <Badge variant="secondary" className="bg-gray-100 text-gray-800">
+                    {draftStories} Draft
+                  </Badge>
+                  <Badge variant="default" className="bg-blue-100 text-blue-800">
+                    {publishedStories} Published
+                  </Badge>
+                  <Badge variant="outline" className="bg-orange-100 text-orange-800">
+                    {archivedStories} Archived
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Engagement Metrics */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Engagement Metrics
-              </CardTitle>
-              <TrendingUp className="h-5 w-5 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">{totalEngagement.toLocaleString()}</div>
-              <p className="text-sm text-gray-600 mt-2">
-                {engagementMetrics[0]} likes · {engagementMetrics[1]} reactions · {engagementMetrics[2]} comments
-              </p>
-            </CardContent>
-          </Card>
+          <Link href="/platform-admin/content" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Engagement Metrics
+                </CardTitle>
+                <TrendingUp className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">{totalEngagement.toLocaleString()}</div>
+                <p className="text-sm text-gray-600 mt-2">
+                  {engagementMetrics[0]} likes · {engagementMetrics[1]} reactions · {engagementMetrics[2]} comments
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Monthly Revenue */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Monthly Revenue
-              </CardTitle>
-              <DollarSign className="h-5 w-5 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">
-                £{Number(monthlyRevenue).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <p className="text-sm text-gray-600 mt-2">From active subscriptions</p>
-            </CardContent>
-          </Card>
+          <Link href="/platform-admin/charities?tab=payments" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Monthly Revenue
+                </CardTitle>
+                <DollarSign className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">
+                  £{Number(monthlyRevenue).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <p className="text-sm text-gray-600 mt-2">From active subscriptions</p>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* Active Subscriptions */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                Active Subscriptions
-              </CardTitle>
-              <CheckCircle className="h-5 w-5 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-gray-900">{activeSubscriptions}</div>
-              <p className="text-sm text-gray-600 mt-2">Charities with active subscriptions</p>
-            </CardContent>
-          </Card>
+          <Link href="/platform-admin/charities?tab=subscriptions" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Active Subscriptions
+                </CardTitle>
+                <CheckCircle className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">{activeSubscriptions}</div>
+                <p className="text-sm text-gray-600 mt-2">Charities with active subscriptions</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Activity Feed */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-gray-600" />
-              <CardTitle>Recent Activity</CardTitle>
-            </div>
-            <CardDescription>
-              Last 20 admin actions on the platform
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {recentActivities.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No recent activity to display</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {recentActivities.map((activity) => (
-                  <div
-                    key={activity.id}
-                    className="flex items-start gap-3 border-l-2 border-teal-500 pl-3 py-2"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">
-                          {(adminMap.get(activity.userId) as string | undefined) || 'Unknown Admin'}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {activity.action.replace(/_/g, ' ')}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {activity.entityType} {activity.entityId && `· ID: ${activity.entityId.slice(0, 8)}`}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {new Date(activity.timestamp).toLocaleString('en-GB', {
-                          dateStyle: 'medium',
-                          timeStyle: 'short',
-                        })}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <ActivityFeed initialActivities={recentActivities} />
       </main>
     </div>
   );
