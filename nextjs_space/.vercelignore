@@ -1,0 +1,8 @@
+node_modules
+.next
+.build
+.build_backup
+*.log
+.git
+.DS_Store
+public/videos/man-united-impact.mp4
