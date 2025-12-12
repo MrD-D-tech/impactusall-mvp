@@ -19,6 +19,9 @@ import {
   Clock,
   Flag,
   Activity,
+  UserCheck,
+  Server,
+  Info,
 } from 'lucide-react';
 
 export default async function PlatformAdminPage() {
@@ -42,12 +45,15 @@ export default async function PlatformAdminPage() {
     charitiesStats,
     donorsCount,
     storiesStats,
+    usersCount,
     engagementMetrics,
     subscriptionStats,
     overduePayments,
     inactiveCharities,
     flaggedContent,
     recentActivities,
+    recentActivityCount,
+    lastSystemActivity,
   ] = await Promise.all([
     // Charities stats
     prisma.charity.groupBy({
@@ -63,6 +69,9 @@ export default async function PlatformAdminPage() {
       by: ['status'],
       _count: true,
     }),
+    
+    // Total users count
+    prisma.user.count(),
     
     // Engagement metrics (likes + reactions + comments)
     prisma.$transaction([
@@ -134,6 +143,25 @@ export default async function PlatformAdminPage() {
         timestamp: true,
       },
     }),
+    
+    // Recent activity count (last 24 hours)
+    prisma.activityLog.count({
+      where: {
+        timestamp: {
+          gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        },
+      },
+    }),
+    
+    // Last system activity (for system health)
+    prisma.activityLog.findFirst({
+      orderBy: {
+        timestamp: 'desc',
+      },
+      select: {
+        timestamp: true,
+      },
+    }),
   ]);
 
   // Process stats
@@ -154,17 +182,46 @@ export default async function PlatformAdminPage() {
   const [flaggedStories, flaggedComments] = flaggedContent;
   const totalFlaggedContent = flaggedStories + flaggedComments;
 
+  // Calculate system health based on last activity
+  const getSystemHealth = () => {
+    if (!lastSystemActivity) {
+      return { status: 'red', label: 'No Activity', description: 'No system activity recorded' };
+    }
+    
+    const hoursSinceLastActivity = (Date.now() - new Date(lastSystemActivity.timestamp).getTime()) / (1000 * 60 * 60);
+    
+    if (hoursSinceLastActivity < 24) {
+      return { status: 'green', label: 'Healthy', description: 'Active in last 24 hours' };
+    } else if (hoursSinceLastActivity < 72) {
+      return { status: 'yellow', label: 'Warning', description: `Last activity ${Math.round(hoursSinceLastActivity)} hours ago` };
+    } else {
+      return { status: 'red', label: 'Critical', description: `No activity for ${Math.round(hoursSinceLastActivity / 24)} days` };
+    }
+  };
+
+  const systemHealth = getSystemHealth();
+
   return (
     <>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Platform Administration</h1>
-        <p className="text-gray-600 mt-1">Manage charity applications and approvals</p>
+        <h1 className="text-3xl font-bold text-gray-900">Morning Briefing Dashboard</h1>
+        <p className="text-gray-600 mt-1">Your daily overview of key metrics and platform health</p>
       </div>
 
         {/* Alert Banners */}
-        {(overduePayments.length > 0 || inactiveCharities.length > 0 || totalFlaggedContent > 0) && (
+        {(overduePayments.length > 0 || inactiveCharities.length > 0 || totalFlaggedContent > 0 || recentActivityCount > 0) && (
           <div className="space-y-4 mb-8">
+            {/* Recent Activity Alert */}
+            {recentActivityCount > 0 && (
+              <Alert className="border-blue-200 bg-blue-50">
+                <Info className="h-4 w-4 text-blue-600" />
+                <AlertTitle className="text-blue-900">Recent Activity (Last 24 Hours)</AlertTitle>
+                <AlertDescription className="text-blue-800">
+                  {recentActivityCount} {recentActivityCount === 1 ? 'action has' : 'actions have'} been performed on the platform in the last 24 hours.
+                </AlertDescription>
+              </Alert>
+            )}
             {/* Overdue Payments Alert */}
             {overduePayments.length > 0 && (
               <Alert variant="destructive">
@@ -222,10 +279,10 @@ export default async function PlatformAdminPage() {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
           {/* Total Charities */}
           <Link href="/platform-admin/charities" className="block transition-transform hover:scale-105">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">
                   Total Charities
@@ -251,7 +308,7 @@ export default async function PlatformAdminPage() {
 
           {/* Active Donors */}
           <Link href="/platform-admin/donors" className="block transition-transform hover:scale-105">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">
                   Active Donors
@@ -267,7 +324,7 @@ export default async function PlatformAdminPage() {
 
           {/* Total Stories */}
           <Link href="/platform-admin/content" className="block transition-transform hover:scale-105">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">
                   Total Stories
@@ -291,12 +348,84 @@ export default async function PlatformAdminPage() {
             </Card>
           </Link>
 
-          {/* Engagement Metrics */}
-          <Link href="/platform-admin/content" className="block transition-transform hover:scale-105">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          {/* Total Users */}
+          <Link href="/platform-admin/users" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-gray-600">
-                  Engagement Metrics
+                  Total Users
+                </CardTitle>
+                <UserCheck className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">{usersCount}</div>
+                <p className="text-sm text-gray-600 mt-2">All platform users</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Monthly Revenue */}
+          <Link href="/platform-admin/charities?tab=payments" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Monthly Revenue
+                </CardTitle>
+                <DollarSign className="h-5 w-5 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-gray-900">
+                  £{Number(monthlyRevenue).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </div>
+                <p className="text-sm text-gray-600 mt-2">From {activeSubscriptions} active subscriptions</p>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* System Health */}
+          <Card className={`h-full ${
+            systemHealth.status === 'green' ? 'border-green-200 bg-green-50' :
+            systemHealth.status === 'yellow' ? 'border-yellow-200 bg-yellow-50' :
+            'border-red-200 bg-red-50'
+          }`}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className={`text-sm font-medium ${
+                systemHealth.status === 'green' ? 'text-green-800' :
+                systemHealth.status === 'yellow' ? 'text-yellow-800' :
+                'text-red-800'
+              }`}>
+                System Health
+              </CardTitle>
+              <Server className={`h-5 w-5 ${
+                systemHealth.status === 'green' ? 'text-green-500' :
+                systemHealth.status === 'yellow' ? 'text-yellow-500' :
+                'text-red-500'
+              }`} />
+            </CardHeader>
+            <CardContent>
+              <div className={`text-2xl font-bold ${
+                systemHealth.status === 'green' ? 'text-green-900' :
+                systemHealth.status === 'yellow' ? 'text-yellow-900' :
+                'text-red-900'
+              }`}>
+                {systemHealth.label}
+              </div>
+              <p className={`text-sm mt-2 ${
+                systemHealth.status === 'green' ? 'text-green-700' :
+                systemHealth.status === 'yellow' ? 'text-yellow-700' :
+                'text-red-700'
+              }`}>
+                {systemHealth.description}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Engagement Metrics */}
+          <Link href="/platform-admin/content" className="block transition-transform hover:scale-105">
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  Total Engagement
                 </CardTitle>
                 <TrendingUp className="h-5 w-5 text-gray-400" />
               </CardHeader>
@@ -309,39 +438,25 @@ export default async function PlatformAdminPage() {
             </Card>
           </Link>
 
-          {/* Monthly Revenue */}
-          <Link href="/platform-admin/charities?tab=payments" className="block transition-transform hover:scale-105">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  Monthly Revenue
-                </CardTitle>
-                <DollarSign className="h-5 w-5 text-gray-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-gray-900">
-                  £{Number(monthlyRevenue).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </div>
-                <p className="text-sm text-gray-600 mt-2">From active subscriptions</p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* Active Subscriptions */}
-          <Link href="/platform-admin/charities?tab=subscriptions" className="block transition-transform hover:scale-105">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">
-                  Active Subscriptions
-                </CardTitle>
-                <CheckCircle className="h-5 w-5 text-gray-400" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-gray-900">{activeSubscriptions}</div>
-                <p className="text-sm text-gray-600 mt-2">Charities with active subscriptions</p>
-              </CardContent>
-            </Card>
-          </Link>
+          {/* Pending Charities Quick Stat */}
+          {pendingCharities > 0 && (
+            <Link href="/platform-admin/charities?status=PENDING" className="block transition-transform hover:scale-105">
+              <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full border-yellow-200 bg-yellow-50">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-yellow-800">
+                    Pending Review
+                  </CardTitle>
+                  <Clock className="h-5 w-5 text-yellow-500" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-yellow-900">{pendingCharities}</div>
+                  <p className="text-sm text-yellow-700 mt-2">
+                    {pendingCharities === 1 ? 'Charity awaiting' : 'Charities awaiting'} approval
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          )}
         </div>
 
       {/* Activity Feed */}
