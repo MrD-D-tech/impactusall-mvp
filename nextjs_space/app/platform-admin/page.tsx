@@ -3,7 +3,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
 import { logActivity } from '@/lib/activity-log';
-import { SidebarNav } from '@/components/platform-admin/sidebar-nav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -156,23 +155,12 @@ export default async function PlatformAdminPage() {
   const totalFlaggedContent = flaggedStories + flaggedComments;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-gray-200 bg-white p-6">
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900">Platform Admin</h2>
-          <p className="text-sm text-gray-600 mt-1">God Mode Dashboard</p>
-        </div>
-        <SidebarNav />
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Overview Dashboard</h1>
-          <p className="text-gray-600 mt-1">Monitor and manage your platform at a glance</p>
-        </div>
+    <>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Platform Administration</h1>
+        <p className="text-gray-600 mt-1">Manage charity applications and approvals</p>
+      </div>
 
         {/* Alert Banners */}
         {(overduePayments.length > 0 || inactiveCharities.length > 0 || totalFlaggedContent > 0) && (
@@ -356,9 +344,8 @@ export default async function PlatformAdminPage() {
           </Link>
         </div>
 
-        {/* Activity Feed */}
-        <ActivityFeed initialActivities={recentActivities} />
-      </main>
-    </div>
+      {/* Activity Feed */}
+      <ActivityFeed initialActivities={recentActivities} />
+    </>
   );
 }
