@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authOptions } from '@/lib/auth-options';
 import { SidebarNav } from '@/components/platform-admin/sidebar-nav';
 
 export default async function PlatformAdminLayout({
