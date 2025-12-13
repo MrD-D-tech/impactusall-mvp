@@ -2,10 +2,52 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
-import { Story, Charity } from '@prisma/client';
+
+// Manual type definitions for Vercel compatibility
+// These match the Prisma schema but don't rely on @prisma/client type exports
+// which can fail in Vercel's build environment
+
+interface Charity {
+  id: string;
+  name: string;
+  description: string | null;
+  logoUrl: string | null;
+  websiteUrl: string | null;
+  location: string | null;
+  focusArea: string | null;
+  registrationNumber: string | null;
+  status: string; // 'PENDING' | 'APPROVED' | 'REJECTED'
+  monthlyFee: any | null; // Decimal type from Prisma
+  subscriptionStatus: string | null; // 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'CANCELLED'
+  lastPaymentDate: Date | null;
+  nextPaymentDue: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface Story {
+  id: string;
+  charityId: string;
+  donorId: string | null;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string | null;
+  featuredImageUrl: string | null;
+  impactMetrics: any | null; // JSON type from Prisma
+  status: string; // 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
+  publishedAt: Date | null;
+  isFlagged: boolean;
+  flagReason: string | null;
+  flaggedAt: Date | null;
+  flaggedBy: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  createdById: string;
+  updatedById: string | null;
+}
 
 // Define the type for a story with charity relation and counts
-// Using custom interface instead of Prisma.StoryGetPayload for Vercel compatibility
 interface StoryWithRelations extends Story {
   charity: Charity;
   _count: {
