@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
+import { Prisma } from '@prisma/client';
+
+// Define the type for a story with charity relation and counts
+type StoryWithRelations = Prisma.StoryGetPayload<{
+  include: {
+    charity: true;
+    _count: {
+      select: {
+        likes: true;
+        comments: true;
+        reactions: true;
+      };
+    };
+  };
+}>;
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,7 +39,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all stories for this donor
-    const stories = await prisma.story.findMany({
+    const stories: StoryWithRelations[] = await prisma.story.findMany({
       where: {
         donorId: user.donor.id,
         status: 'PUBLISHED',
@@ -48,7 +63,7 @@ export async function GET(request: NextRequest) {
     const donationPerStory = 25000;
     
     // Add donationAmount and createdAt to each story
-    const storiesWithDonation = stories.map((story) => ({
+    const storiesWithDonation = stories.map((story: StoryWithRelations) => ({
       ...story,
       donationAmount: donationPerStory,
       createdAt: story.createdAt.toISOString(), // Convert Date to string for serialization
