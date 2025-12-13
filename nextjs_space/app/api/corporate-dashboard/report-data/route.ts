@@ -2,21 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
-import { Prisma } from '@prisma/client';
+import { Story, Charity } from '@prisma/client';
 
 // Define the type for a story with charity relation and counts
-type StoryWithRelations = Prisma.StoryGetPayload<{
-  include: {
-    charity: true;
-    _count: {
-      select: {
-        likes: true;
-        comments: true;
-        reactions: true;
-      };
-    };
+// Using custom interface instead of Prisma.StoryGetPayload for Vercel compatibility
+interface StoryWithRelations extends Story {
+  charity: Charity;
+  _count: {
+    likes: number;
+    comments: number;
+    reactions: number;
   };
-}>;
+}
 
 export async function GET(request: NextRequest) {
   try {
