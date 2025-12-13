@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const donationPerStory = 25000;
     
     // Add donationAmount and createdAt to each story
-    const storiesWithDonation = stories.map((story: any) => ({
+    const storiesWithDonation = stories.map((story) => ({
       ...story,
       donationAmount: donationPerStory,
       createdAt: story.createdAt.toISOString(), // Convert Date to string for serialization
