@@ -69,7 +69,7 @@ export default async function DonorHubPage({ params }: DonorHubPageProps) {
     }
   });
   
-  const totalShares = analyticsData.reduce((sum, record) => sum + (record.shares || 0), 0);
+  const totalShares = analyticsData.reduce((sum: number, record) => sum + (record.shares || 0), 0);
 
   // Resolve S3 keys to signed URLs for all story images
   const storiesWithResolvedImages = await Promise.all(
