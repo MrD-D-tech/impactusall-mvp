@@ -39,7 +39,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Search, Filter, ChevronDown, Check, X, Edit, Trash2, DollarSign, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, Filter, ChevronDown, Check, X, Edit, Trash2, DollarSign, Loader2, Plus } from 'lucide-react';
 
 interface Charity {
   id: string;
@@ -72,6 +73,7 @@ export function CharityManagement({ initialCharities, initialTab, adminId }: Cha
   const [actionDialog, setActionDialog] = useState<'approve' | 'reject' | 'suspend' | 'resume' | 'delete' | 'payment' | null>(null);
   const [paymentAmount, setPaymentAmount] = useState('');
   const { toast } = useToast();
+  const router = useRouter();
 
   // Filter charities based on search and filters
   const filteredCharities = useMemo(() => {
@@ -214,9 +216,18 @@ export function CharityManagement({ initialCharities, initialTab, adminId }: Cha
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Charity Management</h1>
-        <p className="text-gray-600 mt-1">Manage charities, approvals, subscriptions, and payments</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Charity Management</h1>
+          <p className="text-gray-600 mt-1">Manage charities, approvals, subscriptions, and payments</p>
+        </div>
+        <Button 
+          onClick={() => router.push('/platform-admin/charities/add')}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Charity
+        </Button>
       </div>
 
       {/* Search and Filters */}

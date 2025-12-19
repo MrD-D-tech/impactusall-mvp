@@ -30,7 +30,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { Search, Eye, UserX, UserCheck, Trash2, Loader2, Building2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, Eye, UserX, UserCheck, Trash2, Loader2, Building2, Plus } from 'lucide-react';
 
 interface Donor {
   id: string;
@@ -57,6 +58,7 @@ export function DonorManagement({ initialDonors, adminId }: DonorManagementProps
   const [viewDialog, setViewDialog] = useState(false);
   const [actionDialog, setActionDialog] = useState<'delete' | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   // Filter donors based on search
   const filteredDonors = useMemo(() => {
@@ -112,9 +114,18 @@ export function DonorManagement({ initialDonors, adminId }: DonorManagementProps
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Donor Management</h1>
-        <p className="text-gray-600 mt-1">Manage corporate donors and their activity</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Corporate Donor Management</h1>
+          <p className="text-gray-600 mt-1">Manage corporate donors and their activity</p>
+        </div>
+        <Button 
+          onClick={() => router.push('/platform-admin/donors/add')}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Corporate
+        </Button>
       </div>
 
       {/* Search */}
